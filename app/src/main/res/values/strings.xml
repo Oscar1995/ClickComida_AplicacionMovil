@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">clickComida</string>
+    <string name="iniciar_sesion">Iniciar Sesión</string>
+    <string name="clave_boton">He olvidado mi contraseña</string>
+    <string name="tu_nombre">¿Cual es tu nombre?</string>
+    <string name="tu_apellido">¿Cual es tu apellido?</string>
+    <string name="registrar_usuario">Registrate</string>
+    <string name="texto_correo">Correo Electronico</string>
+    <string name="texto_clave">Contraseña</string>
+    <string name="texto_clave_repetir">Repetir Contraseña</string>
+    <string name="texto_restaurar_clave">Restaurar Clave</string>
+    <string name="IniciarSesionCorreo_texto">Inicia sesión con tu correo electronico</string>
+    <string name="RestaurarClave">Restaurar contraseña</string>
+    <string name="mensaje_welcome">Bienvenido</string>
+    <string name="tambien_puedes">Tambien puedes...</string>
+    <string name="title_activity_inicio_usuario">InicioUsuario</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

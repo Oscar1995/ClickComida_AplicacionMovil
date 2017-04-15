@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.chile.oscar.clickcomida_aplicacionmovil.RegistrarUsuario"
+    android:weightSum="1">
+
+
+    <Button
+        android:id="@+id/btnback"
+        android:layout_width="53dp"
+        android:layout_height="53dp"
+        android:background="@drawable/ic_shortcut_arrow_back" />
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="169dp"
+        android:layout_height="58dp"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/ic_shortcut_email"
+        android:layout_weight="0.42" />
+
+    <EditText
+        android:id="@+id/etCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/texto_correo"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etClave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/texto_clave"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etClaveRep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/texto_clave_repetir"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/tu_nombre"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etApellido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/tu_apellido"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/btnRegistrarUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorCeleste"
+        android:text="@string/registrar_usuario"
+        android:textColor="@color/textoBlanco" />
+</LinearLayout>
