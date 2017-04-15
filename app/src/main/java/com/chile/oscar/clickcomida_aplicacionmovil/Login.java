@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -48,6 +49,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 boolean correoCorrecto = false;
                 String correoElectronico = txtCorreo.getText().toString().trim();
                 String claveUsuario = txtClave.getText().toString().trim();
+
                 if (correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                 {
                     correoCorrecto = true;
@@ -98,8 +100,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 String afirmacion = jao.getString("datos");
                 if (afirmacion.equals("verdad"))
                 {
+                    String nombre_usuario = jao.getString("nombre");
                     Intent abrirInicio = new Intent(Login.this, InicioUsuario.class);
+                    abrirInicio.putExtra("correo_usuario", txtCorreo.getText().toString());
+                    abrirInicio.putExtra("nombre_usuario", nombre_usuario);
                     startActivity(abrirInicio);
+
                 }
                 else
                 {
