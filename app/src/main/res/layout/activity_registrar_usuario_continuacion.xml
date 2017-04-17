@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.chile.oscar.clickcomida_aplicacionmovil.RegistrarUsuarioContinuacion"
+    android:weightSum="1">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/estamos_casi_listo"
+        android:textSize="20dp"
+        android:textColor="@color/colorNegro"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/tvInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ Hola te pediremos algunos datos
+antes de empezar a usar la aplicación"
+        android:textColor="@color/colorNegro"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ Tu dirección"
+        android:textStyle="bold"
+        android:textColor="@color/colorNegro"
+        android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/etPasajeRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/pasaje"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etNumeroRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/numero"
+        android:inputType="number"
+        android:singleLine="false" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ Datos personales"
+        android:textColor="@color/colorNegro"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/etNicknameRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/usuario_nickname"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/etTelefonoRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/telefono_celular"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/etTelefonoOpcionalRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/telefono_celular_opcional"
+        android:inputType="number" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ "/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ "/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n\ "/>
+
+    <Button
+        android:id="@+id/btnRegistrarUsuarioFinal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorCeleste"
+        android:text="@string/registrar_usuario"
+        android:textColor="@color/textoBlanco" />
+
+
+</LinearLayout>

@@ -68,6 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorCeleste"
-        android:text="@string/registrar_usuario"
+        android:elevation="0dp"
+        android:text="@string/continuar"
         android:textColor="@color/textoBlanco" />
 </LinearLayout>

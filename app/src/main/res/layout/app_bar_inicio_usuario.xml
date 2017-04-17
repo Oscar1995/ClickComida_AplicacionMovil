@@ -20,7 +20,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_inicio_usuario" />
+    <include
+        android:id="@+id/contenedor_inicio"
+        layout="@layout/content_inicio_usuario" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

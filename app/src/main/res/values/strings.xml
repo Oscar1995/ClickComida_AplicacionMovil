@@ -14,9 +14,21 @@
     <string name="mensaje_welcome">Bienvenido</string>
     <string name="tambien_puedes">Tambien puedes...</string>
     <string name="title_activity_inicio_usuario">InicioUsuario</string>
+    <string name="estamos_casi_listo">Estamos casi listo</string>
+    <string name="pasaje">Pasaje</string>
+    <string name="numero">Numero</string>
+    <string name="usuario_nickname">Nickname</string>
+    <string name="telefono_celular">Telefono/Celular</string>
+    <string name="telefono_celular_opcional">Telefono/Celular (Opcional)</string>
+    <string name="continuar">Continuar</string>
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="google_maps_key">AIzaSyBVWckeTBVm1nmPyJmSqyyFsW_ecedufyA</string>
     <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

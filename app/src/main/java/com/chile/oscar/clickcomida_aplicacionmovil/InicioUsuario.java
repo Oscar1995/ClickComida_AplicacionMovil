@@ -1,8 +1,11 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Map;
 
 public class InicioUsuario extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -54,6 +59,7 @@ public class InicioUsuario extends AppCompatActivity implements NavigationView.O
 
         vCorreo.setText(correoUsuario);
         vNombre.setText(nombreUsuario);
+
     }
 
     @Override
@@ -102,9 +108,14 @@ public class InicioUsuario extends AppCompatActivity implements NavigationView.O
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        Fragment fragment = null;
+        boolean fragmentoSeleccionado = false;
+
         if (id == R.id.nav_camera)
         {
             // Handle the camera action
+            fragmentoSeleccionado = true;
+
         }
         else if (id == R.id.nav_gallery)
         {
@@ -126,9 +137,19 @@ public class InicioUsuario extends AppCompatActivity implements NavigationView.O
         {
 
         }
+        if (fragmentoSeleccionado == true)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.contenedor_content, fragment).commit();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //@Override
+    public void onFragmentInteraction(Uri uri)
+    {
+
     }
 }

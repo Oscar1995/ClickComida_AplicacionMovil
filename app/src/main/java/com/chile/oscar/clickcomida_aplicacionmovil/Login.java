@@ -20,7 +20,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
     WebService contenido = new WebService();
     Button btnIniciar, btnRegistro, btnOlvidado;
-    EditText txtCorreo, txtClave;
+    public EditText txtCorreo, txtClave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,18 +50,45 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 String correoElectronico = txtCorreo.getText().toString().trim();
                 String claveUsuario = txtClave.getText().toString().trim();
 
-                if (correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                int nCaracterCorreo = correoElectronico.length();
+                int nCaracterClave = claveUsuario.length();
+
+                if (nCaracterCorreo > 0 && nCaracterClave > 0)
                 {
-                    correoCorrecto = true;
-                }
-                if (correoCorrecto == true)
-                {
-                    new ConsultarDatos().execute("http://192.168.43.71/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
+                    if (correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                    {
+                        correoCorrecto = true;
+                    }
+                    if (correoCorrecto == true)
+                    {
+                        new ConsultarDatos().execute("http://192.168.43.71/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
+                    }
+                    else
+                    {
+                        txtCorreo.setError("Formato invalido.");
+                    }
                 }
                 else
                 {
-                    txtCorreo.setError("Formato invalido.");
+                    if (nCaracterCorreo == 0 && nCaracterClave == 0)
+                    {
+                        txtCorreo.setError("Rellena este campo.");
+                        txtClave.setError("Rellena este campo.");
+                    }
+                    else if (nCaracterCorreo > 0 && nCaracterClave == 0)
+                    {
+                        if (!correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                        {
+                            txtCorreo.setError("Formato Invalido.");
+                        }
+                        txtClave.setError("Rellena este campo.");
+                    }
+                    else if (nCaracterCorreo == 0 && nCaracterClave > 0)
+                    {
+                        txtCorreo.setError("Rellena este campo.");
+                    }
                 }
+
 
                 break;
 

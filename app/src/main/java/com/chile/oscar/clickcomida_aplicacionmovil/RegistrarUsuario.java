@@ -44,27 +44,119 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
         switch (v.getId())
         {
             case R.id.btnback:
-                Intent abrirLogin = new Intent(RegistrarUsuario.this, Login.class);
-                startActivity(abrirLogin);
                 break;
 
             case R.id.btnRegistrarUsuario:
                 String cUno = txtClave.getText().toString().trim();
                 String cDos = txtClaveR.getText().toString().trim();
-                if (cUno.equals(cDos))
+
+                boolean datosCorrectos = false;
+                int nCorreo = txtCorreo.getText().length();
+                int nClave = txtClave.getText().length();
+                int nClaveRep = txtClaveR.getText().length();
+                int nNombre = txtNombre.getText().length();
+                int nApellido = txtApellido.getText().length();
+
+                if (nCorreo == 0 || nCorreo != 0)
                 {
-                    new CargarDatos().execute("http://192.168.43.71/clickcomida/cargar_usuario.php?nombre="+txtNombre.getText().toString().trim()+"&&apellido="+txtApellido.getText().toString().trim()+"&&correo="+txtCorreo.getText().toString().trim()+"&&clave="+txtClave.getText().toString().trim());
+                    if (nCorreo == 0)
+                    {
+                        txtCorreo.setError("Complete este campo.");
+                        datosCorrectos = false;
+                    }
+                    else
+                    {
+                        if (!txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                        {
+                            txtCorreo.setError("Formato Invalido.");
+                            datosCorrectos = false;
+                        }
+                        else
+                        {
+                            datosCorrectos = true;
+                        }
+                    }
+
                 }
-                else
+                if (nClave == 0 || nClave != 0)
                 {
-                    txtClave.setText("");
-                    txtClaveR.setText("");
-                    Toast.makeText(getApplicationContext(), "Tu clave no coincide, repite tu clave nuevamente.", Toast.LENGTH_SHORT).show();
+                    if (nClave == 0)
+                    {
+                        txtClave.setError("Complete este campo.");
+                        datosCorrectos = false;
+                    }
+                    else
+                    {
+                        if (nClave <= 4)
+                        {
+                            txtClave.setError("La clave debe tener al menos 5 caracteres.");
+                            datosCorrectos = false;
+                        }
+                        else
+                        {
+                            datosCorrectos = true;
+                        }
+                    }
+                }
+                if (nClaveRep == 0 || nClaveRep != 0)
+                {
+                    if (nClaveRep == 0)
+                    {
+                        txtClaveR.setError("Complete este campo.");
+                        datosCorrectos = false;
+                    }
+                    else
+                    {
+                        if (!txtClave.getText().toString().equals(txtClaveR.getText().toString()))
+                        {
+                            txtClaveR.setError("No coincide con el campo clave.");
+                            datosCorrectos = false;
+                        }
+                        else
+                        {
+                            datosCorrectos = true;
+                        }
+                    }
+                }
+                if (nNombre == 0 || nNombre != 0)
+                {
+                    if (nNombre == 0)
+                    {
+                        txtNombre.setError("Complete este campo.");
+                        datosCorrectos = false;
+                    }
+                    else
+                    {
+                        datosCorrectos = true;
+                    }
+                }
+                if (nApellido == 0 || nApellido !=0)
+                {
+                    if (nApellido == 0)
+                    {
+                        txtApellido.setError("Complete este campo.");
+                        datosCorrectos = false;
+                    }
+                    else
+                    {
+                        datosCorrectos = true;
+                    }
+
+                }
+                if (datosCorrectos == true)
+                {
+                    String uCorreo, uClave, uNombre, uApellido;
+                    uCorreo = txtCorreo.getText().toString().trim();
+                    uClave = txtClave.getText().toString().trim();
+                    uNombre = txtNombre.getText().toString().trim();
+                    uApellido = txtApellido.getText().toString().trim();
+                    new EjecutarSentencia().execute("http://192.168.43.71/clickcomida/cargar_usuario.php?nombre="+uNombre+"&&apellido="+uApellido+"&&correo="+uCorreo+"&&clave="+uClave);
                 }
                 break;
+
         }
     }
-    private class CargarDatos extends AsyncTask<String, Void, String>
+    private class EjecutarSentencia extends AsyncTask<String, Void, String>
     {
         @Override
         protected String doInBackground(String... urls)
@@ -88,13 +180,18 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
             {
                 jao = new JSONObject(result);
                 String laConfirmacion = jao.getString("email");
+                String idUsuario = jao.getString("id_usuario");
                 if (laConfirmacion.equals("yes"))
                 {
                     Toast.makeText(getApplicationContext(), "El correo ya existe.", Toast.LENGTH_SHORT).show();
+                    txtCorreo.setError("Este correo ya se encuentra en uso.");
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "Bienvenido " + txtNombre.getText().toString().trim(), Toast.LENGTH_SHORT).show();
+                    Intent abrirRegistroContinuacion = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
+                    abrirRegistroContinuacion.putExtra("nombre_usuario", txtNombre.getText().toString());
+                    abrirRegistroContinuacion.putExtra("usuario_id", idUsuario);
+                    startActivity(abrirRegistroContinuacion);
                 }
 
             }
