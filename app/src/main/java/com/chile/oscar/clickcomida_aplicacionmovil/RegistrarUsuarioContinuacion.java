@@ -40,8 +40,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
         txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
         String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
-        id_usuario = Integer.parseInt(idUsuarioCadena);
 
+        id_usuario = Integer.parseInt(idUsuarioCadena);
         btnRegistroFinal.setOnClickListener(this);
     }
 
@@ -103,7 +103,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "Insertado.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Insertado.", Toast.LENGTH_SHORT).show();
                 }
 
             }
