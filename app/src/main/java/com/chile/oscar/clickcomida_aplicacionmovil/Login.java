@@ -61,7 +61,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     }
                     if (correoCorrecto == true)
                     {
-                        new ConsultarDatos().execute("http://192.168.43.71/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
+                        String ip = getResources().getString(R.string.direccion_ip);
+                        new ConsultarDatos().execute("http://"+ip+"/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
                     }
                     else
                     {

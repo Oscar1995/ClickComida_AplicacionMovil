@@ -150,7 +150,10 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                     uClave = txtClave.getText().toString().trim();
                     uNombre = txtNombre.getText().toString().trim();
                     uApellido = txtApellido.getText().toString().trim();
-                    new EjecutarSentencia().execute("http://192.168.43.71/clickcomida/cargar_usuario.php?nombre="+uNombre+"&&apellido="+uApellido+"&&correo="+uCorreo+"&&clave="+uClave);
+
+
+                    String ip = getResources().getString(R.string.direccion_ip);
+                    new EjecutarSentencia().execute("http://"+ip+"/clickcomida/cargar_usuario.php?nombre="+uNombre+"&&apellido="+uApellido+"&&correo="+uCorreo+"&&clave="+uClave);
                 }
                 break;
 
@@ -191,6 +194,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                     Intent abrirRegistroContinuacion = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
                     abrirRegistroContinuacion.putExtra("nombre_usuario", txtNombre.getText().toString());
                     abrirRegistroContinuacion.putExtra("usuario_id", idUsuario);
+                    abrirRegistroContinuacion.putExtra("correo_usuario", txtCorreo.getText().toString());
                     startActivity(abrirRegistroContinuacion);
                 }
 

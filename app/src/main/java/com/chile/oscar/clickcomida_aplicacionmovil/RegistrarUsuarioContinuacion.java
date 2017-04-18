@@ -24,6 +24,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     Button btnRegistroFinal;
     TextView txtInformacion;
     int id_usuario = 0;
+    String correoUsuario = "";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -40,6 +41,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
         txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
         String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
+
+        correoUsuario = getIntent().getStringExtra("correo_usuario");
 
         id_usuario = Integer.parseInt(idUsuarioCadena);
         btnRegistroFinal.setOnClickListener(this);
@@ -63,7 +66,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
                 if (nTelefonoOpcional.isEmpty())
                 {
-                    new EjecutarSentencia().execute("http://192.168.43.71/clickcomida/cargar_usuario_final.php?id="+id_usuario+"&&pasaje="+pasajeNombre+"&&numerocalle="+numeroPasaje+"&&nickname="+uNick+"&&telefono="+nTelefono+"&&telefono_opcional=no");
+                    String ip = getResources().getString(R.string.direccion_ip);
+                    new EjecutarSentencia().execute("http://"+ip+"/clickcomida/cargar_usuario_final.php?id="+id_usuario+"&&pasaje="+pasajeNombre+"&&numerocalle="+numeroPasaje+"&&nickname="+uNick+"&&telefono="+nTelefono+"&&telefono_opcional=no");
                 }
                 else
                 {
@@ -103,7 +107,10 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 else
                 {
-                    //Toast.makeText(getApplicationContext(), "Insertado.", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(RegistrarUsuarioContinuacion.this, InicioUsuario.class);
+                    i.putExtra("correo_usuario", correoUsuario);
+                    i.putExtra("nombre_usuario", txtNickname.getText().toString());
+                    startActivity(i);
                 }
 
             }
