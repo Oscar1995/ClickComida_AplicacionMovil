@@ -47,7 +47,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.btnRegistrarUsuario:
-                String cUno = txtClave.getText().toString().trim();
+                /*String cUno = txtClave.getText().toString().trim();
                 String cDos = txtClaveR.getText().toString().trim();
 
                 boolean datosCorrectos = false;
@@ -154,7 +154,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
 
                     String ip = getResources().getString(R.string.direccion_ip);
                     new EjecutarSentencia().execute("http://"+ip+"/clickcomida/cargar_usuario.php?nombre="+uNombre+"&&apellido="+uApellido+"&&correo="+uCorreo+"&&clave="+uClave);
-                }
+                }*/
                 break;
 
         }

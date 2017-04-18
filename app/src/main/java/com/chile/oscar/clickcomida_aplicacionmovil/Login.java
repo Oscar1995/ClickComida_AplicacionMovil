@@ -46,8 +46,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.btnIniciarSesion:
-                boolean correoCorrecto = false;
-                String correoElectronico = txtCorreo.getText().toString().trim();
+                Intent i = new Intent(this, InicioUsuario.class);
+                startActivity(i);
+                /*String correoElectronico = txtCorreo.getText().toString().trim();
                 String claveUsuario = txtClave.getText().toString().trim();
 
                 int nCaracterCorreo = correoElectronico.length();
@@ -56,10 +57,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 if (nCaracterCorreo > 0 && nCaracterClave > 0)
                 {
                     if (correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
-                    {
-                        correoCorrecto = true;
-                    }
-                    if (correoCorrecto == true)
                     {
                         String ip = getResources().getString(R.string.direccion_ip);
                         new ConsultarDatos().execute("http://"+ip+"/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
@@ -88,7 +85,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         txtCorreo.setError("Rellena este campo.");
                     }
-                }
+                }*/
 
 
                 break;

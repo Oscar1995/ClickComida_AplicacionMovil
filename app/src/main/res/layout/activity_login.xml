@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:screenOrientation="landscape"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.Login"
     android:weightSum="1">
 
@@ -27,19 +28,21 @@
 
     <EditText
         android:id="@+id/etCorreoLogin"
-        android:layout_width="match_parent"
+        android:layout_width="345dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:gravity="center"
+        android:layout_gravity="center"
         android:hint="@string/texto_correo"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/etClaveLogin"
-        android:layout_width="match_parent"
+        android:layout_width="345dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:gravity="center"
+        android:layout_gravity="center"
         android:hint="@string/texto_clave"
         android:inputType="textPassword" />
 
@@ -48,30 +51,42 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="265dp">
+
         <Button
             android:id="@+id/btnIniciarSesion"
-            android:layout_width="185dp"
             android:layout_height="wrap_content"
+            android:layout_width="172dp"
+            android:text="Button"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/btnClaveOlvidada"
             android:background="@color/colorVerde"
-            android:elevation="0dp"
-            android:text="@string/iniciar_sesion"
-            android:textColor="@color/textoBlanco" />
+            android:textColor="@color/textoBlanco"/>
 
         <Button
             android:id="@+id/btnRegistrate"
-            android:layout_width="match_parent"
+            android:layout_width="172dp"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/btnIniciarSesion"
+            android:text="Button"
             android:background="@color/colorCeleste"
-            android:text="@string/registrar_usuario"
-            android:textColor="@color/textoBlanco" />
-    </LinearLayout>
+            android:textColor="@color/textoBlanco"/>
 
-    <Button
-        android:id="@+id/btnClaveOlvidada"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorRojo"
-        android:text="@string/clave_boton"
-        android:textColor="@color/textoBlanco" />
+        <Button
+            android:id="@+id/btnClaveOlvidada"
+            android:layout_width="345dp"
+            android:layout_height="wrap_content"
+            android:text="Button"
+            android:layout_marginTop="3dp"
+            android:layout_below="@+id/btnIniciarSesion"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorRojo"
+            android:textColor="@color/textoBlanco"/>
+    </RelativeLayout>
 
 </LinearLayout>
