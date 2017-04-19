@@ -39,12 +39,11 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         txtInformacion = (TextView)findViewById(R.id.tvInfo);
         btnRegistroFinal = (Button)findViewById(R.id.btnRegistrarUsuarioFinal);
 
-        txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
+        /*txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
         String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
-
         correoUsuario = getIntent().getStringExtra("correo_usuario");
 
-        id_usuario = Integer.parseInt(idUsuarioCadena);
+        id_usuario = Integer.parseInt(idUsuarioCadena);*/
         btnRegistroFinal.setOnClickListener(this);
     }
 
@@ -54,25 +53,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         switch (v.getId())
         {
             case R.id.btnRegistrarUsuarioFinal:
-
-                String pasajeNombre, uNick, nTelefonoOpcional;
-                int numeroPasaje, nTelefono;
-
-                pasajeNombre = txtPasaje.getText().toString().trim();
-                uNick = txtNickname.getText().toString().trim();
-                numeroPasaje = Integer.parseInt(txtNumeroPasaje.getText().toString().trim());
-                nTelefono = Integer.parseInt(txtTelefono.getText().toString().trim());
-                nTelefonoOpcional = txtTelefonoOpcional.getText().toString().trim();
-
-                if (nTelefonoOpcional.isEmpty())
-                {
-                    String ip = getResources().getString(R.string.direccion_ip);
-                    new EjecutarSentencia().execute("http://"+ip+"/clickcomida/cargar_usuario_final.php?id="+id_usuario+"&&pasaje="+pasajeNombre+"&&numerocalle="+numeroPasaje+"&&nickname="+uNick+"&&telefono="+nTelefono+"&&telefono_opcional=no");
-                }
-                else
-                {
-                    new EjecutarSentencia().execute("http://192.168.43.71/clickcomida/cargar_usuario_final.php?id="+id_usuario+"&&pasaje="+pasajeNombre+"&&numerocalle="+numeroPasaje+"&&nickname="+uNick+"&&telefono="+nTelefono+"&&telefono_opcional="+nTelefonoOpcional);
-                }
+                Intent i = new Intent(this, InicioUsuario.class);
+                startActivity(i);
                 break;
         }
     }

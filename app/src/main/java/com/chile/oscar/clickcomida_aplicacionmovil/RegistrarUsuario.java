@@ -18,7 +18,7 @@ import java.io.IOException;
 public class RegistrarUsuario extends AppCompatActivity implements View.OnClickListener
 {
     WebService contenido = new WebService();
-    Button btnAtras, btnRegistro;
+    Button btnAtras, btnContinuar;
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,10 +31,10 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
         txtClaveR = (EditText)findViewById(R.id.etClaveRep);
         txtNombre = (EditText)findViewById(R.id.etNombre);
         txtApellido = (EditText)findViewById(R.id.etApellido);
-        btnRegistro = (Button)findViewById(R.id.btnRegistrarUsuario);
+        btnContinuar = (Button)findViewById(R.id.btnContinuar);
         btnAtras = (Button)findViewById(R.id.btnback);
 
-        btnRegistro.setOnClickListener(this);
+        btnContinuar.setOnClickListener(this);
         btnAtras.setOnClickListener(this);
     }
 
@@ -44,117 +44,12 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
         switch (v.getId())
         {
             case R.id.btnback:
+                this.finish();
                 break;
 
-            case R.id.btnRegistrarUsuario:
-                /*String cUno = txtClave.getText().toString().trim();
-                String cDos = txtClaveR.getText().toString().trim();
-
-                boolean datosCorrectos = false;
-                int nCorreo = txtCorreo.getText().length();
-                int nClave = txtClave.getText().length();
-                int nClaveRep = txtClaveR.getText().length();
-                int nNombre = txtNombre.getText().length();
-                int nApellido = txtApellido.getText().length();
-
-                if (nCorreo == 0 || nCorreo != 0)
-                {
-                    if (nCorreo == 0)
-                    {
-                        txtCorreo.setError("Complete este campo.");
-                        datosCorrectos = false;
-                    }
-                    else
-                    {
-                        if (!txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
-                        {
-                            txtCorreo.setError("Formato Invalido.");
-                            datosCorrectos = false;
-                        }
-                        else
-                        {
-                            datosCorrectos = true;
-                        }
-                    }
-
-                }
-                if (nClave == 0 || nClave != 0)
-                {
-                    if (nClave == 0)
-                    {
-                        txtClave.setError("Complete este campo.");
-                        datosCorrectos = false;
-                    }
-                    else
-                    {
-                        if (nClave <= 4)
-                        {
-                            txtClave.setError("La clave debe tener al menos 5 caracteres.");
-                            datosCorrectos = false;
-                        }
-                        else
-                        {
-                            datosCorrectos = true;
-                        }
-                    }
-                }
-                if (nClaveRep == 0 || nClaveRep != 0)
-                {
-                    if (nClaveRep == 0)
-                    {
-                        txtClaveR.setError("Complete este campo.");
-                        datosCorrectos = false;
-                    }
-                    else
-                    {
-                        if (!txtClave.getText().toString().equals(txtClaveR.getText().toString()))
-                        {
-                            txtClaveR.setError("No coincide con el campo clave.");
-                            datosCorrectos = false;
-                        }
-                        else
-                        {
-                            datosCorrectos = true;
-                        }
-                    }
-                }
-                if (nNombre == 0 || nNombre != 0)
-                {
-                    if (nNombre == 0)
-                    {
-                        txtNombre.setError("Complete este campo.");
-                        datosCorrectos = false;
-                    }
-                    else
-                    {
-                        datosCorrectos = true;
-                    }
-                }
-                if (nApellido == 0 || nApellido !=0)
-                {
-                    if (nApellido == 0)
-                    {
-                        txtApellido.setError("Complete este campo.");
-                        datosCorrectos = false;
-                    }
-                    else
-                    {
-                        datosCorrectos = true;
-                    }
-
-                }
-                if (datosCorrectos == true)
-                {
-                    String uCorreo, uClave, uNombre, uApellido;
-                    uCorreo = txtCorreo.getText().toString().trim();
-                    uClave = txtClave.getText().toString().trim();
-                    uNombre = txtNombre.getText().toString().trim();
-                    uApellido = txtApellido.getText().toString().trim();
-
-
-                    String ip = getResources().getString(R.string.direccion_ip);
-                    new EjecutarSentencia().execute("http://"+ip+"/clickcomida/cargar_usuario.php?nombre="+uNombre+"&&apellido="+uApellido+"&&correo="+uCorreo+"&&clave="+uClave);
-                }*/
+            case R.id.btnContinuar:
+                Intent i = new Intent(this, RegistrarUsuarioContinuacion.class);
+                startActivity(i);
                 break;
 
         }

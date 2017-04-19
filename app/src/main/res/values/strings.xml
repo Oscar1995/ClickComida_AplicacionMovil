@@ -21,6 +21,7 @@
     <string name="telefono_celular">Telefono/Celular</string>
     <string name="telefono_celular_opcional">Telefono/Celular (Opcional)</string>
     <string name="continuar">Continuar</string>
+    <string name="registrar">Registrar</string>
     <string name="direccion_ip">192.168.43.71</string>
     <string name="Editar">Editar Usuario</string>
 

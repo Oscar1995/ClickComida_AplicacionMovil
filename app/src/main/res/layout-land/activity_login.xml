@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,83 +10,90 @@
     android:weightSum="1">
 
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Bienvenido a Click Comida"
-        android:textSize="20dp"
-        android:textColor="@color/colorNegro"
-        android:gravity="center"/>
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="165dp"
-        android:layout_height="85dp"
-        android:layout_gravity="center"
-        app:srcCompat="@drawable/ic_shortcut_email" />
-
-    <EditText
-        android:id="@+id/etCorreoLogin"
-        android:layout_width="382dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:hint="@string/texto_correo"
-        android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/etClaveLogin"
-        android:layout_width="345dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:hint="@string/texto_clave"
-        android:inputType="textPassword" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:screenOrientation="landscape"
+        tools:context="com.chile.oscar.clickcomida_aplicacionmovil.Login"
+        android:weightSum="1">
 
-    </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="265dp">
-
-        <Button
-            android:id="@+id/btnIniciarSesion"
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="172dp"
-            android:text="Button"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/btnClaveOlvidada"
-            android:background="@color/colorVerde"
-            android:textColor="@color/textoBlanco"/>
+            android:text="Bienvenido a Click Comida"
+            android:textSize="20dp"
+            android:textColor="@color/colorNegro"
+            android:gravity="center"/>
 
-        <Button
-            android:id="@+id/btnRegistrate"
-            android:layout_width="172dp"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="165dp"
+            android:layout_height="85dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_shortcut_email" />
+
+        <EditText
+            android:id="@+id/etCorreoLogin"
+            android:layout_width="555dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/btnIniciarSesion"
-            android:text="Button"
-            android:background="@color/colorCeleste"
-            android:textColor="@color/textoBlanco"/>
+            android:ems="10"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:hint="@string/texto_correo"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/etClaveLogin"
+            android:layout_width="555dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:hint="@string/texto_clave"
+            android:inputType="textPassword" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnIniciarSesion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorVerde"
+                android:text="@string/iniciar_sesion"
+                android:textColor="@color/textoBlanco"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+            <Button
+                android:id="@+id/btnRegistrate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorCeleste"
+                android:text="@string/registrar_usuario"
+                android:textColor="@color/textoBlanco"
+                tools:layout_editor_absoluteX="198dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnClaveOlvidada"
-            android:layout_width="345dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button"
-            android:layout_marginTop="3dp"
-            android:layout_below="@+id/btnIniciarSesion"
-            android:layout_centerHorizontal="true"
             android:background="@color/colorRojo"
-            android:textColor="@color/textoBlanco"/>
-    </RelativeLayout>
+            android:text="@string/clave_boton"
+            android:textColor="@color/textoBlanco"
+            tools:layout_editor_absoluteX="20dp"
+            tools:layout_editor_absoluteY="73dp" />
 
-</LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
