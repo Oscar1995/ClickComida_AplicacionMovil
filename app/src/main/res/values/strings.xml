@@ -24,6 +24,20 @@
     <string name="registrar">Registrar</string>
     <string name="direccion_ip">192.168.43.71</string>
     <string name="Editar">Editar Usuario</string>
+    <string name="agregar_foto">Agregar Fotos (Puedes deslizar a la derecha. Minimo 4)</string>
+    <string name="foto_tienda_general">Imagen de la tienda</string>
+    <string name="check_reparto">Esta tienda hace reparto a domicilio</string>
+    <string name="ubicacion_tienda">\nTu ubicación</string>
+    <string name="calle_tienda">Calle</string>
+    <string name="numero_tienda">Numero</string>
+    <string name="horario_tienda">\nHorario de la tienda</string>
+    <string name="horario_continuado">Continuado</string>
+    <string name="horario_m_t">Mañana y tarde</string>
+    <string name="nombre_tienda">Nombre de la tienda</string>
+    <string name="a">a</string>
+    <string name="horario_de">De</string>
+    <string name="horario_hasta">Hasta</string>
+    <string name="boton_siguiente">Siguiente</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -34,4 +48,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_inicio__usuario">Inicio_Usuario</string>
 </resources>

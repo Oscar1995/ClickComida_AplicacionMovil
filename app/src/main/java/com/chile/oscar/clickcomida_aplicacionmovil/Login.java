@@ -46,7 +46,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.btnIniciarSesion:
-                Intent i = new Intent(this, InicioUsuario.class);
+                Intent i = new Intent(this, Inicio_Usuario.class);
                 startActivity(i);
                 /*String correoElectronico = txtCorreo.getText().toString().trim();
                 String claveUsuario = txtClave.getText().toString().trim();
@@ -126,7 +126,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 if (afirmacion.equals("verdad"))
                 {
                     String nombre_usuario = jao.getString("nombre");
-                    Intent abrirInicio = new Intent(Login.this, InicioUsuario.class);
+                    Intent abrirInicio = new Intent(Login.this, Inicio_Usuario.class);
                     abrirInicio.putExtra("correo_usuario", txtCorreo.getText().toString());
                     abrirInicio.putExtra("nombre_usuario", nombre_usuario);
                     startActivity(abrirInicio);

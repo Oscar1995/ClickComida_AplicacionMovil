@@ -53,7 +53,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         switch (v.getId())
         {
             case R.id.btnRegistrarUsuarioFinal:
-                Intent i = new Intent(this, InicioUsuario.class);
+                Intent i = new Intent(this, Inicio_Usuario.class);
                 startActivity(i);
                 break;
         }
@@ -89,7 +89,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 else
                 {
-                    Intent i = new Intent(RegistrarUsuarioContinuacion.this, InicioUsuario.class);
+                    Intent i = new Intent(RegistrarUsuarioContinuacion.this, Inicio_Usuario.class);
                     i.putExtra("correo_usuario", correoUsuario);
                     i.putExtra("nombre_usuario", txtNickname.getText().toString());
                     startActivity(i);
