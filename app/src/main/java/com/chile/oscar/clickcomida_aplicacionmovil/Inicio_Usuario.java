@@ -123,8 +123,9 @@ public class Inicio_Usuario extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
+
+    public void onFragmentInteraction(Uri uri)
+    {
 
     }
 }

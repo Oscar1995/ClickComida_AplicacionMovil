@@ -35,9 +35,13 @@
     <string name="horario_m_t">Mañana y tarde</string>
     <string name="nombre_tienda">Nombre de la tienda</string>
     <string name="a">a</string>
-    <string name="horario_de">De</string>
-    <string name="horario_hasta">Hasta</string>
+    <string name="horario_de">Pincha aqui para fijar hora comienzo</string>
+    <string name="horario_hasta">Pincha Aqui para fijar hora fin</string>
     <string name="boton_siguiente">Siguiente</string>
+    <string name="horario_titulo">\nHorario de atención</string>
+    <string name="horario_descripcion">Selecciona CONTINUADO para fijar una hora de inicio y cierre. De lo contrario selecciona MAÑANA para fijar una un horario INICIO-FIN para la mañana y otra para la tarde.</string>
+    <string name="tomorrow">Mañana</string>
+    <string name="tarde">Tarde</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

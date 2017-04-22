@@ -4,10 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.Button;
 
 
 /**
@@ -18,25 +19,23 @@ import android.widget.RadioButton;
  * Use the {@link fragmentTienda#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragmentTienda extends Fragment
-{
+public class fragmentTienda extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    RadioButton radioContinuado, radioTomorrow;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    Button botonContinuar;
 
     private OnFragmentInteractionListener mListener;
 
     public fragmentTienda()
     {
         // Required empty public constructor
-
     }
 
     /**
@@ -62,8 +61,7 @@ public class fragmentTienda extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
+        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -74,21 +72,34 @@ public class fragmentTienda extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
+        View v = inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
+
+        botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
+        botonContinuar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, new fragmentTiendaDos());
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
+
+            }
+        });
+        return v;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri)
-    {
-        if (mListener != null)
-        {
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
 
     @Override
-    public void onAttach(Context context)
-    {
+    public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
@@ -99,8 +110,7 @@ public class fragmentTienda extends Fragment
     }
 
     @Override
-    public void onDetach()
-    {
+    public void onDetach() {
         super.onDetach();
         mListener = null;
     }
@@ -115,10 +125,8 @@ public class fragmentTienda extends Fragment
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener
-    {
+    public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-
         void onFragmentInteraction(Uri uri);
     }
 }

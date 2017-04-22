@@ -57,7 +57,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
@@ -65,21 +65,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorVerde"
-                android:text="@string/iniciar_sesion"
-                android:textColor="@color/textoBlanco"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="16dp" />
+                android:text="Button"
+
+                tools:layout_editor_absoluteX="20dp"
+                tools:layout_editor_absoluteY="73dp" />
 
             <Button
                 android:id="@+id/btnRegistrate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorCeleste"
-                android:text="@string/registrar_usuario"
-                android:textColor="@color/textoBlanco"
-                tools:layout_editor_absoluteX="198dp"
+                android:text="Button"
+                tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="16dp" />
 
         </LinearLayout>
@@ -88,11 +85,10 @@
             android:id="@+id/btnClaveOlvidada"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorRojo"
-            android:text="@string/clave_boton"
-            android:textColor="@color/textoBlanco"
-            tools:layout_editor_absoluteX="20dp"
-            tools:layout_editor_absoluteY="73dp" />
+            android:layout_weight="1"
+            android:text="Button"
+            tools:layout_editor_absoluteX="198dp"
+            tools:layout_editor_absoluteY="16dp" />
 
     </LinearLayout>
 
