@@ -43,6 +43,7 @@ public class fragmentTiendaDos extends Fragment
         final TextView textViewHoraCuatro = (TextView)view.findViewById(R.id.tvCuatroHora);
         final RelativeLayout rUno = (RelativeLayout)view.findViewById(R.id.rlUno);
         final RelativeLayout rDos = (RelativeLayout)view.findViewById(R.id.relative_Dos);
+        Button botonSiguiente = (Button)view.findViewById(R.id.btnContinuarDos);
 
         OcultarRelative(rUno, rDos);
 
@@ -104,6 +105,17 @@ public class fragmentTiendaDos extends Fragment
             @Override
             public void onClick(View view) {
                 LlamarHora(textViewHoraCuatro, textViewHoraTres);
+            }
+        });
+        botonSiguiente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, new fragmentProductosVender());
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
             }
         });
 

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.fragmentTiendaDos">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -96,10 +98,9 @@
 
             <TextView
                 android:id="@+id/tvUnoHora"
-                android:layout_width="194dp"
+                android:layout_width="157dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/horario_de" />
 
@@ -145,10 +146,10 @@
 
             <TextView
                 android:id="@+id/tvTresHora"
-                android:layout_width="194dp"
+                android:layout_width="155dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_weight="1"
+                android:layout_weight="0.02"
                 android:gravity="center"
                 android:text="@string/horario_de" />
 
@@ -175,7 +176,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:text="@string/continuar" />
     </LinearLayout>
 
 </RelativeLayout>

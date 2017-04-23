@@ -54,7 +54,8 @@
             android:name=".Inicio_Usuario"
             android:label="@string/title_activity_inicio__usuario"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".fragmentTiendaDos"></activity>
+        <activity android:name=".fragmentTiendaDos" />
+        <activity android:name=".fragmentProductosVender"></activity>
     </application>
 
 </manifest>
