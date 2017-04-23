@@ -65,8 +65,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button"
 
+                android:text="@string/iniciar_sesion"
                 tools:layout_editor_absoluteX="20dp"
                 tools:layout_editor_absoluteY="73dp" />
 
@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button"
+                android:text="@string/registrar_usuario"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="16dp" />
 
@@ -86,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button"
+            android:text="@string/clave_boton"
             tools:layout_editor_absoluteX="198dp"
             tools:layout_editor_absoluteY="16dp" />
 

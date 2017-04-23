@@ -42,6 +42,15 @@
     <string name="horario_descripcion">Selecciona CONTINUADO para fijar una hora de inicio y cierre. De lo contrario selecciona MAÑANA para fijar una un horario INICIO-FIN para la mañana y otra para la tarde.</string>
     <string name="tomorrow">Mañana</string>
     <string name="tarde">Tarde</string>
+    <string name="titulo_productos_crear">\nProductos que vas a vender</string>
+    <string name="nombre_producto">Nombre del producto</string>
+    <string name="des_producto">Descripción</string>
+    <string name="precio_venta">Precio</string>
+    <string name="agregar_producto">Agregar</string>
+    <string name="modificar_producto">Modificar</string>
+    <string name="eliminar_producto">Eliminar</string>
+    <string name="titulo_gestionar_producto">Gestiona los productos</string>
+    <string name="categoria_producto">Categoria</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
