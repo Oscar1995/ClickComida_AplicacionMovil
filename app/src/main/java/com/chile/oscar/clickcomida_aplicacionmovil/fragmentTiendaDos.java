@@ -95,7 +95,8 @@ public class fragmentTiendaDos extends Fragment
         });
         textViewHoraTres.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 LlamarHora(textViewHoraTres, textViewHoraCuatro);
             }
         });
