@@ -37,6 +37,7 @@ public class fragmentTienda extends Fragment
     public fragmentTienda()
     {
         // Required empty public constructor
+
     }
 
     /**

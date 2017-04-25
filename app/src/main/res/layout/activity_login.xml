@@ -90,6 +90,12 @@
             tools:layout_editor_absoluteX="198dp"
             tools:layout_editor_absoluteY="16dp" />
 
+        <Button
+            android:id="@+id/btnHuella"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="usar huella dactilar" />
+
     </LinearLayout>
 
 </ScrollView>

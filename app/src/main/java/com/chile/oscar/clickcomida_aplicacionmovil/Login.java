@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
@@ -97,6 +98,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
             case R.id.btnClaveOlvidada:
                 break;
+
+            case R.id.btnHuella:
+                break;
+
         }
     }
     private class ConsultarDatos extends AsyncTask<String, Void, String>

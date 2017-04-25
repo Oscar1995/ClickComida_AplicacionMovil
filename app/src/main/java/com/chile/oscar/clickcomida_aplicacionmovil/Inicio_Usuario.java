@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -45,6 +46,9 @@ public class Inicio_Usuario extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Fragment myFrag = new MapaInicio();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
+
         /*View hView = navigationView.getHeaderView(0);
         vCorreo = (TextView)hView.findViewById(R.id.tvCorreoUsuarioMenu);
         vNombre = (TextView)hView.findViewById(R.id.tvNombreUsuarioMenu);
@@ -54,6 +58,7 @@ public class Inicio_Usuario extends AppCompatActivity
 
         vCorreo.setText(correoUsuario);
         vNombre.setText(nombreUsuario);*/
+
     }
 
     @Override
