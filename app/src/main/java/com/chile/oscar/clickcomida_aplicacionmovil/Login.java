@@ -10,6 +10,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +27,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
     WebService contenido = new WebService();
     Button btnIniciar, btnRegistro, btnOlvidado;
-    public EditText txtCorreo, txtClave;
+    LoginButton botonFacebook;
+    EditText txtCorreo, txtClave;
+    CallbackManager callbackManager = CallbackManager.Factory.create();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,6 +39,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
         btnIniciar = (Button)findViewById(R.id.btnIniciarSesion);
         btnRegistro = (Button)findViewById(R.id.btnRegistrate);
+        botonFacebook = (LoginButton)findViewById(R.id.btnFacebook);
         btnOlvidado = (Button)findViewById(R.id.btnClaveOlvidada);
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
@@ -38,6 +47,41 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
         btnOlvidado.setOnClickListener(this);
+        botonFacebook.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+                try
+                {
+                    botonFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>()
+                    {
+                        @Override
+                        public void onSuccess(LoginResult loginResult)
+                        {
+                            Toast.makeText(getApplicationContext(), loginResult.toString(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancel()
+                        {
+                            // App code
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception)
+                        {
+                            // App code
+                        }
+                    });
+                }
+                catch (Exception x)
+                {
+                    Toast.makeText(getApplicationContext(), x.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
@@ -47,20 +91,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.btnIniciarSesion:
-                Intent i = new Intent(this, Inicio_Usuario.class);
-                startActivity(i);
-                /*String correoElectronico = txtCorreo.getText().toString().trim();
-                String claveUsuario = txtClave.getText().toString().trim();
 
-                int nCaracterCorreo = correoElectronico.length();
-                int nCaracterClave = claveUsuario.length();
+                int nCaracterCorreo = txtCorreo.getText().toString().length();
+                int nCaracterClave = txtClave.getText().toString().length();
 
                 if (nCaracterCorreo > 0 && nCaracterClave > 0)
                 {
-                    if (correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                    if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
                         String ip = getResources().getString(R.string.direccion_ip);
-                        new ConsultarDatos().execute("http://"+ip+"/clickcomida/consultar_usuario_login.php?correo="+correoElectronico+ "&&clave="+claveUsuario);
+                        new ConsultarDatos().execute("http://"+ip+"/clickcomida/consultar_usuario_login.php?correo="+txtCorreo.getText().toString()+ "&&clave="+txtClave.getText().toString());
                     }
                     else
                     {
@@ -76,7 +116,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     }
                     else if (nCaracterCorreo > 0 && nCaracterClave == 0)
                     {
-                        if (!correoElectronico.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                        if (!txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                         {
                             txtCorreo.setError("Formato Invalido.");
                         }
@@ -86,9 +126,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         txtCorreo.setError("Rellena este campo.");
                     }
-                }*/
-
-
+                }
                 break;
 
             case R.id.btnRegistrate:
@@ -99,8 +137,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             case R.id.btnClaveOlvidada:
                 break;
 
-            case R.id.btnHuella:
-                break;
 
         }
     }

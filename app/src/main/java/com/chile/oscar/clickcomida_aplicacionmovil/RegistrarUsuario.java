@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 public class RegistrarUsuario extends AppCompatActivity implements View.OnClickListener
 {
     WebService contenido = new WebService();
+    Validadores mValidador = new Validadores();
     Button btnAtras, btnContinuar;
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
     @Override
@@ -48,8 +51,115 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.btnContinuar:
-                Intent i = new Intent(this, RegistrarUsuarioContinuacion.class);
-                startActivity(i);
+                String claveUsuario = "";
+
+                boolean isCorrectEmail = false;
+                boolean isCorrectClave = false;
+                boolean isCorrectClaveR = false;
+                boolean isCorrectNombre = false;
+                boolean isCorrectApellido = false;
+
+                Intent i = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
+                if (txtCorreo.getText().toString().isEmpty())
+                {
+                    txtCorreo.setError("Introduce un correo electronico.");
+                    isCorrectEmail = false;
+                }
+                else
+                {
+                    if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
+                    {
+                        i.putExtra("correo_usuario", txtCorreo.getText().toString().trim());
+                        isCorrectEmail = true;
+                    }
+                    else
+                    {
+                        txtCorreo.setError("No tiene formato de correo electronico.");
+                        isCorrectEmail = false;
+                    }
+                }
+
+                if (txtClave.getText().toString().isEmpty())
+                {
+                    txtClave.setError("Introduce una clave con al menos 6 caracteres.");
+                    isCorrectClave = false;
+                }
+                else
+                {
+                    if (txtClave.getText().toString().length() >= 6)
+                    {
+                        claveUsuario = txtClave.getText().toString();
+                        isCorrectClave = true;
+                    }
+                    else
+                    {
+                        txtClave.setError("La clave debe tener al mennos 6 caracteres.");
+                        isCorrectClave = false;
+                    }
+                }
+
+
+                if (txtClaveR.getText().toString().isEmpty())
+                {
+                    txtClaveR.setError("Introduce una clave con al menos 6 caracteres.");
+                    isCorrectClaveR = false;
+                }
+                else
+                {
+                    if (!txtClaveR.getText().toString().equals(claveUsuario))
+                    {
+                        txtClaveR.setError("La clave no coincide con la clave de arriba.");
+                        isCorrectClaveR = false;
+                    }
+                    else
+                    {
+                        i.putExtra("clave_usuario", txtClave.getText().toString());
+                        isCorrectClaveR = true;
+                    }
+                }
+
+
+                if (txtNombre.getText().toString().isEmpty())
+                {
+                    txtNombre.setError("Introduce tu nombre sin numeros.");
+                    isCorrectNombre = false;
+                }
+                else
+                {
+                    if (mValidador.isLetter(txtNombre.getText().toString()) == false)
+                    {
+                        txtNombre.setError("Solo se permiten letras.");
+                        isCorrectNombre = false;
+                    }
+                    else
+                    {
+                        i.putExtra("nombre_usuario", txtNombre.getText().toString().trim());
+                        isCorrectNombre = true;
+                    }
+                }
+                if (txtApellido.getText().toString().isEmpty())
+                {
+                    txtApellido.setError("Introduce tu apellido sin numeros.");
+                    isCorrectApellido = false;
+                }
+                else
+                {
+                    if (mValidador.isLetter(txtApellido.getText().toString()) == false)
+                    {
+                        txtApellido.setError("Solo se permiten letras.");
+                        isCorrectApellido = false;
+                    }
+                    else
+                    {
+                        i.putExtra("apellido_usuario", txtApellido.getText().toString().trim());
+                        isCorrectApellido = true;
+                    }
+                }
+                if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
+                {
+                    startActivity(i);
+                }
+
                 break;
 
         }
