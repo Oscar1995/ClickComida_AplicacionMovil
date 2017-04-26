@@ -1,9 +1,11 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +18,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,12 +27,11 @@ import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
-
-    WebService contenido = new WebService();
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
     CallbackManager callbackManager = CallbackManager.Factory.create();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -99,8 +101,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 {
                     if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
-                        String ip = getResources().getString(R.string.direccion_ip);
-                        new ConsultarDatos().execute("http://"+ip+"/clickcomida/consultar_usuario_login.php?correo="+txtCorreo.getText().toString()+ "&&clave="+txtClave.getText().toString());
+                        //http://www.hermosaprogramacion.com/2014/07/php-mysql-conectar-como/
                     }
                     else
                     {
@@ -137,53 +138,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             case R.id.btnClaveOlvidada:
                 break;
 
-
         }
     }
-    private class ConsultarDatos extends AsyncTask<String, Void, String>
-    {
-        @Override
-        protected String doInBackground(String... urls)
-        {
-            // params comes from the execute() call: params[0] is the url.
-            try
-            {
-                return contenido.downloadUrl(urls[0]);
-            }
-            catch (IOException e)
-            {
-                return "Unable to retrieve web page. URL may be invalid.";
-            }
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result)
-        {
-            JSONObject jao = null;
-            try
-            {
-                jao = new JSONObject(result);
-                String afirmacion = jao.getString("datos");
-                if (afirmacion.equals("verdad"))
-                {
-                    String nombre_usuario = jao.getString("nombre");
-                    Intent abrirInicio = new Intent(Login.this, Inicio_Usuario.class);
-                    abrirInicio.putExtra("correo_usuario", txtCorreo.getText().toString());
-                    abrirInicio.putExtra("nombre_usuario", nombre_usuario);
-                    startActivity(abrirInicio);
 
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(), "El correo o clave son incorrectos.", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-
-        }
-    }
 }
