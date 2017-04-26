@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +21,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 {
 
     WebService contenido = new WebService();
-
+    Validadores mValidar = new Validadores();
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
     Button btnRegistroFinal;
     TextView txtInformacion;
@@ -36,8 +38,14 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         txtNickname = (EditText)findViewById(R.id.etNicknameRegistro);
         txtTelefono = (EditText)findViewById(R.id.etTelefonoRegistro);
         txtTelefonoOpcional = (EditText)findViewById(R.id.etTelefonoOpcionalRegistro);
+
         txtInformacion = (TextView)findViewById(R.id.tvInfo);
         btnRegistroFinal = (Button)findViewById(R.id.btnRegistrarUsuarioFinal);
+
+        String getCorreo = getIntent().getStringExtra("correo_usuario");
+        String getClave = getIntent().getStringExtra("clave_usuario");
+        String getNombre = getIntent().getStringExtra("nombre_usuario");
+        String getApellido = getIntent().getStringExtra("apellido_usuario");
 
         /*txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
         String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
@@ -53,8 +61,79 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         switch (v.getId())
         {
             case R.id.btnRegistrarUsuarioFinal:
+
+                boolean isCorrectPasaje = false;
+                boolean isCorrectNumero = false;
+                boolean isCorrectNickname = false;
+                boolean isCorrectTelefono = false;
+
                 Intent i = new Intent(this, Inicio_Usuario.class);
-                startActivity(i);
+
+                if (txtPasaje.getText().toString().trim().isEmpty())
+                {
+                    txtPasaje.setError("Ingrese un pasaje, ejemplo: Chillán 697");
+                    txtPasaje.setText("");
+                    isCorrectPasaje = false;
+                }
+                else
+                {
+                    txtPasaje.toString().trim();
+                    isCorrectPasaje = true;
+                }
+
+                if (txtNumeroPasaje.getText().toString().trim().isEmpty())
+                {
+                    txtNumeroPasaje.setError("Ingrese un pasaje, ejemplo: #1921");
+                    txtNumeroPasaje.setText("");
+                    isCorrectNumero = false;
+                }
+                else
+                {
+                    if (mValidar.isLetter(txtNumeroPasaje.getText().toString().trim()) == true)
+                    {
+                        txtNumeroPasaje.setError("Solo numeros, ejemplo: #1921");
+                        txtNumeroPasaje.setText("");
+                        isCorrectNumero = false;
+                    }
+                    else
+                    {
+                        txtNumeroPasaje.toString().trim();
+                        isCorrectNumero = true;
+                    }
+                }
+
+                if (txtNickname.getText().toString().trim().isEmpty())
+                {
+                    txtNickname.setError("Ingrese un pasaje, Ejemplo: JuanPerez90");
+                    txtNickname.setText("");
+                    isCorrectNickname = false;
+                }
+                else
+                {
+
+                    txtNickname.toString().trim();
+                    isCorrectNickname = true;
+                }
+
+                if (txtTelefono.getText().toString().trim().isEmpty())
+                {
+                    txtNickname.setError("Ingrese un pasaje, Ejemplo: +569 99999999");
+                    txtNickname.setText("");
+                    isCorrectTelefono = false;
+                }
+                else
+                {
+                    txtTelefono.toString().trim();
+                    isCorrectTelefono = true;
+                }
+                if (txtTelefonoOpcional.getText().toString().isEmpty())
+                {
+                    txtTelefonoOpcional.toString().trim();
+                }
+                if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
+                {
+                    startActivity(i);
+                }
                 break;
         }
     }

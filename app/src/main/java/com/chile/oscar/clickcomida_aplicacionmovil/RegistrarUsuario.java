@@ -39,6 +39,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
 
         btnContinuar.setOnClickListener(this);
         btnAtras.setOnClickListener(this);
+
     }
 
     @Override
@@ -60,6 +61,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 boolean isCorrectApellido = false;
 
                 Intent i = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
+
                 if (txtCorreo.getText().toString().isEmpty())
                 {
                     txtCorreo.setError("Introduce un correo electronico.");
@@ -164,6 +166,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
 
         }
     }
+
     private class EjecutarSentencia extends AsyncTask<String, Void, String>
     {
         @Override

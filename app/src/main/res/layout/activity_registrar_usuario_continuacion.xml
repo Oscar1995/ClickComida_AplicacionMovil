@@ -40,24 +40,36 @@ antes de empezar a usar la aplicación"
             android:textColor="@color/colorNegro"
             android:gravity="center"/>
 
-        <EditText
-            android:id="@+id/etPasajeRegistro"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/pasaje"
-            android:inputType="textPersonName" />
+            android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/etNumeroRegistro"
+            <EditText
+                android:id="@+id/etPasajeRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/pasaje"
+                android:inputType="textPersonName" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/numero"
-            android:inputType="number"
-            android:singleLine="false" />
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/etNumeroRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/numero"
+                android:inputType="number"
+                android:singleLine="false" />
+        </android.support.design.widget.TextInputLayout>
 
         <TextView
             android:layout_width="match_parent"
@@ -67,32 +79,50 @@ antes de empezar a usar la aplicación"
             android:textStyle="bold"
             android:gravity="center"/>
 
-        <EditText
-            android:id="@+id/etNicknameRegistro"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/usuario_nickname"
-            android:inputType="textPersonName" />
+            android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/etTelefonoRegistro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/telefono_celular"
-            android:inputType="number" />
+            <EditText
+                android:id="@+id/etNicknameRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/usuario_nickname"
+                android:inputType="textPersonName" />
+        </android.support.design.widget.TextInputLayout>
 
-        <EditText
-            android:id="@+id/etTelefonoOpcionalRegistro"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/telefono_celular_opcional"
-            android:inputType="number" />
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/etTelefonoRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/telefono_celular"
+                android:inputType="phone" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/etTelefonoOpcionalRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="@string/telefono_celular_opcional"
+                android:inputType="phone" />
+        </android.support.design.widget.TextInputLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
