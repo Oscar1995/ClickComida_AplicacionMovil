@@ -23,6 +23,8 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
     Validadores mValidador = new Validadores();
     Button btnAtras, btnContinuar;
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
+
+    Intent i = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -60,7 +62,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 boolean isCorrectNombre = false;
                 boolean isCorrectApellido = false;
 
-                Intent i = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
+                i = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
 
                 if (txtCorreo.getText().toString().isEmpty())
                 {
@@ -159,7 +161,7 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-                    startActivity(i);
+                    new EjecutarSentencia().execute("http://clickcomida.esy.es/consultar_correo.php?correo="+txtCorreo.getText().toString());
                 }
 
                 break;
@@ -191,19 +193,13 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
             {
                 jao = new JSONObject(result);
                 String laConfirmacion = jao.getString("email");
-                String idUsuario = jao.getString("id_usuario");
                 if (laConfirmacion.equals("yes"))
                 {
-                    Toast.makeText(getApplicationContext(), "El correo ya existe.", Toast.LENGTH_SHORT).show();
                     txtCorreo.setError("Este correo ya se encuentra en uso.");
                 }
                 else
                 {
-                    Intent abrirRegistroContinuacion = new Intent(RegistrarUsuario.this, RegistrarUsuarioContinuacion.class);
-                    abrirRegistroContinuacion.putExtra("nombre_usuario", txtNombre.getText().toString());
-                    abrirRegistroContinuacion.putExtra("usuario_id", idUsuario);
-                    abrirRegistroContinuacion.putExtra("correo_usuario", txtCorreo.getText().toString());
-                    startActivity(abrirRegistroContinuacion);
+                    startActivity(i);
                 }
 
             }

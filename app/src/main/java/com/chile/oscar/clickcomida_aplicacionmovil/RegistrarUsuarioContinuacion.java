@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,8 +26,12 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
     Button btnRegistroFinal;
     TextView txtInformacion;
-    int id_usuario = 0;
-    String correoUsuario = "";
+
+    String getCorreo;
+    String getClave;
+    String getNombre;
+    String getApellido;
+    String correoUsuario;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -42,10 +47,10 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         txtInformacion = (TextView)findViewById(R.id.tvInfo);
         btnRegistroFinal = (Button)findViewById(R.id.btnRegistrarUsuarioFinal);
 
-        String getCorreo = getIntent().getStringExtra("correo_usuario");
-        String getClave = getIntent().getStringExtra("clave_usuario");
-        String getNombre = getIntent().getStringExtra("nombre_usuario");
-        String getApellido = getIntent().getStringExtra("apellido_usuario");
+        getCorreo = getIntent().getStringExtra("correo_usuario");
+        getClave = getIntent().getStringExtra("clave_usuario");
+        getNombre = getIntent().getStringExtra("nombre_usuario");
+        getApellido = getIntent().getStringExtra("apellido_usuario");
 
         /*txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
         String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
@@ -69,22 +74,19 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
                 Intent i = new Intent(this, Inicio_Usuario.class);
 
-                if (txtPasaje.getText().toString().trim().isEmpty())
+                if (txtPasaje.getText().toString().isEmpty())
                 {
                     txtPasaje.setError("Ingrese un pasaje, ejemplo: Chillán 697");
-                    txtPasaje.setText("");
                     isCorrectPasaje = false;
                 }
                 else
                 {
-                    txtPasaje.toString().trim();
                     isCorrectPasaje = true;
                 }
 
-                if (txtNumeroPasaje.getText().toString().trim().isEmpty())
+                if (txtNumeroPasaje.getText().toString().isEmpty())
                 {
                     txtNumeroPasaje.setError("Ingrese un pasaje, ejemplo: #1921");
-                    txtNumeroPasaje.setText("");
                     isCorrectNumero = false;
                 }
                 else
@@ -92,38 +94,31 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                     if (mValidar.isLetter(txtNumeroPasaje.getText().toString().trim()) == true)
                     {
                         txtNumeroPasaje.setError("Solo numeros, ejemplo: #1921");
-                        txtNumeroPasaje.setText("");
                         isCorrectNumero = false;
                     }
                     else
                     {
-                        txtNumeroPasaje.toString().trim();
                         isCorrectNumero = true;
                     }
                 }
 
-                if (txtNickname.getText().toString().trim().isEmpty())
+                if (txtNickname.getText().toString().isEmpty())
                 {
-                    txtNickname.setError("Ingrese un pasaje, Ejemplo: JuanPerez90");
-                    txtNickname.setText("");
+                    txtNickname.setError("Ingrese un Nickname, Ejemplo: JuanPerez90");
                     isCorrectNickname = false;
                 }
                 else
                 {
-
-                    txtNickname.toString().trim();
                     isCorrectNickname = true;
                 }
 
                 if (txtTelefono.getText().toString().trim().isEmpty())
                 {
-                    txtNickname.setError("Ingrese un pasaje, Ejemplo: +569 99999999");
-                    txtNickname.setText("");
+                    txtTelefono.setError("Ingrese un pasaje, Ejemplo: +569 99999999");
                     isCorrectTelefono = false;
                 }
                 else
                 {
-                    txtTelefono.toString().trim();
                     isCorrectTelefono = true;
                 }
                 if (txtTelefonoOpcional.getText().toString().isEmpty())
@@ -132,7 +127,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
                 {
-                    startActivity(i);
+                    new EjecutarSentencia().execute("http://clickcomida.esy.es/cargar_usuario.php?nombre="+getNombre+"&&apellido="+getApellido+"&&nickname="+txtNickname.getText().toString()+"&&correo="+getCorreo+"&&clave="+getClave);
                 }
                 break;
         }
@@ -156,17 +151,16 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         @Override
         protected void onPostExecute(String result)
         {
-            JSONObject jao = null;
             try
             {
-                jao = new JSONObject(result);
-                String nickname = jao.getString("nickname");
+                JSONObject jao = new JSONObject(result);
+                String nickname = jao.getString("nickname_usuario");
 
-                if (nickname == "existe")
+                if (nickname.equals("yes"))
                 {
                     txtNickname.setError("Este nickname ya esta en uso.");
                 }
-                else
+                else if (nickname.equals("no"))
                 {
                     Intent i = new Intent(RegistrarUsuarioContinuacion.this, Inicio_Usuario.class);
                     i.putExtra("correo_usuario", correoUsuario);
