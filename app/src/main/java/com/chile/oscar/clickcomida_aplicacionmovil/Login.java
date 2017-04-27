@@ -19,10 +19,18 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
@@ -102,6 +110,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
                         //http://www.hermosaprogramacion.com/2014/07/php-mysql-conectar-como/
+                        //https://karlabohorquez.wordpress.com/2015/02/22/consumo-de-webservices-rest-desde-android/
                     }
                     else
                     {
@@ -140,5 +149,4 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
         }
     }
-
 }

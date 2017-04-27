@@ -20,8 +20,6 @@ import java.io.IOException;
 
 public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener
 {
-
-    WebService contenido = new WebService();
     Validadores mValidar = new Validadores();
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
     Button btnRegistroFinal;
@@ -127,52 +125,9 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
                 {
-                    new EjecutarSentencia().execute("http://clickcomida.esy.es/cargar_usuario.php?nombre="+getNombre+"&&apellido="+getApellido+"&&nickname="+txtNickname.getText().toString()+"&&correo="+getCorreo+"&&clave="+getClave);
+
                 }
                 break;
-        }
-    }
-    private class EjecutarSentencia extends AsyncTask<String, Void, String>
-    {
-        @Override
-        protected String doInBackground(String... urls)
-        {
-            // params comes from the execute() call: params[0] is the url.
-            try
-            {
-                return contenido.downloadUrl(urls[0]);
-            }
-            catch (IOException e)
-            {
-                return "Unable to retrieve web page. URL may be invalid.";
-            }
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result)
-        {
-            try
-            {
-                JSONObject jao = new JSONObject(result);
-                String nickname = jao.getString("nickname_usuario");
-
-                if (nickname.equals("yes"))
-                {
-                    txtNickname.setError("Este nickname ya esta en uso.");
-                }
-                else if (nickname.equals("no"))
-                {
-                    Intent i = new Intent(RegistrarUsuarioContinuacion.this, Inicio_Usuario.class);
-                    i.putExtra("correo_usuario", correoUsuario);
-                    i.putExtra("nombre_usuario", txtNickname.getText().toString());
-                    startActivity(i);
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
         }
     }
 }
