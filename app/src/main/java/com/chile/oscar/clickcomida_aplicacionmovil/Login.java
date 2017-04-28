@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BackGroundWorker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -35,12 +36,12 @@ import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
+    BackGroundWorker webService = new BackGroundWorker(this);
+
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
     CallbackManager callbackManager = CallbackManager.Factory.create();
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -109,8 +110,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 {
                     if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
-                        //http://www.hermosaprogramacion.com/2014/07/php-mysql-conectar-como/
-                        //https://karlabohorquez.wordpress.com/2015/02/22/consumo-de-webservices-rest-desde-android/
+                        webService.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
                     }
                     else
                     {

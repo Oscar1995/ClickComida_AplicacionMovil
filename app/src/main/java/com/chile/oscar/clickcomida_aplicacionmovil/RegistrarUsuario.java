@@ -19,7 +19,6 @@ import java.io.IOException;
 
 public class RegistrarUsuario extends AppCompatActivity implements View.OnClickListener
 {
-    WebService contenido = new WebService();
     Validadores mValidador = new Validadores();
     Button btnAtras, btnContinuar;
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
@@ -161,52 +160,11 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-                    new EjecutarSentencia().execute("http://clickcomida.esy.es/consultar_correo.php?correo="+txtCorreo.getText().toString());
+
                 }
 
                 break;
 
-        }
-    }
-
-    private class EjecutarSentencia extends AsyncTask<String, Void, String>
-    {
-        @Override
-        protected String doInBackground(String... urls)
-        {
-            // params comes from the execute() call: params[0] is the url.
-            try
-            {
-                return contenido.downloadUrl(urls[0]);
-            }
-            catch (IOException e)
-            {
-                return "Unable to retrieve web page. URL may be invalid.";
-            }
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result)
-        {
-            JSONObject jao = null;
-            try
-            {
-                jao = new JSONObject(result);
-                String laConfirmacion = jao.getString("email");
-                if (laConfirmacion.equals("yes"))
-                {
-                    txtCorreo.setError("Este correo ya se encuentra en uso.");
-                }
-                else
-                {
-                    startActivity(i);
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
         }
     }
 }
