@@ -22,9 +22,15 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
 {
     Validadores mValidador = new Validadores();
     Button btnAtras, btnContinuar;
+
+    public EditText getTxtCorreo() {
+        return txtCorreo;
+    }
+
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
 
     Intent i = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {

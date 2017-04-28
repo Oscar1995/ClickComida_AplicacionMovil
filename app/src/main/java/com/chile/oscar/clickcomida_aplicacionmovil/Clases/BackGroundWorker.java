@@ -1,9 +1,13 @@
 package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.chile.oscar.clickcomida_aplicacionmovil.Login;
+import com.chile.oscar.clickcomida_aplicacionmovil.RegistrarUsuario;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +29,7 @@ import javax.xml.transform.Result;
 /**
  * Created by Oscar on 27-04-2017.
  */
-public class BackGroundWorker extends AsyncTask
+public class BackGroundWorker extends AsyncTask<String, Void, String>
 {
     Context context;
     public BackGroundWorker(Context ctx)
@@ -33,15 +37,17 @@ public class BackGroundWorker extends AsyncTask
         context = ctx;
     }
     String correo = null;
+
+
     @Override
-    protected Object doInBackground(Object[] objects)
+    protected String doInBackground(String... params)
     {
         String direccion = "";
-        String tipo = (String) objects[0];
+        String tipo = params[0];
         if (tipo.equals("consultar_correo"))
         {
             direccion = "http://clickcomida.esy.es/Controlador/consultar_correo.php";
-            correo = (String) objects[1];
+            correo = params[1];
         }
         try
         {
@@ -98,20 +104,21 @@ public class BackGroundWorker extends AsyncTask
         super.onPreExecute();
     }
 
-    public void onPostExecute(Object o)
+    @Override
+    protected void onPostExecute(String s)
     {
-        String json = o.toString();
         try
         {
-            JSONObject jao = new JSONObject(json);
-            Bundle bundle = new Bundle();
-            bundle.putString("email", jao.getString("name"));
+            JSONObject jao = new JSONObject(s);
             Toast.makeText(context, jao.getString("email"), Toast.LENGTH_SHORT).show();
+            RegistrarUsuario x = new RegistrarUsuario();
+            x.getTxtCorreo().setError("holas");
+
         }
         catch (JSONException e)
         {
             Toast.makeText(context, "error json", Toast.LENGTH_SHORT).show();
         }
-
+        super.onPostExecute(s);
     }
 }
