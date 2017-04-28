@@ -36,8 +36,6 @@ import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
-    BackGroundWorker webService = new BackGroundWorker(this);
-
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
@@ -110,7 +108,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 {
                     if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
-                        webService.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
+                        try
+                        {
+                            BackGroundWorker backGroundWorker = new BackGroundWorker(getApplicationContext());
+                            backGroundWorker.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
+                        }
+                        catch (Exception ex)
+                        {
+                            Toast.makeText(getApplicationContext(), "El usuario y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                     else
                     {

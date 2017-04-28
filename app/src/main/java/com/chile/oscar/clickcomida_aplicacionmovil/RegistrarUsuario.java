@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BackGroundWorker;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 import org.json.JSONException;
@@ -160,7 +161,8 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-
+                    BackGroundWorker backGroundWorker = new BackGroundWorker(getApplicationContext());
+                    backGroundWorker.execute("consultar_correo", txtCorreo.getText().toString());
                 }
 
                 break;
