@@ -49,15 +49,15 @@ public class Inicio_Usuario extends AppCompatActivity
         Fragment myFrag = new MapaInicio();
         getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
 
-        //View hView = navigationView.getHeaderView(0);
-        //TextView vCorreo = (TextView)hView.findViewById(R.id.tvCorreoUsuarioMenu);
-        //TextView vNombre = (TextView)hView.findViewById(R.id.tvNombreUsuarioMenu);
+        View hView = navigationView.getHeaderView(0);
+        TextView vCorreo = (TextView)hView.findViewById(R.id.tvCorreoUsuarioMenu);
+        TextView vNombre = (TextView)hView.findViewById(R.id.tvNombreUsuarioMenu);
 
-        //String correoUsuario = getIntent().getStringExtra("correo_usuario");
-        //String nombreUsuario = getIntent().getStringExtra("nombre_usuario");
+        String correoUsuario = getIntent().getStringExtra("correo_usuario");
+        String nombreUsuario = getIntent().getStringExtra("nombre_usuario");
 
-        //vCorreo.setText(correoUsuario);
-        //vNombre.setText(nombreUsuario);*/
+        vCorreo.setText(correoUsuario);
+        vNombre.setText(nombreUsuario);
 
     }
 

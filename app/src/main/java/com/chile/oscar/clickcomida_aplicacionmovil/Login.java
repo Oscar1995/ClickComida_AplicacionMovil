@@ -30,8 +30,18 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.Key;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
@@ -40,6 +50,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
     CallbackManager callbackManager = CallbackManager.Factory.create();
+    Intent i = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -110,8 +121,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         try
                         {
-                            BackGroundWorker backGroundWorker = new BackGroundWorker(getApplicationContext());
-                            backGroundWorker.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
+                            VerificarCorreoClave x = new VerificarCorreoClave();
+                            x.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
                         }
                         catch (Exception ex)
                         {
@@ -154,6 +165,79 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             case R.id.btnClaveOlvidada:
                 break;
 
+        }
+    }
+    public class VerificarCorreoClave extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL("http://clickcomida.esy.es/Controlador/login.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8")+"&" +URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                String res = jsonResult.getString("Resultado");
+                if (res.equals("Correcto"))
+                {
+                    i = new Intent(Login.this, Inicio_Usuario.class);
+                    i.putExtra("correo_usuario", txtCorreo.getText().toString());
+                    i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
+                    startActivity(i);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Correo y/o clave son incorrectos.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }
