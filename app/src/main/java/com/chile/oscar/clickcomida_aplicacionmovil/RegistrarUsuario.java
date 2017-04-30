@@ -16,19 +16,23 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 
-public class RegistrarUsuario extends AppCompatActivity implements View.OnClickListener
+public class RegistrarUsuario extends AppCompatActivity  implements View.OnClickListener
 {
     Validadores mValidador = new Validadores();
     Button btnAtras, btnContinuar;
-
-    public EditText getTxtCorreo() {
-        return txtCorreo;
-    }
-
     EditText txtCorreo, txtClave, txtClaveR, txtNombre, txtApellido;
-
     Intent i = null;
 
     @Override
@@ -167,12 +171,95 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-                    BackGroundWorker backGroundWorker = new BackGroundWorker(getApplicationContext());
-                    backGroundWorker.execute("consultar_correo", txtCorreo.getText().toString());
+                    WebService wServ= new WebService();
+                    wServ.execute("consultar_correo", txtCorreo.getText().toString());
                 }
 
                 break;
-
         }
     }
+    public class WebService extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String direccion = "";
+            String tipo = params[0];
+            String correo = "";
+            String result = "";
+            if (tipo.equals("consultar_correo"))
+            {
+                direccion = "http://clickcomida.esy.es/Controlador/consultar_correo.php";
+                correo = params[1];
+            }
+            try
+            {
+                URL url = new URL(direccion);
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = null;
+                    //post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8")+"&" +URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(clave,"UTF-8");
+                    if (direccion.equals("http://clickcomida.esy.es/Controlador/consultar_correo.php"))
+                    {
+                        post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8");
+                    }
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                String res = jsonResult.getString("email");
+                if (Integer.parseInt(res) != 0)
+                {
+                    txtCorreo.setError("Este correo ya se encuentra en uso.");
+                }
+                else
+                {
+                    startActivity(i);
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

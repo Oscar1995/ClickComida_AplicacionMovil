@@ -16,7 +16,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener
 {
@@ -119,15 +129,169 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 {
                     isCorrectTelefono = true;
                 }
-                if (txtTelefonoOpcional.getText().toString().isEmpty())
-                {
-                    txtTelefonoOpcional.toString().trim();
-                }
+
                 if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
                 {
-
+                    ConsultarNick x = new ConsultarNick();
+                    x.execute(txtNickname.getText().toString());
                 }
                 break;
+        }
+    }
+    public class ConsultarNick extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL("http://clickcomida.esy.es/Controlador/consultar_nickname.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = null;
+                    post_data= URLEncoder.encode("nickname","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                String res = jsonResult.getString("nickname");
+                if (Integer.parseInt(res) != 0)
+                {
+                    txtNickname.setError("Este nickname ya se encuentra en uso.");
+                }
+                else
+                {
+                    RegistrarUsuarioApp y = new RegistrarUsuarioApp();
+                    if(txtTelefonoOpcional.getText().toString().isEmpty())
+                    {
+                        y.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), "0");
+                    }
+                    else
+                    {
+                        y.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), txtTelefonoOpcional.getText().toString());
+                    }
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class RegistrarUsuarioApp extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL("http://clickcomida.esy.es/Controlador/insertar_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = null;
+                    post_data= URLEncoder.encode("nombre","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8")+"&"+
+                            URLEncoder.encode("apellido","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8")+"&"+
+                            URLEncoder.encode("nickname","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8")+"&"+
+                            URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(params[3],"UTF-8")+"&"+
+                            URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[4],"UTF-8")+"&"+
+                            URLEncoder.encode("calle","UTF-8")+"="+URLEncoder.encode(params[5],"UTF-8")+"&"+
+                            URLEncoder.encode("numerocalle","UTF-8")+"="+URLEncoder.encode(params[6],"UTF-8")+"&"+
+                            URLEncoder.encode("numero_telefono","UTF-8")+"="+URLEncoder.encode(params[7],"UTF-8")+"&"+
+                            URLEncoder.encode("numero_telefono_opcional","UTF-8")+"="+URLEncoder.encode(params[8],"UTF-8");
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                String res = jsonResult.getString("Resultado");
+                if (res.equals("Correcto"))
+                {
+                    Toast.makeText(getApplicationContext(), "Insertado", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "No nsertado", Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

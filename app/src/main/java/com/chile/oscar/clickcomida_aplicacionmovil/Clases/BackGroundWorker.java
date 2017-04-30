@@ -112,7 +112,6 @@ public class BackGroundWorker extends AsyncTask<String, Void, String>
             JSONObject jao = new JSONObject(s);
             Toast.makeText(context, jao.getString("email"), Toast.LENGTH_SHORT).show();
             RegistrarUsuario x = new RegistrarUsuario();
-            x.getTxtCorreo().setError("holas");
 
         }
         catch (JSONException e)
