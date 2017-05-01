@@ -62,6 +62,10 @@ public class Inicio_Usuario extends AppCompatActivity
         vCorreo.setText(correoUsuario);
         vNombre.setText(nombreUsuario);
 
+        //Este cambia el valor del titulo del navigation_drawer
+        getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+
+
     }
 
     @Override
@@ -110,20 +114,22 @@ public class Inicio_Usuario extends AppCompatActivity
         {
             fragment = new MapaInicio();
             fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
         }
         else if (id == R.id.nav_gallery)
         {
             fragment = new fragmentTienda();
             fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_crear_tienda));
         }
         else if (id == R.id.nav_slideshow)
         {
             fragment = new MisDatos();
-
             Bundle args = new Bundle();
             args.putString("IdUser", idUsuario);
             fragment.setArguments(args);
             fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mis_datos));
         }
         else if (id == R.id.nav_manage)
         {

@@ -65,6 +65,9 @@
     <string name="direccion_usuario">Direccion</string>
     <string name="calle_usuario">Calle:</string>
     <string name="calle_numero_usuario">Numero:</string>
+    <string name="titulo_inicio">Inicio</string>
+    <string name="titulo_crear_tienda">Crear tienda virtual</string>
+    <string name="titulo_mis_datos">Mis datos</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

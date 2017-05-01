@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,10 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
+    private static final int LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
-    private Marker marcador;
-    double lat = 0.0;
-    double lon = 0.0;
 
     @Override
 
@@ -50,62 +50,44 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        miUbicacion();
 
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+        // Controles UI
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            mMap.setMyLocationEnabled(true);
+        }
+        else
+        {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))
+            {
+                // Mostrar diálogo explicativo
+            }
+            else
+            {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            }
+        }
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        // Marcadores
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)));
     }
 
-    private void AgregarMarcador(double lat, double lon) {
-        LatLng coordenadas = new LatLng(lat, lon);
-        CameraUpdate MiUbicacion = CameraUpdateFactory.newLatLngZoom(coordenadas, 16);
-        if (marcador != null) {
-            marcador.remove();
-            marcador = mMap.addMarker(new MarkerOptions().position(coordenadas).title("Mi posicion actual").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-            mMap.animateCamera(MiUbicacion);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            // ¿Permisos asignados?
+            if (permissions.length > 0 && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+            }
+            else
+            {
+                Toast.makeText(getContext(), "Error de permisos", Toast.LENGTH_SHORT).show();
+            }
         }
-    }
-
-    private void UpdateUbication(Location location) {
-        if (location != null) {
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-            AgregarMarcador(lat, lon);
-        }
-    }
-
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            UpdateUbication(location);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
-    private void miUbicacion() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        UpdateUbication(location);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
     }
 }
