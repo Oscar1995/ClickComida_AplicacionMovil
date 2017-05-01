@@ -245,8 +245,8 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
             try
             {
                 JSONObject jsonResult = new JSONObject(s);
-                String res = jsonResult.getString("email");
-                if (Integer.parseInt(res) != 0)
+                String res = jsonResult.getString("Resultado");
+                if (!res.equals("0"))
                 {
                     txtCorreo.setError("Este correo ya se encuentra en uso.");
                 }

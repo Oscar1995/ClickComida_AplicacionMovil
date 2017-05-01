@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.chile.oscar.clickcomida_aplicacionmovil.MisDatos">
+
+    <Button
+        android:id="@+id/btnRegresar"
+        android:layout_width="34dp"
+        android:layout_height="35dp"
+        android:background="@drawable/ic_shortcut_arrow_back" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/mis_datos"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="380dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtNombre_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/usuario_nombre"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtApellido_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/usuario_apellido"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtNickname_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/usuario_nick"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtCorreo_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/correo_usuario"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtTipo_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/tipo_usuario"
+            android:textColor="@color/colorNegro" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/numero_de_telefono_de_usuario"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTeleUno_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/numtel_uno"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtTeleDos_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/numtel_dos"
+            android:textColor="@color/colorNegro" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="195dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/direccion_usuario"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="215dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtCalle_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_usuario"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/txtNumeroCalle_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_numero_usuario"
+            android:textColor="@color/colorNegro" />
+    </LinearLayout>
+
+</RelativeLayout>

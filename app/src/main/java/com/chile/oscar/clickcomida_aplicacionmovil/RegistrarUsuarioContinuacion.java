@@ -39,7 +39,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     String getClave;
     String getNombre;
     String getApellido;
-    String correoUsuario;
+    Intent i = null;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -60,11 +60,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         getNombre = getIntent().getStringExtra("nombre_usuario");
         getApellido = getIntent().getStringExtra("apellido_usuario");
 
-        /*txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
-        String idUsuarioCadena = getIntent().getStringExtra("usuario_id");
-        correoUsuario = getIntent().getStringExtra("correo_usuario");
+        txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
 
-        id_usuario = Integer.parseInt(idUsuarioCadena);*/
         btnRegistroFinal.setOnClickListener(this);
     }
 
@@ -140,9 +137,9 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     }
     public class ConsultarNick extends AsyncTask<String, Void, String>
     {
+
         @Override
-        public String doInBackground(String... params)
-        {
+        protected String doInBackground(String... params) {
             String result = "";
             try
             {
@@ -191,23 +188,22 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         {
             try
             {
-                JSONObject jsonResult = new JSONObject(s);
-                String res = jsonResult.getString("nickname");
-                if (Integer.parseInt(res) != 0)
+                JSONObject bringNick = new JSONObject(s);
+                if (bringNick.getString("Resultado").equals("0"))
                 {
-                    txtNickname.setError("Este nickname ya se encuentra en uso.");
-                }
-                else
-                {
-                    RegistrarUsuarioApp y = new RegistrarUsuarioApp();
+                    RegistrarUsuarioApp regUs = new RegistrarUsuarioApp();
                     if(txtTelefonoOpcional.getText().toString().isEmpty())
                     {
-                        y.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), "0");
+                        regUs.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), "0");
                     }
                     else
                     {
-                        y.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), txtTelefonoOpcional.getText().toString());
+                        regUs.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), txtTelefonoOpcional.getText().toString());
                     }
+                }
+                else
+                {
+                    txtNickname.setError("Este nickname ya esta en uso.");
                 }
             }
             catch (JSONException e)
@@ -281,7 +277,11 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
-                    Toast.makeText(getApplicationContext(), "Insertado", Toast.LENGTH_SHORT).show();
+                    i = new Intent(RegistrarUsuarioContinuacion.this, Inicio_Usuario.class);
+                    i.putExtra("correo_usuario", getCorreo);
+                    i.putExtra("nombre_usuario", getNombre);
+                    startActivity(i);
+                    finish();
                 }
                 else
                 {

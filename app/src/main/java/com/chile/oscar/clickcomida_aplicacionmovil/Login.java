@@ -225,9 +225,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 if (res.equals("Correcto"))
                 {
                     i = new Intent(Login.this, Inicio_Usuario.class);
+                    i.putExtra("id_user_login", jsonResult.getString("Id"));
                     i.putExtra("correo_usuario", txtCorreo.getText().toString());
                     i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
                     startActivity(i);
+                    finish();
                 }
                 else
                 {

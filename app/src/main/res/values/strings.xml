@@ -52,6 +52,19 @@
     <string name="titulo_gestionar_producto">Gestiona los productos</string>
     <string name="categoria_producto">Categoria</string>
     <string name="facebook_app_id">1583720611646445</string>
+    <string name="mis_datos">Mis datos personales</string>
+    <string name="usuario_nombre">Nombre:</string>
+    <string name="usuario_apellido">Apellido:</string>
+    <string name="usuario_nick">Nickname:</string>
+    <string name="correo_usuario">Correo electronico:</string>
+    <string name="tipo_usuario">Tipo de cuenta:</string>
+    <string name="numero_de_telefono_de_usuario">Numeros telefonicos</string>
+    <string name="direcciones_usuario">usuario_direccion</string>
+    <string name="numtel_uno">Telefono 1:</string>
+    <string name="numtel_dos">Telefono 2:</string>
+    <string name="direccion_usuario">Direccion</string>
+    <string name="calle_usuario">Calle:</string>
+    <string name="calle_numero_usuario">Numero:</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

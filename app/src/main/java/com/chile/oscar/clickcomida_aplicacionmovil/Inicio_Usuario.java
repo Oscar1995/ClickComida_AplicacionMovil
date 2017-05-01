@@ -21,8 +21,10 @@ public class Inicio_Usuario extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
+    String idUsuario;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio__usuario);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,6 +55,7 @@ public class Inicio_Usuario extends AppCompatActivity
         TextView vCorreo = (TextView)hView.findViewById(R.id.tvCorreoUsuarioMenu);
         TextView vNombre = (TextView)hView.findViewById(R.id.tvNombreUsuarioMenu);
 
+        idUsuario = getIntent().getStringExtra("id_user_login");
         String correoUsuario = getIntent().getStringExtra("correo_usuario");
         String nombreUsuario = getIntent().getStringExtra("nombre_usuario");
 
@@ -95,7 +98,8 @@ public class Inicio_Usuario extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -104,18 +108,33 @@ public class Inicio_Usuario extends AppCompatActivity
 
         if (id == R.id.nav_camera)
         {
-            // Handle the camera action
+            fragment = new MapaInicio();
+            fragmentoSeleccionado = true;
+        }
+        else if (id == R.id.nav_gallery)
+        {
             fragment = new fragmentTienda();
             fragmentoSeleccionado = true;
-        } else if (id == R.id.nav_gallery) {
+        }
+        else if (id == R.id.nav_slideshow)
+        {
+            fragment = new MisDatos();
 
-        } else if (id == R.id.nav_slideshow) {
+            Bundle args = new Bundle();
+            args.putString("IdUser", idUsuario);
+            fragment.setArguments(args);
+            fragmentoSeleccionado = true;
+        }
+        else if (id == R.id.nav_manage)
+        {
 
-        } else if (id == R.id.nav_manage) {
+        }
+        else if (id == R.id.nav_share)
+        {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        }
+        else if (id == R.id.nav_send)
+        {
 
         }
         if (fragmentoSeleccionado == true)
