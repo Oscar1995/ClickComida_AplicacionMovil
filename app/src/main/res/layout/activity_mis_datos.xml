@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="400dp"
+        android:layout_marginBottom="391dp"
         android:layout_marginTop="27dp"
         android:orientation="vertical">
 
@@ -154,5 +154,17 @@
             android:text="@string/calle_numero_usuario"
             android:textColor="@color/colorNegro" />
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fbModificar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="19dp"
+        android:layout_marginEnd="18dp"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_menu_manage" />
 
 </RelativeLayout>

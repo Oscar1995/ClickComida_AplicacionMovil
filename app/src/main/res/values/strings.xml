@@ -94,4 +94,21 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="eligeOpcion">Elige una opcion</string>
+    <string name="quiero_spinner">Quiero...</string>
+    <string name="el_los_spinner">El/Los...</string>
+    <string name="modificar_elemento_usuario">Modificar</string>
+    <string name="tu_nombre_actual">Tu nombre actual</string>
+
+    <string name="tu_nombre_nuevo">Nuevo nombre</string>
+    <string name="tu_apellido_nuevo">Nuevo apellido</string>
+    <string name="tu_nickname_nuevo">Nuevo nickname</string>
+    <string name="tu_correo_nuevo">Nuevo correo electronico</string>
+    <string name="tu_clave_nuevo">Nueva clave</string>
+    <string name="tu_clave_nuevo_rep">Repite tu nueva clave</string>
+
+    <string name="ingrese_clave_actual">Ingrese clave actual</string>
+    <string name="modificar_boton">Modificar</string>
+    <string name="boton_aceptar">Aceptar</string>
+    <string name="boton_cancelar">Cancelar</string>
 </resources>

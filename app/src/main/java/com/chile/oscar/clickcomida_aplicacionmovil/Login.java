@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
+    ProgressBar pBarLogin;
     CallbackManager callbackManager = CallbackManager.Factory.create();
     Intent i = null;
     @Override
@@ -63,6 +65,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         btnOlvidado = (Button)findViewById(R.id.btnClaveOlvidada);
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
+        pBarLogin = (ProgressBar)findViewById(R.id.pbInicio);
+        pBarLogin.setVisibility(View.GONE);
+
 
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
@@ -121,11 +126,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         try
                         {
+                            pBarLogin.setVisibility(View.VISIBLE);
                             VerificarCorreoClave x = new VerificarCorreoClave();
                             x.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
                         }
                         catch (Exception ex)
                         {
+                            pBarLogin.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), "El usuario y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
                         }
 
