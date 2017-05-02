@@ -40,7 +40,9 @@ import java.net.URLEncoder;
 public class MisDatos extends Fragment implements View.OnClickListener
 {
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle;
+    String uNombre, uApellido, uNickname, uCorreo;
     FloatingActionButton fbUpdateUser;
+    String id;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.activity_mis_datos, container, false);
@@ -59,7 +61,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
         fbUpdateUser.setOnClickListener(this);
 
         Bundle bundle = getArguments();
-        String id = bundle.getString("IdUser");
+        id = bundle.getString("IdUser");
 
         TraerDatos obj = new TraerDatos();
         obj.execute(id);
@@ -107,6 +109,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         builderChange.setView(p);
                         final AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
+
 
                         Button btnCanTel = (Button)p.findViewById(R.id.btnCancelarTelefono);
                         btnCanTel.setOnClickListener(new View.OnClickListener() {
@@ -296,6 +299,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
         if (tipo.equals("Nombre"))
         {
             manipularTexto(p, getResources().getString(R.string.tu_nombre_nuevo));
+            Button btnModUs = (Button)p.findViewById(R.id.btnModificarUsuario);
+            final EditText txtClaveUser = (EditText)p.findViewById(R.id.etClaveVariable);
+
+            btnModUs.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    modificarUsuario updateUs = new modificarUsuario();
+                    updateUs.execute(id, uNombre, txtClaveUser.getText().toString());
+                }
+            });
         }
         else if (tipo.equals("Apellido"))
         {
@@ -376,6 +391,80 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
                     calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
                     numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
+
+                    uNombre = jsonResult.getString("Nombre");
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class modificarUsuario extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL("http://clickcomida.esy.es/Controlador/actualizar_datos_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                            URLEncoder.encode("nombre","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                            URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
 
                 }
                 else

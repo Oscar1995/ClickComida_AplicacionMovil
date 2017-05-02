@@ -243,6 +243,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             catch (JSONException e)
             {
                 e.printStackTrace();
+                Toast.makeText(getApplicationContext(), e + "", Toast.LENGTH_SHORT).show();
             }
         }
     }
