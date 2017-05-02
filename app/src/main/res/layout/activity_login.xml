@@ -115,12 +115,6 @@
                 android:layout_weight="1"></com.facebook.login.widget.LoginButton>
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/pbInicio"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     </LinearLayout>
 
 </ScrollView>

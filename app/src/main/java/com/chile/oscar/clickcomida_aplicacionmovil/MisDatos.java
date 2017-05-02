@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,86 +77,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 break;
         }
     }
-
-    public class TraerDatos extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            String result = "";
-            try
-            {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/datos_usuario.php");
-                try
-                {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-                    eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
-                    eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
-                    eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
-                    eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
-                    eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
-                    eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
-                    eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
-                    calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
-                    numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
-
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-                
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
     int positionCrudSelected;
     int positionElement;
     public void createdd()
@@ -181,10 +102,38 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     if (positionElement == 0)
                     {
                         //Telefono
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_telefono_usuario, null);
+                        builderChange.setView(p);
+                        final AlertDialog dialogChange = builderChange.create();
+                        dialogChange.show();
+
+                        Button btnCanTel = (Button)p.findViewById(R.id.btnCancelarTelefono);
+                        btnCanTel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialogChange.cancel();
+                            }
+                        });
                     }
                     else if (positionElement == 1) //
                     {
                         //Direccion
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
+                        builderChange.setView(p);
+                        final AlertDialog dialogChange = builderChange.create();
+                        dialogChange.show();
+                        Button btnDir = (Button)p.findViewById(R.id.btnCancelarDireccion);
+                        btnDir.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialogChange.cancel();
+                            }
+                        });
                     }
                 }
                 if (positionCrudSelected == 1) //Modificar
@@ -213,6 +162,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else if (positionElement == 4)
                     {
                         //Clave
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_clave_usuario, null);
+                        builderChange.setView(p);
+                        AlertDialog dialogChange = builderChange.create();
+                        dialogChange.show();
                     }
                 }
                 if (positionCrudSelected == 2) //Eliminar
@@ -220,10 +174,42 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     if (positionElement == 0)
                     {
                         //Telefono
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                        TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
+                        tvInfo.setText(getResources().getString(R.string.descripcion_telefono_o_direccion));
+                        builderChange.setView(p);
+                        AlertDialog dialogChange = builderChange.create();
+                        dialogChange.show();
+
+                        String[] telefonos = null;
+                        if (!eTel2.getText().toString().equals("false"))
+                        {
+                            telefonos = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
+                        }
+
+                        ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, telefonos);
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                            {
+                                Toast.makeText(getContext(), "Numero: " + position, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     }
                     else if (positionElement == 1)
                     {
                         //Direccion
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                        TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
+                        tvInfo.setText(getResources().getString(R.string.descripcion_direccion));
+                        builderChange.setView(p);
+                        AlertDialog dialogChange = builderChange.create();
+                        dialogChange.show();
                     }
                 }
             }
@@ -324,5 +310,84 @@ public class MisDatos extends Fragment implements View.OnClickListener
             manipularTexto(p, getResources().getString(R.string.tu_correo_nuevo));
         }
         dialogUp.show();
+    }
+    public class TraerDatos extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL("http://clickcomida.esy.es/Controlador/datos_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
+                    eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
+                    eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
+                    eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
+                    eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
+                    eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
+                    eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
+                    calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
+                    numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }

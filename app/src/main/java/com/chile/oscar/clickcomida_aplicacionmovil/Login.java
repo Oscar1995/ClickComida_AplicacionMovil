@@ -3,6 +3,7 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,7 +51,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
-    ProgressBar pBarLogin;
     CallbackManager callbackManager = CallbackManager.Factory.create();
     Intent i = null;
     @Override
@@ -65,8 +65,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         btnOlvidado = (Button)findViewById(R.id.btnClaveOlvidada);
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
-        pBarLogin = (ProgressBar)findViewById(R.id.pbInicio);
-        pBarLogin.setVisibility(View.GONE);
 
 
         btnIniciar.setOnClickListener(this);
@@ -126,13 +124,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         try
                         {
-                            pBarLogin.setVisibility(View.VISIBLE);
+                            //cuadroIniciarSesion();
                             VerificarCorreoClave x = new VerificarCorreoClave();
                             x.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
                         }
                         catch (Exception ex)
                         {
-                            pBarLogin.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), "El usuario y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
                         }
 
@@ -248,5 +245,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 e.printStackTrace();
             }
         }
+    }
+    private void cuadroIniciarSesion()
+    {
+        AlertDialog.Builder builderChange = new AlertDialog.Builder(this);
+        View p = getLayoutInflater().inflate(R.layout.iniciar_sesion_proceso, null);
+        builderChange.setView(p);
+        AlertDialog dialogChange = builderChange.create();
+
+        dialogChange.show();
     }
 }

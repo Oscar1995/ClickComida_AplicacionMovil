@@ -111,4 +111,17 @@
     <string name="modificar_boton">Modificar</string>
     <string name="boton_aceptar">Aceptar</string>
     <string name="boton_cancelar">Cancelar</string>
+    <string name="titulo_modificar_clave">Modificar clave</string>
+    <string name="clave_nueva_usuario">Clave nueva</string>
+    <string name="clave_nueva_rep">Repite clave nueva</string>
+    <string name="titulo_agregar_direccion">Agregar nueva direccion</string>
+    <string name="titulo_calle_usuario">Calle</string>
+    <string name="titulo_calle_numero_usuario">Numero</string>
+    <string name="titulo_agregar_telefono">Agregar nuevo telefono</string>
+    <string name="titulo_nuevo_telefono">Nuevo telefono</string>
+    <string name="Eliminar" />
+    <string name="titulo_eliminar">Eliminar</string>
+    <string name="descripcion_telefono_o_direccion">Seleccione un telefono en esta lista y elimine</string>
+    <string name="descripcion_direccion">Seleccione una direccion en esta lista y elimine</string>
+    <string name="titulo_inicio_sesion">Iniciando sesión...</string>
 </resources>
