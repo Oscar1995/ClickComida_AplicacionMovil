@@ -2,7 +2,9 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -46,9 +48,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Key;
+import java.util.ArrayList;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
+    String uId, uCorreo, uNombre;
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
@@ -67,10 +71,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
 
-
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
         btnOlvidado.setOnClickListener(this);
+
+        if (cargarPreferencias())
+        {
+            i = new Intent(Login.this, Inicio_Usuario.class);
+            i.putExtra("id_user_login", uId);
+            i.putExtra("correo_usuario", uCorreo);
+            i.putExtra("nombre_usuario", uNombre);
+            startActivity(i);
+            this.finish();
+        }
         botonFacebook.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -232,6 +245,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
+                    guardarPreferencias(jsonResult.getString("Id"), txtCorreo.getText().toString(), jsonResult.getString("Nombre"));
                     i = new Intent(Login.this, Inicio_Usuario.class);
                     i.putExtra("id_user_login", jsonResult.getString("Id"));
                     i.putExtra("correo_usuario", txtCorreo.getText().toString());
@@ -249,6 +263,31 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), e + "", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+    public void guardarPreferencias(String id, String correo, String nombre)
+    {
+        SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("id_usuario_shared", id);
+        editor.putString("correo_usuario_shared", correo);
+        editor.putString("nombre_usuario_shared", nombre);
+        editor.commit();
+    }
+    public boolean cargarPreferencias()
+    {
+        SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+        uId = sharedpreferences.getString("id_usuario_shared", "");
+        uCorreo = sharedpreferences.getString("correo_usuario_shared", "");
+        uNombre = sharedpreferences.getString("nombre_usuario_shared", "");
+
+        if(uId.isEmpty() && uCorreo.isEmpty() && uNombre.isEmpty())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 }

@@ -1,5 +1,8 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -141,7 +144,14 @@ public class Inicio_Usuario extends AppCompatActivity
         }
         else if (id == R.id.nav_send)
         {
+            SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.clear();
+            editor.commit();
 
+            Intent intent = new Intent (Inicio_Usuario.this, Login.class);
+            startActivity(intent);
+            this.finish();
         }
         if (fragmentoSeleccionado == true)
         {
