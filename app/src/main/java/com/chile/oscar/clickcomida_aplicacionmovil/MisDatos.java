@@ -40,11 +40,16 @@ import java.net.URLEncoder;
 public class MisDatos extends Fragment implements View.OnClickListener
 {
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle;
+    EditText txtVariable ,txtClaveUser;
     FloatingActionButton fbUpdateUser;
     String id;
+    AlertDialog dialogCrudUsuario;
+    View view, vUpdate;
+    AlertDialog dialogUp;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.activity_mis_datos, container, false);
+        view = inflater.inflate(R.layout.activity_mis_datos, container, false);
         eNombre = (TextView) view.findViewById(R.id.txtNombre_misdatos);
         eApellido = (TextView) view.findViewById(R.id.txtApellido_misdatos);
         eNickname = (TextView) view.findViewById(R.id.txtNickname_misdatos);
@@ -85,8 +90,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View v = getActivity().getLayoutInflater().inflate(R.layout.crud_datos_usuario, null);
         builder.setView(v);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
+        dialogCrudUsuario = builder.create();
+        dialogCrudUsuario.show();
 
         Button botonAceptar = (Button) v.findViewById(R.id.btnAceptar);
         Button botonCancelar = (Button) v.findViewById(R.id.btnCancelar);
@@ -143,23 +148,23 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     if (positionElement == 0)
                     {
                         //Nombre
-                        dialogoSingular(dialog, "Nombre");
+                        dialogoSingular(dialogCrudUsuario, "Nombre");
 
                     }
                     else if (positionElement == 1)
                     {
                         //Apellido
-                        dialogoSingular(dialog, "Apellido");
+                        dialogoSingular(dialogCrudUsuario, "Apellido");
                     }
                     else if (positionElement == 2)
                     {
                         //Nickname
-                        dialogoSingular(dialog, "Nickname");
+                        dialogoSingular(dialogCrudUsuario, "Nickname");
                     }
                     else if (positionElement == 3)
                     {
                         //Correo
-                        dialogoSingular(dialog, "Correo");
+                        dialogoSingular(dialogCrudUsuario, "Correo");
                     }
                     else if (positionElement == 4)
                     {
@@ -279,7 +284,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
             @Override
             public void onClick(View v)
             {
-                dialog.cancel();
+                dialogCrudUsuario.cancel();
             }
         });
     }
@@ -291,16 +296,17 @@ public class MisDatos extends Fragment implements View.OnClickListener
     public void dialogoSingular(AlertDialog dialog, String tipo)
     {
         AlertDialog.Builder builderUpdate = new AlertDialog.Builder(getContext());
-        View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_usuario_singular, null);
-        builderUpdate.setView(p);
-        AlertDialog dialogUp = builderUpdate.create();
+        vUpdate = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_usuario_singular, null);
+        builderUpdate.setView(vUpdate);
+        dialogUp = builderUpdate.create();
         dialog.cancel();
+
         if (tipo.equals("Nombre"))
         {
-            manipularTexto(p, getResources().getString(R.string.tu_nombre_nuevo));
-            Button btnModUs = (Button)p.findViewById(R.id.btnModificarUsuario);
-            final EditText txtVariable = (EditText)p.findViewById(R.id.etVariable);
-            final EditText txtClaveUser = (EditText)p.findViewById(R.id.etClaveVariable);
+            manipularTexto(vUpdate, getResources().getString(R.string.tu_nombre_nuevo));
+            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
+            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
 
             btnModUs.setOnClickListener(new View.OnClickListener()
             {
@@ -314,15 +320,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
         }
         else if (tipo.equals("Apellido"))
         {
-            manipularTexto(p, getResources().getString(R.string.tu_apellido_nuevo));
+            manipularTexto(vUpdate, getResources().getString(R.string.tu_apellido_nuevo));
         }
         else if (tipo.equals("Nickname"))
         {
-            manipularTexto(p, getResources().getString(R.string.tu_nickname_nuevo));
+            manipularTexto(vUpdate, getResources().getString(R.string.tu_nickname_nuevo));
         }
         else if (tipo.equals("Correo"))
         {
-            manipularTexto(p, getResources().getString(R.string.tu_correo_nuevo));
+            manipularTexto(vUpdate, getResources().getString(R.string.tu_correo_nuevo));
         }
         dialogUp.show();
     }
@@ -463,7 +469,19 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 JSONObject jsonResult = new JSONObject(s);
                 if (jsonResult != null)
                 {
+                    if (jsonResult.getString("Clave").equals("Incorrecto"))
+                    {
+                        txtClaveUser.setError("La clave es incorrecta.");
+                    }
+                    else if (jsonResult.getString("Clave").equals("Correcto"))
+                    {
 
+                        eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + txtVariable.getText().toString());
+                        Toast.makeText(getContext(), "Se ha modificado tu nombre por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
+                        dialogCrudUsuario.cancel();
+                        dialogUp.cancel();
+
+                    }
                 }
                 else
                 {
