@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
@@ -388,6 +389,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 JSONObject jsonResult = new JSONObject(s);
                 if (jsonResult != null)
                 {
+                    ProgressDialog progress = new ProgressDialog(getContext());
+                    progress.setMessage("Cargando datos...");
+                    progress.show();
+
                     eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
                     eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
                     eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
@@ -397,6 +402,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
                     calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
                     numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
+
+                    progress.cancel();
 
                 }
                 else

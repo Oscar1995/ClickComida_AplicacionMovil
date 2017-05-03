@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
@@ -124,7 +125,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         try
                         {
-                            //cuadroIniciarSesion();
+                            ProgressDialog progress = new ProgressDialog(this);
+                            progress.setMessage("Iniciando..");
+                            progress.show();
+
                             VerificarCorreoClave x = new VerificarCorreoClave();
                             x.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
                         }
@@ -246,14 +250,5 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 Toast.makeText(getApplicationContext(), e + "", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-    private void cuadroIniciarSesion()
-    {
-        AlertDialog.Builder builderChange = new AlertDialog.Builder(this);
-        View p = getLayoutInflater().inflate(R.layout.iniciar_sesion_proceso, null);
-        builderChange.setView(p);
-        AlertDialog dialogChange = builderChange.create();
-
-        dialogChange.show();
     }
 }
