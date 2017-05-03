@@ -30,7 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapaInicio extends Fragment implements OnMapReadyCallback {
+public class MapaInicio extends Fragment implements OnMapReadyCallback
+{
 
     private static final int LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
@@ -48,9 +49,9 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
         mMap = googleMap;
-
         // Controles UI
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {

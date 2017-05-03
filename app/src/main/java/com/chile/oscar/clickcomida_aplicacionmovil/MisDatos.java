@@ -40,7 +40,6 @@ import java.net.URLEncoder;
 public class MisDatos extends Fragment implements View.OnClickListener
 {
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle;
-    String uNombre, uApellido, uNickname, uCorreo;
     FloatingActionButton fbUpdateUser;
     String id;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -300,6 +299,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
         {
             manipularTexto(p, getResources().getString(R.string.tu_nombre_nuevo));
             Button btnModUs = (Button)p.findViewById(R.id.btnModificarUsuario);
+            final EditText txtVariable = (EditText)p.findViewById(R.id.etVariable);
             final EditText txtClaveUser = (EditText)p.findViewById(R.id.etClaveVariable);
 
             btnModUs.setOnClickListener(new View.OnClickListener()
@@ -308,7 +308,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 public void onClick(View v)
                 {
                     modificarUsuario updateUs = new modificarUsuario();
-                    updateUs.execute(id, uNombre, txtClaveUser.getText().toString());
+                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
                 }
             });
         }
@@ -392,8 +392,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
                     numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
 
-                    uNombre = jsonResult.getString("Nombre");
-
                 }
                 else
                 {
@@ -427,8 +425,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
                     String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                            URLEncoder.encode("nombre","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                            URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                            URLEncoder.encode("nombre_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                            URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
