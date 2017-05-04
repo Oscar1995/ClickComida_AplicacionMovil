@@ -175,6 +175,31 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         builderChange.setView(p);
                         AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
+
+                        final EditText txtActualClave = (EditText)p.findViewById(R.id.txtClaveActual_us);
+                        final EditText txtNuevaClave = (EditText)p.findViewById(R.id.txtClaveNueva_us);
+                        final EditText txtNuevaClaveRep = (EditText)p.findViewById(R.id.txtClaveNuevaRep_us);
+
+                        Button botonCambiarClave = (Button)p.findViewById(R.id.btnCambiarClave);
+
+                        botonCambiarClave.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString()))
+                                {
+                                    tipo_registro = "Clave";
+                                    modificarUsuario updateUs = new modificarUsuario();
+                                    updateUs.execute(id, txtNuevaClave.getText().toString(), txtActualClave.getText().toString());
+                                }
+                                else
+                                {
+                                    txtNuevaClaveRep.setError("La clave no coincide con la de arriba.");
+                                }
+                            }
+                        });
+
                     }
                 }
                 if (positionCrudSelected == 2) //Eliminar
@@ -314,6 +339,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 @Override
                 public void onClick(View v)
                 {
+                    tipo_registro = "Nombre";
                     modificarUsuario updateUs = new modificarUsuario();
                     updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
                 }
@@ -322,14 +348,51 @@ public class MisDatos extends Fragment implements View.OnClickListener
         else if (tipo.equals("Apellido"))
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_apellido_nuevo));
+            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
+            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
+            btnModUs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    tipo_registro = "Apellido";
+                    modificarUsuario updateUs = new modificarUsuario();
+                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                }
+            });
+
         }
         else if (tipo.equals("Nickname"))
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_nickname_nuevo));
+            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
+            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
+            btnModUs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    tipo_registro = "Nickname";
+                    modificarUsuario updateUs = new modificarUsuario();
+                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                }
+            });
         }
         else if (tipo.equals("Correo"))
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_correo_nuevo));
+            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
+            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
+            btnModUs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    tipo_registro = "Correo";
+                    modificarUsuario updateUs = new modificarUsuario();
+                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                }
+            });
         }
         dialogUp.show();
     }
@@ -418,6 +481,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
             }
         }
     }
+    String tipo_registro;
     public class modificarUsuario extends AsyncTask<String, Void, String>
     {
         @Override
@@ -437,9 +501,37 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
-                    String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                            URLEncoder.encode("nombre_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                            URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    String post_data = "";
+                    if (tipo_registro.equals("Nombre"))
+                    {
+                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("nombre_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
+                    else if(tipo_registro.equals("Apellido"))
+                    {
+                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("apellido_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
+                    else if (tipo_registro.equals("Nickname"))
+                    {
+                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("nickname_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
+                    else if (tipo_registro.equals("Clave"))
+                    {
+                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_nueva_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
+                    else if (tipo_registro.equals("Correo"))
+                    {
+                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("correo_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
@@ -467,7 +559,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
             }
             return result;
         }
-
         @Override
         protected void onPostExecute(String s)
         {
@@ -482,12 +573,46 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     }
                     else if (jsonResult.getString("Clave").equals("Correcto"))
                     {
-
-                        eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + txtVariable.getText().toString());
-                        Toast.makeText(getContext(), "Se ha modificado tu nombre por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
-                        dialogCrudUsuario.cancel();
-                        dialogUp.cancel();
-
+                        if (tipo_registro.equals("Nombre"))
+                        {
+                            eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + txtVariable.getText().toString());
+                            Toast.makeText(getContext(), "Se ha modificado tu nombre por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
+                            dialogCrudUsuario.cancel();
+                            dialogUp.cancel();
+                        }
+                        else if (tipo_registro.equals("Apellido"))
+                        {
+                            eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + txtVariable.getText().toString());
+                            Toast.makeText(getContext(), "Se ha modificado tu apellido por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
+                            dialogCrudUsuario.cancel();
+                            dialogUp.cancel();
+                        }
+                        else if (tipo_registro.equals("Nickname"))
+                        {
+                            eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + txtVariable.getText().toString());
+                            Toast.makeText(getContext(), "Se ha modificado tu nickname por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
+                            dialogCrudUsuario.cancel();
+                            dialogUp.cancel();
+                        }
+                        else if (tipo_registro.equals("Clave"))
+                        {
+                            Toast.makeText(getContext(), "Tu clave se ha modificado correctamente.", Toast.LENGTH_SHORT).show();
+                        }
+                        else if (tipo_registro.equals("Correo"))
+                        {
+                            eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + txtVariable.getText().toString());
+                            Toast.makeText(getContext(), "Se ha modificado tu correo por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
+                            dialogCrudUsuario.cancel();
+                            dialogUp.cancel();
+                        }
+                    }
+                    else if (jsonResult.getString("Clave").equals("Nickname_existe"))
+                    {
+                        txtVariable.setError("Este nickname ya esta en uso.");
+                    }
+                    else if (jsonResult.getString("Clave").equals("Correo_existe"))
+                    {
+                        txtVariable.setError("Este correo ya esta en uso.");
                     }
                 }
                 else

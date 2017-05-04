@@ -22,6 +22,7 @@
         android:id="@+id/textInputLayout3">
 
         <EditText
+            android:id="@+id/txtClaveActual_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -39,7 +40,7 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:id="@+id/editText4"
+            android:id="@+id/txtClaveNueva_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -57,7 +58,7 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:id="@+id/editText10"
+            android:id="@+id/txtClaveNuevaRep_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
