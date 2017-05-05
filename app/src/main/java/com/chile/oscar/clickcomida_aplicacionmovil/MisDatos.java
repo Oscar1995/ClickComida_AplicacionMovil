@@ -43,10 +43,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle;
     EditText txtVariable ,txtClaveUser;
     FloatingActionButton fbUpdateUser;
-    String id;
+    String id, telefono, telefonoRestanteUno, telefonoRestanteDos;
     AlertDialog dialogCrudUsuario;
     View view, vUpdate;
-    AlertDialog dialogUp;
+    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -89,6 +89,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
     boolean swDelete = false;
     int positionDelete = 0;
+
+    boolean tel1 = false, tel2 = false;
     public void createdd()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -115,8 +117,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                         View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_telefono_usuario, null);
                         builderChange.setView(p);
-                        final AlertDialog dialogChange = builderChange.create();
-                        dialogChange.show();
+                        dialogChangeTelefono = builderChange.create();
+                        dialogChangeTelefono.show();
 
                         final EditText textoTel = (EditText) p.findViewById(R.id.txtTelefono_us);
                         Button btnAddTel = (Button)p.findViewById(R.id.btnAgregarTelefono);
@@ -131,10 +133,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 }
                                 else
                                 {
-                                    tipo_add = "Telefono";
-                                    String tel = textoTel.getText().toString();
-                                    agregarDatos addData = new agregarDatos();
-                                    addData.execute(id, tel);
+                                    if (tel1 == true && tel2 == true)
+                                    {
+                                        Toast.makeText(getContext(), "Solo esta permitido agregar dos numeros de telefono.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else if (tel1 == true && tel2 == false)
+                                    {
+                                        tipo_add = "Telefono";
+                                        String tel = textoTel.getText().toString();
+                                        telefono = tel;
+                                        agregarDatos addData = new agregarDatos();
+                                        addData.execute(id, tel);
+                                    }
                                 }
                             }
                         });
@@ -142,7 +152,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             @Override
                             public void onClick(View v)
                             {
-                                dialogChange.cancel();
+                                dialogChangeTelefono.cancel();
                             }
                         });
                     }
@@ -233,9 +243,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
                         tvInfo.setText(getResources().getString(R.string.descripcion_telefono_o_direccion));
                         builderChange.setView(p);
-                        AlertDialog dialogChange = builderChange.create();
+                        dialogChangeDelete = builderChange.create();
                         swDelete = false;
-                        dialogChange.show();
+                        dialogChangeDelete.show();
 
                         String[] telefonos = null;
                         if (eTel2.getText().toString().equals("Telefono 2: Vacio"))
@@ -300,6 +310,28 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         builderChange.setView(p);
                         AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
+                        Button botonDeleteDireccion = (Button)p.findViewById(R.id.btnEliminar_d_f);
+
+                        String[] direcciones = null;
+                        if (eTel2.getText().toString().equals("Telefono 2: Vacio"))
+                        {
+                            direcciones = new String[]{eTel1.getText().toString()};
+                        }
+                        else
+                        {
+                            direcciones = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
+                        }
+
+                        final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
+                        listView.setAdapter(adapter);
+
+                        botonDeleteDireccion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
                     }
                 }
             }
@@ -516,13 +548,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
                     eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
                     eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
+                    telefonoRestanteDos = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
+                    tel1 = true;
                     if (jsonResult.getString("telefonoDos").equals("false"))
                     {
                         eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + "Vacio");
+                        tel2 = false;
                     }
                     else
                     {
                         eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
+                        tel2 = true;
+                        telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
                     }
 
                     calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
@@ -754,7 +791,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 {
                     if (jsonResult.getString("Eliminado").equals("Si"))
                     {
-                        Toast.makeText(getContext(), "Se ha eliminado.", Toast.LENGTH_SHORT).show();
+                        dialogChangeDelete.cancel();
+                        if (positionDelete == 0)
+                        {
+                            eTel1.setText(telefonoRestanteDos);
+                            eTel2.setText("Telefono 2: Vacio");
+                        }
+                        else if (positionDelete == 1)
+                        {
+                            eTel1.setText(telefonoRestanteUno);
+                            eTel2.setText("Telefono 1: Vacio");
+                        }
+                        Toast.makeText(getContext(), "Telefono eliminado.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
@@ -832,7 +880,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 {
                     if (jsonResult.getString("Agregado").equals("Si"))
                     {
+                        dialogChangeTelefono.cancel();
                         Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
+                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + telefono);
                     }
                 }
                 else

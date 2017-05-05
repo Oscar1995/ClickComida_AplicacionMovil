@@ -29,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="391dp"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="30dp"
         android:orientation="vertical">
 
         <TextView
@@ -95,7 +95,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="155dp"
         android:orientation="vertical">
 
         <TextView
@@ -133,10 +133,20 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/lnDireccion_uno"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="215dp"
+        android:layout_marginTop="223dp"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView29"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/direccion_1"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtCalle_misdatos"
@@ -148,6 +158,72 @@
 
         <TextView
             android:id="@+id/txtNumeroCalle_misdatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_numero_usuario"
+            android:textColor="@color/colorNegro" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lnDireccion_dos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="283dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView33"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/direccion_2"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView27"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_usuario"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/textView28"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_numero_usuario"
+            android:textColor="@color/colorNegro" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lnDireccion_tres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="343dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView34"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/direccion_3"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView35"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/calle_usuario"
+            android:textColor="@color/colorNegro" />
+
+        <TextView
+            android:id="@+id/textView36"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

@@ -127,4 +127,7 @@
     <string name="descripcion_direccion">Seleccione una direccion en esta lista y elimine</string>
     <string name="titulo_inicio_sesion">Iniciando sesión...</string>
     <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="direccion_1">Direccion 1</string>
+    <string name="direccion_2">Direccion 2</string>
+    <string name="direccion_3">Direccion 3</string>
 </resources>
