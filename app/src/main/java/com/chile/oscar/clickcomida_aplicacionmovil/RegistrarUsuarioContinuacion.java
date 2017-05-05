@@ -143,7 +143,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
             String result = "";
             try
             {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/consultar_nickname.php");
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/consultar_nickname.php");
                 try
                 {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -220,7 +220,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
             String result = "";
             try
             {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/insertar_usuario.php");
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/insertar_usuario.php");
                 try
                 {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();

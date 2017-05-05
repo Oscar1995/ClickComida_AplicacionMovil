@@ -23,7 +23,7 @@
         android:id="@+id/textInputLayout8">
 
         <EditText
-            android:id="@+id/editText6"
+            android:id="@+id/txtTelefono_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"

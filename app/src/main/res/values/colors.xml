@@ -7,6 +7,6 @@
     <color name="colorCeleste">#2196f3</color>
     <color name="colorVerde">#0fac4b</color>
     <color name="colorRojo">#bc080b</color>
-
+    <color name="celesteClaro">#02e1ff</color>
     <color name="textoBlanco">#ffffff</color>
 </resources>

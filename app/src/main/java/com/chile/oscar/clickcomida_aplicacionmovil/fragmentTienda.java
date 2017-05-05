@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,7 +29,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     private String mParam1;
     private String mParam2;
 
-    Button botonContinuar;
+    Button botonContinuar, botonUAutomatico;
     ImageButton tImagen_uno, tImagen_dos, tImagen_tres, tImagen_cuatro, tImagen_cinco, tImagen_seis;
     private OnFragmentInteractionListener mListener;
 
@@ -66,6 +67,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
         botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
+        botonUAutomatico = (Button)v.findViewById(R.id.btnUbicacionAutomatica);
         tImagen_uno = (ImageButton)v.findViewById(R.id.ibUno);
         tImagen_dos = (ImageButton)v.findViewById(R.id.ibDos);
         tImagen_tres = (ImageButton)v.findViewById(R.id.ibTres);
@@ -89,6 +91,13 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
+
+            }
+        });
+        botonUAutomatico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
 
             }
         });

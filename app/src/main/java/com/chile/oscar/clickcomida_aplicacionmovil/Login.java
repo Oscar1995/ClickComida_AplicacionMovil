@@ -58,6 +58,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     EditText txtCorreo, txtClave;
     CallbackManager callbackManager = CallbackManager.Factory.create();
     Intent i = null;
+    ProgressDialog progress;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -138,7 +139,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     {
                         try
                         {
-                            ProgressDialog progress = new ProgressDialog(this);
+                            progress = new ProgressDialog(this);
                             progress.setMessage("Iniciando..");
                             progress.show();
 
@@ -147,6 +148,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                         }
                         catch (Exception ex)
                         {
+                            progress.cancel();
                             Toast.makeText(getApplicationContext(), "El usuario y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
                         }
 
@@ -196,7 +198,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             String result = "";
             try
             {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/login.php");
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/login.php");
                 try
                 {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();

@@ -189,7 +189,7 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
             String result = "";
             if (tipo.equals("consultar_correo"))
             {
-                direccion = "http://clickcomida.esy.es/Controlador/consultar_correo.php";
+                direccion = getResources().getString(R.string.direccion_web) + "/Controlador/consultar_correo.php";
                 correo = params[1];
             }
             try
@@ -207,7 +207,7 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
 
                     String post_data = null;
                     //post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8")+"&" +URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(clave,"UTF-8");
-                    if (direccion.equals("http://clickcomida.esy.es/Controlador/consultar_correo.php"))
+                    if (direccion.equals(getResources().getString(R.string.direccion_web) + "/Controlador/consultar_correo.php"))
                     {
                         post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8");
                     }

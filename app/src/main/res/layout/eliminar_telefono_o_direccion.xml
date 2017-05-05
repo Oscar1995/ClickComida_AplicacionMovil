@@ -31,7 +31,8 @@
         android:layout_marginBottom="300dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="13dp" />
+        android:layout_marginTop="13dp"
+        android:listSelector="@color/celesteClaro" />
 
     <Button
         android:id="@+id/btnEliminar_d_f"

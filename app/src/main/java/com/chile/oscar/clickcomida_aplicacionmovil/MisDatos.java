@@ -86,6 +86,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
     }
     int positionCrudSelected;
     int positionElement;
+
+    boolean swDelete = false;
+    int positionDelete = 0;
     public void createdd()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -115,8 +118,26 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         final AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
 
-
+                        final EditText textoTel = (EditText) p.findViewById(R.id.txtTelefono_us);
+                        Button btnAddTel = (Button)p.findViewById(R.id.btnAgregarTelefono);
                         Button btnCanTel = (Button)p.findViewById(R.id.btnCancelarTelefono);
+                        btnAddTel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (textoTel.getText().toString().isEmpty())
+                                {
+                                    textoTel.setError("Debes agregar un numero de telefono.");
+                                }
+                                else
+                                {
+                                    tipo_add = "Telefono";
+                                    String tel = textoTel.getText().toString();
+                                    agregarDatos addData = new agregarDatos();
+                                    addData.execute(id, tel);
+                                }
+                            }
+                        });
                         btnCanTel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v)
@@ -213,22 +234,58 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         tvInfo.setText(getResources().getString(R.string.descripcion_telefono_o_direccion));
                         builderChange.setView(p);
                         AlertDialog dialogChange = builderChange.create();
+                        swDelete = false;
                         dialogChange.show();
 
                         String[] telefonos = null;
-                        if (!eTel2.getText().toString().equals("false"))
+                        if (eTel2.getText().toString().equals("Telefono 2: Vacio"))
+                        {
+                            telefonos = new String[]{eTel1.getText().toString()};
+                        }
+                        else
                         {
                             telefonos = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
                         }
 
-                        ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
+                        Button botonEliminar_t_d = (Button)p.findViewById(R.id.btnEliminar_d_f);
+                        final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, telefonos);
                         listView.setAdapter(adapter);
+
                         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                             {
-                                Toast.makeText(getContext(), "Numero: " + position, Toast.LENGTH_SHORT).show();
+                                positionDelete = position;
+                                swDelete = true;
+                            }
+                        });
+                        botonEliminar_t_d.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (swDelete)
+                                {
+                                    int listaTotal = listView.getAdapter().getCount();
+                                    if (listaTotal == 1)
+                                    {
+                                        Toast.makeText(getContext(), "Debes tener al menos 2 numeros de telefonos para eliminar uno, si este numero ya no lo usas podrias modificarlo.", Toast.LENGTH_LONG).show();
+                                    }
+                                    else
+                                    {
+                                        String telName = listView.getItemAtPosition(positionDelete).toString();
+                                        String[] arregloTel = telName.split(":");
+                                        String onlyNumber = arregloTel[1].trim();
+                                        tipo_delete = "Telefono";
+                                        eliminarDatos deleteData = new eliminarDatos();
+                                        deleteData.execute(id, onlyNumber);
+
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Selecciona un telefono e elimina", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
 
@@ -302,9 +359,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
             }
         });
 
-        /*builder.setView(v);
-        final AlertDialog dialog = builder.create();
-        dialog.show();*/
         botonCancelar.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -404,7 +458,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
             String result = "";
             try
             {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/datos_usuario.php");
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/datos_usuario.php");
                 try
                 {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -462,7 +516,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
                     eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
                     eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
-                    eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
+                    if (jsonResult.getString("telefonoDos").equals("false"))
+                    {
+                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + "Vacio");
+                    }
+                    else
+                    {
+                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
+                    }
+
                     calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
                     numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
 
@@ -482,6 +544,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
         }
     }
     String tipo_registro;
+    String tipo_delete;
+    String tipo_add;
     public class modificarUsuario extends AsyncTask<String, Void, String>
     {
         @Override
@@ -490,7 +554,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
             String result = "";
             try
             {
-                URL url = new URL("http://clickcomida.esy.es/Controlador/actualizar_datos_usuario.php");
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_datos_usuario.php");
                 try
                 {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -613,6 +677,162 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else if (jsonResult.getString("Clave").equals("Correo_existe"))
                     {
                         txtVariable.setError("Este correo ya esta en uso.");
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class eliminarDatos extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/eliminar_datos_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = "";
+                    if (tipo_delete.equals("Telefono"))
+                    {
+                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("telefono_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+                    }
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    if (jsonResult.getString("Eliminado").equals("Si"))
+                    {
+                        Toast.makeText(getContext(), "Se ha eliminado.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class agregarDatos extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/insertar_datos_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = "";
+                    if (tipo_add.equals("Telefono"))
+                    {
+                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("telefono_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+                    }
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    if (jsonResult.getString("Agregado").equals("Si"))
+                    {
+                        Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
