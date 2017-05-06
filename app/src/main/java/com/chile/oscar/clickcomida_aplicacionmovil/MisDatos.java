@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -47,7 +48,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
     AlertDialog dialogCrudUsuario;
     View view, vUpdate;
     String[] direcciones;
-    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete;
+    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete, dialogChangeDireccionn, dialogAgregarDireccion, dialogChangeClave, dialogChangeDireccionUpdate;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -175,8 +176,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                         View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
                         builderChange.setView(p);
-                        final AlertDialog dialogChange = builderChange.create();
-                        dialogChange.show();
+                        dialogAgregarDireccion = builderChange.create();
+                        dialogAgregarDireccion.show();
                         final EditText txtCalle = (EditText)p.findViewById(R.id.txtCalle_usuario_dir);
                         final EditText txtNumeroCalle = (EditText)p.findViewById(R.id.txtNumero_usuario_dir);
                         Button btnDir = (Button)p.findViewById(R.id.btnCancelarDireccion);
@@ -203,7 +204,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             @Override
                             public void onClick(View v)
                             {
-                                dialogChange.cancel();
+                                dialogAgregarDireccion.cancel();
                             }
                         });
                     }
@@ -237,8 +238,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                         View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_clave_usuario, null);
                         builderChange.setView(p);
-                        AlertDialog dialogChange = builderChange.create();
-                        dialogChange.show();
+                        dialogChangeClave = builderChange.create();
+                        dialogChangeClave.show();
 
                         final EditText txtActualClave = (EditText)p.findViewById(R.id.txtClaveActual_us);
                         final EditText txtNuevaClave = (EditText)p.findViewById(R.id.txtClaveNueva_us);
@@ -263,7 +264,32 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 }
                             }
                         });
+                    }
+                    else if (positionElement == 5)
+                    {
+                        //Direccion
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_direccion_usuario, null);
+                        builderChange.setView(p);
+                        dialogChangeDireccionUpdate = builderChange.create();
+                        dialogChangeDireccionUpdate.show();
 
+                        LinearLayout linearUno = (LinearLayout)p.findViewById(R.id.llCalle_numero);
+                        LinearLayout linearDos = (LinearLayout)p.findViewById(R.id.llCalle_numero_textos);
+                        LinearLayout lineaTres = (LinearLayout)p.findViewById(R.id.llBotones);
+                        TextView txtInfoCalle = (TextView)p.findViewById(R.id.tvInfoCalle);
+                        TextView txtInfoNumeroCalle = (TextView)p.findViewById(R.id.tvInfoNumeroCalle);
+                        EditText textNuevaCalle = (EditText)p.findViewById(R.id.eNuevaCalle);
+                        EditText textNuevaCalleNumero = (EditText)p.findViewById(R.id.eNuevoNumeroCalle);
+                        Button botonMod = (Button)p.findViewById(R.id.btnModificarDireccion_us);
+                        Button botonCerrar = (Button)p.findViewById(R.id.btnCerrarDireccion_us);
+                        ListView lvDirecciones = (ListView)p.findViewById(R.id.lvListaDirecciones);
+
+
+                    }
+                    else if (positionElement == 6)
+                    {
+                        //Telefono
                     }
                 }
                 if (positionCrudSelected == 2) //Eliminar
@@ -341,8 +367,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
                         tvInfo.setText(getResources().getString(R.string.descripcion_direccion));
                         builderChange.setView(p);
-                        AlertDialog dialogChange = builderChange.create();
-                        dialogChange.show();
+                        dialogChangeDireccionn = builderChange.create();
+                        dialogChangeDireccionn.show();
                         Button botonDeleteDireccion = (Button)p.findViewById(R.id.btnEliminar_d_f);
                         swDelete = false;
 
@@ -387,8 +413,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
                                         eliminarDatos deleteData = new eliminarDatos();
                                         deleteData.execute(id, calle, numero);
-
-                                        cargar();
                                     }
                                 }
                                 else
@@ -413,7 +437,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 positionCrudSelected = positionCrud;
                 if (positionCrud == 1)
                 {
-                    String[] dElements = {"Nombre", "Apellido", "Nickname", "Correo electronico", "Clave"};
+                    String[] dElements = {"Nombre", "Apellido", "Nickname", "Correo electronico", "Clave", "Direccion", "Telefono"};
                     ArrayAdapter adapElement = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, dElements);
                     sElements.setAdapter(adapElement);
                     sElements.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -801,6 +825,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         }
                         else if (tipo_registro.equals("Clave"))
                         {
+                            dialogChangeClave.cancel();
+                            dialogCrudUsuario.cancel();
                             Toast.makeText(getContext(), "Tu clave se ha modificado correctamente.", Toast.LENGTH_SHORT).show();
                         }
                         else if (tipo_registro.equals("Correo"))
@@ -904,31 +930,21 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         if (jsonResult.getString("Eliminado").equals("Si"))
                         {
                             dialogChangeDelete.cancel();
-                            if (positionDelete == 0)
-                            {
-                                /*eTel1.setText(telefonoRestanteDos);
-                                eTel2.setText("Telefono 2: Vacio");*/
-                                cargar();
-                            }
-                            else if (positionDelete == 1)
-                            {
-                                /*String[]telDos = telefonoRestanteDos.split(":");
-                                String telefono = telDos[1].trim();
-
-                                eTel1.setText("Telefono 1: " + telefono);
-                                eTel2.setText("Telefono 2: Vacio");*/
-                                cargar();
-                            }
+                            dialogCrudUsuario.cancel();
+                            cargar();
                             Toast.makeText(getContext(), "Telefono eliminado.", Toast.LENGTH_SHORT).show();
                         }
                     }
                     else if (tipo_delete.equals("Direccion"))
                     {
-                        dialogChangeDelete.cancel();
-                        cargar();
-                        Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
+                        if(jsonResult.getString("Eliminado").equals("Si"))
+                        {
+                            dialogCrudUsuario.cancel();
+                            dialogChangeDireccionn.cancel();
+                            cargar();
+                            Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
+                        }
                     }
-
                 }
                 else
                 {
@@ -1006,6 +1022,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     if (jsonResult.getString("Agregado").equals("Si"))
                     {
                         dialogChangeTelefono.cancel();
+                        dialogCrudUsuario.cancel();
                         Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
                         //eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + telefono);
                         cargar();
@@ -1083,6 +1100,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 {
                     if (jsonResult.getString("Direccion").equals("Si"))
                     {
+                        dialogAgregarDireccion.cancel();
+                        dialogCrudUsuario.cancel();
                         cargar();
                         Toast.makeText(getContext(), "Direccion agregada", Toast.LENGTH_SHORT).show();
                     }

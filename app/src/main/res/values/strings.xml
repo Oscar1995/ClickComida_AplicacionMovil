@@ -130,4 +130,10 @@
     <string name="direccion_1">Direccion 1</string>
     <string name="direccion_2">Direccion 2</string>
     <string name="direccion_3">Direccion 3</string>
+    <string name="titulo_modificar_direccion">Selecciona una dirección en la lista para modificarlo</string>
+    <string name="titulo_has_seleccionado">Has seleccionado</string>
+    <string name="titulo_ingresar_nueva_calle_numero">Ingresa nueva calle y numero para reemplazar</string>
+    <string name="nueva_calle">Nueva calle</string>
+    <string name="nuevo_numero">Nuevo numero</string>
+    <string name="boton_cerrar">Cerrar</string>
 </resources>
