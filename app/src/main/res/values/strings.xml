@@ -136,4 +136,6 @@
     <string name="nueva_calle">Nueva calle</string>
     <string name="nuevo_numero">Nuevo numero</string>
     <string name="boton_cerrar">Cerrar</string>
+    <string name="titulo_modificar_telefono">Selecciona un telefono en la lista para modificar</string>
+    <string name="titulo_nuevo_numero">Nuevo numero</string>
 </resources>

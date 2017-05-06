@@ -47,8 +47,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
     String id, telefono, telefonoRestanteUno, telefonoRestanteDos;
     AlertDialog dialogCrudUsuario;
     View view, vUpdate;
-    String[] direcciones;
-    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete, dialogChangeDireccionn, dialogAgregarDireccion, dialogChangeClave, dialogChangeDireccionUpdate;
+    String calleAntigua = "", calleNumAntigua = "", telefono_ant = "";
+    String[] direcciones, vTelefonos;
+    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete, dialogChangeDireccionn, dialogAgregarDireccion, dialogChangeClave, dialogChangeDireccionUpdate, dialogChangeDireccionTelefono;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -100,8 +101,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
     }
     int positionCrudSelected;
     int positionElement;
+    int positionUpdateSelected;
+    int positionUpdateSelectedTel;
 
-    boolean swDelete = false;
+    boolean swDelete = false, swUpdate = false;
     int positionDelete = 0;
 
     boolean tel1 = false, tel2 = false;
@@ -274,22 +277,147 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         dialogChangeDireccionUpdate = builderChange.create();
                         dialogChangeDireccionUpdate.show();
 
-                        LinearLayout linearUno = (LinearLayout)p.findViewById(R.id.llCalle_numero);
-                        LinearLayout linearDos = (LinearLayout)p.findViewById(R.id.llCalle_numero_textos);
-                        LinearLayout lineaTres = (LinearLayout)p.findViewById(R.id.llBotones);
-                        TextView txtInfoCalle = (TextView)p.findViewById(R.id.tvInfoCalle);
-                        TextView txtInfoNumeroCalle = (TextView)p.findViewById(R.id.tvInfoNumeroCalle);
-                        EditText textNuevaCalle = (EditText)p.findViewById(R.id.eNuevaCalle);
-                        EditText textNuevaCalleNumero = (EditText)p.findViewById(R.id.eNuevoNumeroCalle);
+                        swUpdate = false;
+                        final LinearLayout linearUno = (LinearLayout)p.findViewById(R.id.llCalle_numero);
+                        final LinearLayout linearDos = (LinearLayout)p.findViewById(R.id.llCalle_numero_textos);
+                        final LinearLayout linearTres = (LinearLayout)p.findViewById(R.id.llBotones);
+                        final TextView txtInfoCalle = (TextView)p.findViewById(R.id.tvInfoCalle);
+                        final TextView txtInfoNumeroCalle = (TextView)p.findViewById(R.id.tvInfoNumeroCalle);
+                        final EditText textNuevaCalle = (EditText)p.findViewById(R.id.eNuevaCalle);
+                        final EditText textNuevaCalleNumero = (EditText)p.findViewById(R.id.eNuevoNumeroCalle);
                         Button botonMod = (Button)p.findViewById(R.id.btnModificarDireccion_us);
                         Button botonCerrar = (Button)p.findViewById(R.id.btnCerrarDireccion_us);
-                        ListView lvDirecciones = (ListView)p.findViewById(R.id.lvListaDirecciones);
+                        final ListView lvDirecciones = (ListView)p.findViewById(R.id.lvListaDirecciones);
+
+                        linearUno.setVisibility(View.GONE);
+                        linearDos.setVisibility(View.GONE);
+                        linearTres.setVisibility(View.GONE);
+
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
+                        lvDirecciones.setAdapter(adapter);
+
+                        lvDirecciones.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                        {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                            {
+                                positionUpdateSelected = position;
+                                swUpdate = true;
+
+                                linearUno.setVisibility(View.VISIBLE);
+                                String dirUs = lvDirecciones.getItemAtPosition(position).toString();
+
+                                String[]arr_numero = dirUs.split("Numero:");
+                                String numeroCalle = arr_numero[1].trim();
+
+                                String[]arr_calleLeft = dirUs.split("-");
+                                String calleLeft = arr_calleLeft[0].trim();
+                                String[]arr_calle = calleLeft.split("Calle:");
+                                String nomCalle = arr_calle[1].trim();
+
+                                calleAntigua = nomCalle;
+                                calleNumAntigua = numeroCalle;
+
+                                txtInfoCalle.setText(getResources().getString(R.string.calle_usuario) + " " + nomCalle);
+                                txtInfoNumeroCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + numeroCalle);
+
+                                linearDos.setVisibility(View.VISIBLE);
+                                linearTres.setVisibility(View.VISIBLE);
+                            }
+                        });
+
+                        botonMod.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (swUpdate)
+                                {
+                                    if (textNuevaCalle.getText().toString().isEmpty() && textNuevaCalleNumero.getText().toString().isEmpty())
+                                    {
+                                        textNuevaCalle.setError("Debes ingresar una calle");
+                                        textNuevaCalleNumero.setError("Debes ingresar una calle");
+                                    }
+                                    else
+                                    {
+                                        tipo_registro = "Direccion";
+                                        updateDireccion_or_telefono modificarDir = new updateDireccion_or_telefono();
+                                        modificarDir.execute(calleAntigua, calleNumAntigua, textNuevaCalle.getText().toString(), textNuevaCalleNumero.getText().toString());
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Selecciona una direccion para modificarlo.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        botonCerrar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialogChangeDireccionUpdate.cancel();
+                            }
+                        });
 
 
                     }
                     else if (positionElement == 6)
                     {
                         //Telefono
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_telefono, null);
+                        builderChange.setView(p);
+                        dialogChangeDireccionTelefono = builderChange.create();
+                        dialogChangeDireccionTelefono.show();
+
+                        final ListView listaTelefono = (ListView)p.findViewById(R.id.lv_lista_telefono);
+                        final TextView textoNum = (TextView)p.findViewById(R.id.tvInfoTelefono);
+                        final EditText txtnuevoTel = (EditText) p.findViewById(R.id.etNuevoTelefonp_us);
+                        final LinearLayout linearElementos = (LinearLayout)p.findViewById(R.id.llTextoandButton);
+                        Button btnModTel = (Button)p.findViewById(R.id.btnModificarTelefono_us);
+                        Button btnCerrarTel = (Button)p.findViewById(R.id.btnCerrarTelefono_us);
+
+                        linearElementos.setVisibility(View.GONE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, vTelefonos);
+                        listaTelefono.setAdapter(adapter);
+
+                        listaTelefono.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                            {
+                                positionUpdateSelectedTel = position;
+                                linearElementos.setVisibility(View.VISIBLE);
+                                String telUs = listaTelefono.getItemAtPosition(position).toString();
+
+                                String[]arr_numero = telUs.split(":");
+                                String telefono_antiguo = arr_numero[1].trim();
+                                textoNum.setText(telefono_antiguo);
+                                telefono_ant = telefono_antiguo;
+
+                            }
+                        });
+
+                        btnModTel.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (txtnuevoTel.getText().toString().isEmpty())
+                                {
+                                    txtnuevoTel.setError("Debes ingresar un telefono");
+                                }
+                                else
+                                {
+                                    tipo_registro = "Telefono";
+                                    updateDireccion_or_telefono updateTel = new updateDireccion_or_telefono();
+                                    updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
+                                }
+                            }
+                        });
+                        btnCerrarTel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialogChangeDireccionTelefono.cancel();
+                            }
+                        });
                     }
                 }
                 if (positionCrudSelected == 2) //Eliminar
@@ -639,16 +767,23 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
                     telefonoRestanteUno = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
                     tel1 = true;
+
                     if (jsonResult.getString("telefonoDos").equals("false"))
                     {
                         eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + "Vacio");
                         tel2 = false;
+                        vTelefonos = new String[1];
+                        vTelefonos[0] = telefonoRestanteUno;
                     }
                     else
                     {
                         eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
                         tel2 = true;
                         telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
+
+                        vTelefonos = new String[2];
+                        vTelefonos[0] = telefonoRestanteUno;
+                        vTelefonos[1] = telefonoRestanteDos;
                     }
 
                     int longitud = jsonResult.length();
@@ -844,6 +979,119 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else if (jsonResult.getString("Clave").equals("Correo_existe"))
                     {
                         txtVariable.setError("Este correo ya esta en uso.");
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class updateDireccion_or_telefono extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = null;
+                if (tipo_registro.equals("Direccion"))
+                {
+                    url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_direccion_usuario.php");
+                }
+                else if (tipo_registro.equals("Telefono"))
+                {
+                    url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_telefono_usuario.php");
+                }
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = "";
+                    if (tipo_registro.equals("Direccion"))
+                    {
+                        post_data = URLEncoder.encode("calle_antigua","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("calle_num_antigua","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("calle_nueva","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8") + "&" +
+                                URLEncoder.encode("calle_num_nueva","UTF-8")+"="+URLEncoder.encode(params[3],"UTF-8");
+                    }
+                    else if (tipo_registro.equals("Telefono"))
+                    {
+                        post_data = URLEncoder.encode("id_us","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("num_an","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("num_new","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+
+                        //updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
+                    }
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    if (tipo_registro.equals("Direccion"))
+                    {
+                        if (jsonResult.getString("Actualizado").equals("Si"))
+                        {
+                            dialogCrudUsuario.cancel();
+                            dialogChangeDireccionUpdate.cancel();
+                            Toast.makeText(getContext(), "Direccion actualizada.", Toast.LENGTH_LONG).show();
+
+                            cargar();
+                        }
+                    }
+                    else if (tipo_registro.equals("Telefono"))
+                    {
+                        if (jsonResult.getString("Actualizado").equals("Si"))
+                        {
+                            dialogCrudUsuario.cancel();
+                            dialogChangeDireccionTelefono.cancel();
+                            Toast.makeText(getContext(), "Telefono modificado.", Toast.LENGTH_LONG).show();
+                            cargar();
+                        }
                     }
                 }
                 else
