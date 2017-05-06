@@ -182,7 +182,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView27"
+            android:id="@+id/txtCalle_misdatos_d"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -190,7 +190,7 @@
             android:textColor="@color/colorNegro" />
 
         <TextView
-            android:id="@+id/textView28"
+            android:id="@+id/txtNumeros_misdatos_d"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -215,7 +215,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView35"
+            android:id="@+id/txtCallemisdatos_t"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -223,7 +223,7 @@
             android:textColor="@color/colorNegro" />
 
         <TextView
-            android:id="@+id/textView36"
+            android:id="@+id/txtNumeromisdatos_t"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

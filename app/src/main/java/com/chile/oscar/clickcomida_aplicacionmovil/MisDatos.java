@@ -40,12 +40,13 @@ import java.net.URLEncoder;
 
 public class MisDatos extends Fragment implements View.OnClickListener
 {
-    TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle;
+    TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle, calleDos, numCalleDos, calleTres, numCalleTres;
     EditText txtVariable ,txtClaveUser;
     FloatingActionButton fbUpdateUser;
     String id, telefono, telefonoRestanteUno, telefonoRestanteDos;
     AlertDialog dialogCrudUsuario;
     View view, vUpdate;
+    String[] direcciones;
     AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -60,18 +61,30 @@ public class MisDatos extends Fragment implements View.OnClickListener
         eTipo = (TextView) view.findViewById(R.id.txtTipo_misdatos);
         eTel1 = (TextView) view.findViewById(R.id.txtTeleUno_misdatos);
         eTel2 = (TextView) view.findViewById(R.id.txtTeleDos_misdatos);
+
         calle = (TextView) view.findViewById(R.id.txtCalle_misdatos);
         numCalle = (TextView) view.findViewById(R.id.txtNumeroCalle_misdatos);
+        calleDos = (TextView) view.findViewById(R.id.txtCalle_misdatos_d);
+        numCalleDos = (TextView) view.findViewById(R.id.txtNumeros_misdatos_d);
+        calleTres = (TextView) view.findViewById(R.id.txtCallemisdatos_t);
+        numCalleTres = (TextView) view.findViewById(R.id.txtNumeromisdatos_t);
+
 
         fbUpdateUser.setOnClickListener(this);
 
         Bundle bundle = getArguments();
         id = bundle.getString("IdUser");
 
+
         TraerDatos obj = new TraerDatos();
         obj.execute(id);
 
         return view;
+    }
+    public void cargar()
+    {
+        TraerDatos obj = new TraerDatos();
+        obj.execute(id);
     }
 
     @Override
@@ -99,7 +112,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
         dialogCrudUsuario = builder.create();
         dialogCrudUsuario.show();
 
-        Button botonAceptar = (Button) v.findViewById(R.id.btnAceptar);
+        final Button botonAceptar = (Button) v.findViewById(R.id.btnAceptar);
         Button botonCancelar = (Button) v.findViewById(R.id.btnCancelar);
         final Button botonCancelarE = (Button) v.findViewById(R.id.btnCancelarE);
 
@@ -164,7 +177,27 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         builderChange.setView(p);
                         final AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
+                        final EditText txtCalle = (EditText)p.findViewById(R.id.txtCalle_usuario_dir);
+                        final EditText txtNumeroCalle = (EditText)p.findViewById(R.id.txtNumero_usuario_dir);
                         Button btnDir = (Button)p.findViewById(R.id.btnCancelarDireccion);
+                        Button botonModificarDi = (Button)p.findViewById(R.id.btnModificarDireccion);
+                        botonModificarDi.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                int lonDir = direcciones.length;
+                                if (lonDir == 3)
+                                {
+                                    Toast.makeText(getContext(), "Ya tienes tres direcciones, puedes eliminar una direccion o modificar una.", Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    agregarDireccion addDireccion = new agregarDireccion();
+                                    addDireccion.execute(id, txtCalle.getText().toString(), txtNumeroCalle.getText().toString());
+                                }
+
+                            }
+                        });
                         btnDir.setOnClickListener(new View.OnClickListener()
                         {
                             @Override
@@ -311,25 +344,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         AlertDialog dialogChange = builderChange.create();
                         dialogChange.show();
                         Button botonDeleteDireccion = (Button)p.findViewById(R.id.btnEliminar_d_f);
-
-                        String[] direcciones = null;
-                        if (eTel2.getText().toString().equals("Telefono 2: Vacio"))
-                        {
-                            direcciones = new String[]{eTel1.getText().toString()};
-                        }
-                        else
-                        {
-                            direcciones = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
-                        }
+                        swDelete = false;
 
                         final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
                         listView.setAdapter(adapter);
 
-                        botonDeleteDireccion.setOnClickListener(new View.OnClickListener() {
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                            {
+                                positionDelete = position;
+                                swDelete = true;
+                            }
+                        });
 
+                        botonDeleteDireccion.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (swDelete)
+                                {
+                                    int listaTotal = listView.getAdapter().getCount();
+                                    if (listaTotal == 1)
+                                    {
+                                        Toast.makeText(getContext(), "Debes tener al menos 2 direcciones para eliminar uno, si esta direccion ya no lo usas podrias modificarlo.", Toast.LENGTH_LONG).show();
+                                    }
+                                    else
+                                    {
+                                        tipo_delete = "Direccion";
+                                        String datos = direcciones[positionDelete];
+
+                                        String[]arr_numero = datos.split("Numero:");
+                                        String numero = arr_numero[1].trim();
+
+                                        String[]arr_calleLeft = datos.split("-");
+                                        String calleLeft = arr_calleLeft[0].trim();
+                                        String[]arr_calle = calleLeft.split("Calle:");
+                                        String calle = arr_calle[1].trim();
+
+
+                                        eliminarDatos deleteData = new eliminarDatos();
+                                        deleteData.execute(id, calle, numero);
+
+                                        cargar();
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Selecciona una direccion e elimina", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
@@ -548,7 +613,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
                     eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
                     eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
-                    telefonoRestanteDos = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
+                    telefonoRestanteUno = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
                     tel1 = true;
                     if (jsonResult.getString("telefonoDos").equals("false"))
                     {
@@ -562,9 +627,48 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
                     }
 
-                    calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonResult.getString("Calle"));
-                    numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonResult.getString("Numero_calle"));
+                    int longitud = jsonResult.length();
+                    int lonDireccion = longitud - 7;
+                    boolean dUno = false, dDos = false, dTres = false;
+                    direcciones = new String[lonDireccion];
 
+                    for (int i=0; i<lonDireccion; i++)
+                    {
+                        if (i == 0)
+                        {
+                            JSONObject jsonDireccionUno = new JSONObject(jsonResult.getString("0"));
+                            calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionUno.getString("street"));
+                            numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionUno.getString("number"));
+                            direcciones[i] = "Calle: " + jsonDireccionUno.getString("street") + " - " + "Numero: " + jsonDireccionUno.getString("number");
+                            dUno = true;
+                        }
+                        if (i == 1)
+                        {
+                            JSONObject jsonDireccionDos = new JSONObject(jsonResult.getString("1"));
+                            calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionDos.getString("street"));
+                            numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionDos.getString("number"));
+                            direcciones[i] = "Calle: " + jsonDireccionDos.getString("street") + " - " + "Numero: " + jsonDireccionDos.getString("number");
+                            dDos = true;
+                        }
+                        if (i == 2)
+                        {
+                            JSONObject jsonDireccionTres = new JSONObject(jsonResult.getString("2"));
+                            calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionTres.getString("street"));
+                            numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionTres.getString("number"));
+                            direcciones[i] = "Calle: " + jsonDireccionTres.getString("street") + " - " + "Numero: " + jsonDireccionTres.getString("number");
+                            dTres = true;
+                        }
+                    }
+                    if (dUno == true && dDos == false && dTres == false)
+                    {
+                        calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + "Vacio");
+                        numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + "Vacio");
+                    }
+                    else if (dUno == true && dDos == true && dTres == false)
+                    {
+                        calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + "Vacio");
+                        numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + "Vacio");
+                    }
                     progress.cancel();
 
                 }
@@ -753,6 +857,12 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
                                 URLEncoder.encode("telefono_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
                     }
+                    else if (tipo_delete.equals("Direccion"))
+                    {
+                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                                URLEncoder.encode("calle_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                                URLEncoder.encode("callenum_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    }
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
@@ -789,21 +899,36 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 JSONObject jsonResult = new JSONObject(s);
                 if (jsonResult != null)
                 {
-                    if (jsonResult.getString("Eliminado").equals("Si"))
+                    if (tipo_delete.equals("Telefono"))
+                    {
+                        if (jsonResult.getString("Eliminado").equals("Si"))
+                        {
+                            dialogChangeDelete.cancel();
+                            if (positionDelete == 0)
+                            {
+                                /*eTel1.setText(telefonoRestanteDos);
+                                eTel2.setText("Telefono 2: Vacio");*/
+                                cargar();
+                            }
+                            else if (positionDelete == 1)
+                            {
+                                /*String[]telDos = telefonoRestanteDos.split(":");
+                                String telefono = telDos[1].trim();
+
+                                eTel1.setText("Telefono 1: " + telefono);
+                                eTel2.setText("Telefono 2: Vacio");*/
+                                cargar();
+                            }
+                            Toast.makeText(getContext(), "Telefono eliminado.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else if (tipo_delete.equals("Direccion"))
                     {
                         dialogChangeDelete.cancel();
-                        if (positionDelete == 0)
-                        {
-                            eTel1.setText(telefonoRestanteDos);
-                            eTel2.setText("Telefono 2: Vacio");
-                        }
-                        else if (positionDelete == 1)
-                        {
-                            eTel1.setText(telefonoRestanteUno);
-                            eTel2.setText("Telefono 1: Vacio");
-                        }
-                        Toast.makeText(getContext(), "Telefono eliminado.", Toast.LENGTH_SHORT).show();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
                     }
+
                 }
                 else
                 {
@@ -882,7 +1007,84 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         dialogChangeTelefono.cancel();
                         Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
-                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + telefono);
+                        //eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + telefono);
+                        cargar();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    public class agregarDireccion extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            String result = "";
+            try
+            {
+                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/agregar_direccion_usuario.php");
+                try
+                {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+
+                    String post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
+                            URLEncoder.encode("calle_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
+                            URLEncoder.encode("numero_calle_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String line="";
+                    while ((line = bufferedReader.readLine())!=null)
+                    {
+                        result+=line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    if (jsonResult.getString("Direccion").equals("Si"))
+                    {
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion agregada", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else

@@ -277,15 +277,14 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
-                    i = new Intent(RegistrarUsuarioContinuacion.this, Inicio_Usuario.class);
-                    i.putExtra("correo_usuario", getCorreo);
-                    i.putExtra("nombre_usuario", getNombre);
+                    Toast.makeText(getApplicationContext(), "Te has registrado con exito, inicia sesion con las credenciales que te has registrado.", Toast.LENGTH_SHORT).show();
+                    i = new Intent(RegistrarUsuarioContinuacion.this, Login.class);
                     startActivity(i);
                     finish();
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "No nsertado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "No insertado", Toast.LENGTH_SHORT).show();
                 }
             }
             catch (JSONException e)
