@@ -3,50 +3,72 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/titulo_eliminar"
-        android:textColor="@color/colorNegro"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tvInfo_d_f"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView17"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp"
-        android:text="@string/descripcion_telefono_o_direccion" />
-
-    <ListView
-        android:id="@+id/lv_d_f"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvInfo_d_f"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="300dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="13dp"
-        android:listSelector="@color/celesteClaro" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnEliminar_d_f"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/textView17"
-        android:text="@string/eliminar_producto" />
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/titulo_eliminar"
+            android:background="@color/colorCeleste"
+            android:textColor="@color/textoBlanco"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnCancelar_d_f"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/textView17"
-        android:text="@string/boton_cancelar" />
+        <TextView
+            android:id="@+id/tvInfo_d_f"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView17"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/descripcion_telefono_o_direccion" />
+
+        <ListView
+            android:id="@+id/lv_d_f"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvInfo_d_f"
+            android:layout_centerHorizontal="true"
+            android:listSelector="@color/celesteClaro" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnEliminar_d_f"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="2dp"
+                android:layout_toStartOf="@+id/textView17"
+                android:layout_weight="1"
+                android:background="@drawable/colorbuttonpurpura"
+                android:text="@string/eliminar_producto" />
+
+            <Button
+                android:id="@+id/btnCancelar_d_f"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="20dp"
+                android:layout_toEndOf="@+id/textView17"
+                android:layout_weight="1"
+                android:background="@drawable/colorbuttonred"
+                android:text="@string/boton_cerrar" />
+
+        </LinearLayout>
+    </LinearLayout>
+
 </RelativeLayout>

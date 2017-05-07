@@ -18,7 +18,6 @@
         tools:context="com.chile.oscar.clickcomida_aplicacionmovil.Login"
         android:weightSum="1">
 
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
@@ -41,9 +40,11 @@
 
             <EditText
                 android:id="@+id/etCorreoLogin"
-                android:layout_width="345dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="center"
@@ -57,9 +58,11 @@
 
             <EditText
                 android:id="@+id/etClaveLogin"
-                android:layout_width="345dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="center"
@@ -74,19 +77,27 @@
 
             <Button
                 android:id="@+id/btnIniciarSesion"
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
 
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/colorbutton"
                 android:text="@string/iniciar_sesion"
                 tools:layout_editor_absoluteX="20dp"
                 tools:layout_editor_absoluteY="73dp" />
 
             <Button
                 android:id="@+id/btnRegistrate"
+                style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
+                android:background="@drawable/colorbuttonceleste"
                 android:text="@string/registrar_usuario"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="16dp" />
@@ -95,9 +106,14 @@
 
         <Button
             android:id="@+id/btnClaveOlvidada"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="2dp"
             android:layout_weight="1"
+            android:background="@drawable/colorbuttonred"
             android:text="@string/clave_boton"
             tools:layout_editor_absoluteX="198dp"
             tools:layout_editor_absoluteY="16dp" />
@@ -112,6 +128,8 @@
                 android:id="@+id/btnFacebook"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"></com.facebook.login.widget.LoginButton>
         </LinearLayout>
 

@@ -2,50 +2,74 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/titulo_agregar_telefono"
-        android:textColor="@color/colorNegro"
-        android:textStyle="bold"/>
-
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/textView16"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/textInputLayout8">
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/txtTelefono_us"
+        <TextView
+            android:id="@+id/textView16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:hint="@string/titulo_nuevo_telefono" />
-    </android.support.design.widget.TextInputLayout>
+            android:text="@string/titulo_agregar_telefono"
+            android:background="@color/colorCeleste"
+            android:textColor="@color/textoBlanco"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnAgregarTelefono"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textInputLayout8"
-        android:layout_below="@+id/textInputLayout8"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/agregar_producto" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayout8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView16"
+            android:layout_centerHorizontal="true">
 
-    <Button
-        android:id="@+id/btnCancelarTelefono"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/btnAgregarTelefono"
-        android:layout_marginStart="25dp"
-        android:layout_toEndOf="@+id/btnAgregarTelefono"
-        android:text="@string/boton_cancelar" />
+            <EditText
+                android:id="@+id/txtTelefono_us"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:hint="@string/titulo_nuevo_telefono"
+                android:inputType="phone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnAgregarTelefono"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/textInputLayout8"
+                    android:layout_below="@+id/textInputLayout8"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/colorbutton"
+                    android:text="@string/agregar_producto" />
+
+                <Button
+                    android:id="@+id/btnCancelarTelefono"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/btnAgregarTelefono"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_toEndOf="@+id/btnAgregarTelefono"
+                    android:layout_weight="1"
+                    android:background="@drawable/colorbuttonred"
+                    android:text="@string/boton_cerrar" />
+
+            </LinearLayout>
+
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
 </RelativeLayout>

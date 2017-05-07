@@ -8,6 +8,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +44,7 @@ import java.net.URLEncoder;
 public class MisDatos extends Fragment implements View.OnClickListener
 {
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle, calleDos, numCalleDos, calleTres, numCalleTres;
-    EditText txtVariable ,txtClaveUser;
+    EditText txtVariable ,txtClaveUser, txtActualClave;
     FloatingActionButton fbUpdateUser;
     String id, telefono, telefonoRestanteUno, telefonoRestanteDos;
     AlertDialog dialogCrudUsuario;
@@ -150,17 +152,25 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 }
                                 else
                                 {
-                                    if (tel1 == true && tel2 == true)
+                                    int longitud = textoTel.length();
+                                    if (longitud >= 6)
                                     {
-                                        Toast.makeText(getContext(), "Solo esta permitido agregar dos numeros de telefono.", Toast.LENGTH_SHORT).show();
+                                        if (tel1 == true && tel2 == true)
+                                        {
+                                            Toast.makeText(getContext(), "Solo esta permitido agregar dos numeros de telefono.", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if (tel1 == true && tel2 == false)
+                                        {
+                                            tipo_add = "Telefono";
+                                            String tel = textoTel.getText().toString();
+                                            telefono = tel;
+                                            agregarDatos addData = new agregarDatos();
+                                            addData.execute(id, tel);
+                                        }
                                     }
-                                    else if (tel1 == true && tel2 == false)
+                                    else
                                     {
-                                        tipo_add = "Telefono";
-                                        String tel = textoTel.getText().toString();
-                                        telefono = tel;
-                                        agregarDatos addData = new agregarDatos();
-                                        addData.execute(id, tel);
+                                        textoTel.setError("El numero de telefono debe ser mayor o igual a seis numeros");
                                     }
                                 }
                             }
@@ -196,10 +206,23 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 }
                                 else
                                 {
-                                    agregarDireccion addDireccion = new agregarDireccion();
-                                    addDireccion.execute(id, txtCalle.getText().toString(), txtNumeroCalle.getText().toString());
+                                    if (txtCalle.getText().toString().isEmpty() || txtNumeroCalle.getText().toString().isEmpty())
+                                    {
+                                        if (txtCalle.getText().toString().isEmpty())
+                                        {
+                                            txtCalle.setError("Completa este campo.");
+                                        }
+                                        if(txtNumeroCalle.getText().toString().isEmpty())
+                                        {
+                                            txtNumeroCalle.setError("Completa este campo.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        agregarDireccion addDireccion = new agregarDireccion();
+                                        addDireccion.execute(id, txtCalle.getText().toString(), txtNumeroCalle.getText().toString());
+                                    }
                                 }
-
                             }
                         });
                         btnDir.setOnClickListener(new View.OnClickListener()
@@ -218,7 +241,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         //Nombre
                         dialogoSingular(dialogCrudUsuario, "Nombre");
-
                     }
                     else if (positionElement == 1)
                     {
@@ -244,27 +266,53 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         dialogChangeClave = builderChange.create();
                         dialogChangeClave.show();
 
-                        final EditText txtActualClave = (EditText)p.findViewById(R.id.txtClaveActual_us);
+                        txtActualClave = (EditText)p.findViewById(R.id.txtClaveActual_us);
                         final EditText txtNuevaClave = (EditText)p.findViewById(R.id.txtClaveNueva_us);
                         final EditText txtNuevaClaveRep = (EditText)p.findViewById(R.id.txtClaveNuevaRep_us);
 
                         Button botonCambiarClave = (Button)p.findViewById(R.id.btnCambiarClave);
+                        Button botonCerrarDialogo = (Button)p.findViewById(R.id.btnCancelarClave);
 
                         botonCambiarClave.setOnClickListener(new View.OnClickListener()
                         {
                             @Override
                             public void onClick(View v)
                             {
-                                if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString()))
+                                if (txtActualClave.getText().toString().isEmpty() || txtNuevaClave.getText().toString().isEmpty() || txtNuevaClaveRep.getText().toString().isEmpty())
                                 {
-                                    tipo_registro = "Clave";
-                                    modificarUsuario updateUs = new modificarUsuario();
-                                    updateUs.execute(id, txtNuevaClave.getText().toString(), txtActualClave.getText().toString());
+                                    if (txtActualClave.getText().toString().isEmpty())
+                                    {
+                                        txtActualClave.setError("Completa este campo");
+                                    }
+                                    if (txtNuevaClave.getText().toString().isEmpty())
+                                    {
+                                        txtNuevaClave.setError("Completa este campo");
+                                    }
+                                    if (txtNuevaClaveRep.getText().toString().isEmpty())
+                                    {
+                                        txtNuevaClaveRep.setError("Completa este campo");
+                                    }
                                 }
                                 else
                                 {
-                                    txtNuevaClaveRep.setError("La clave no coincide con la de arriba.");
+                                    if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString()))
+                                    {
+                                        tipo_registro = "Clave";
+                                        modificarUsuario updateUs = new modificarUsuario();
+                                        updateUs.execute(id, txtNuevaClave.getText().toString(), txtActualClave.getText().toString());
+                                    }
+                                    else
+                                    {
+                                        txtNuevaClaveRep.setError("La clave no coincide con la de arriba.");
+                                    }
                                 }
+                            }
+                        });
+                        botonCerrarDialogo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialogChangeClave.cancel();
                             }
                         });
                     }
@@ -332,10 +380,16 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             {
                                 if (swUpdate)
                                 {
-                                    if (textNuevaCalle.getText().toString().isEmpty() && textNuevaCalleNumero.getText().toString().isEmpty())
+                                    if (textNuevaCalle.getText().toString().isEmpty() || textNuevaCalleNumero.getText().toString().isEmpty())
                                     {
-                                        textNuevaCalle.setError("Debes ingresar una calle");
-                                        textNuevaCalleNumero.setError("Debes ingresar una calle");
+                                        if (textNuevaCalle.getText().toString().isEmpty())
+                                        {
+                                            textNuevaCalle.setError("Debes completar este campo.");
+                                        }
+                                        if (textNuevaCalleNumero.getText().toString().isEmpty())
+                                        {
+                                            textNuevaCalleNumero.setError("Debes completar este campo.");
+                                        }
                                     }
                                     else
                                     {
@@ -402,13 +456,21 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             {
                                 if (txtnuevoTel.getText().toString().isEmpty())
                                 {
-                                    txtnuevoTel.setError("Debes ingresar un telefono");
+                                    txtnuevoTel.setError("Debes ingresar un telefono.");
                                 }
                                 else
                                 {
-                                    tipo_registro = "Telefono";
-                                    updateDireccion_or_telefono updateTel = new updateDireccion_or_telefono();
-                                    updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
+                                    if (txtnuevoTel.getText().toString().length() >= 6)
+                                    {
+                                        tipo_registro = "Telefono";
+                                        updateDireccion_or_telefono updateTel = new updateDireccion_or_telefono();
+                                        updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
+                                    }
+                                    else
+                                    {
+                                        txtnuevoTel.setError("El numero de telefono debe ser mayor igual a 6.");
+                                    }
+
                                 }
                             }
                         });
@@ -443,8 +505,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         {
                             telefonos = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
                         }
-
                         Button botonEliminar_t_d = (Button)p.findViewById(R.id.btnEliminar_d_f);
+                        Button botonCerrar = (Button)p.findViewById(R.id.btnCancelar_d_f);
                         final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, telefonos);
                         listView.setAdapter(adapter);
@@ -457,7 +519,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 swDelete = true;
                             }
                         });
-                        botonEliminar_t_d.setOnClickListener(new View.OnClickListener() {
+                        botonEliminar_t_d.setOnClickListener(new View.OnClickListener()
+                        {
                             @Override
                             public void onClick(View v)
                             {
@@ -485,6 +548,13 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 }
                             }
                         });
+                        botonCerrar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialogChangeDelete.cancel();
+                            }
+                        });
 
                     }
                     else if (positionElement == 1)
@@ -498,6 +568,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         dialogChangeDireccionn = builderChange.create();
                         dialogChangeDireccionn.show();
                         Button botonDeleteDireccion = (Button)p.findViewById(R.id.btnEliminar_d_f);
+                        Button botonCerrarDireccion = (Button)p.findViewById(R.id.btnCancelar_d_f);
                         swDelete = false;
 
                         final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
@@ -547,6 +618,12 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 {
                                     Toast.makeText(getContext(), "Selecciona una direccion e elimina", Toast.LENGTH_SHORT).show();
                                 }
+                            }
+                        });
+                        botonCerrarDireccion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialogChangeDireccionn.cancel();
                             }
                         });
                     }
@@ -622,18 +699,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
         EditText etUno = (EditText)p.findViewById(R.id.etVariable);
         etUno.setHint(toHintP);
     }
-    public void dialogoSingular(AlertDialog dialog, String tipo)
+    public void dialogoSingular(final AlertDialog dialog, String tipo)
     {
         AlertDialog.Builder builderUpdate = new AlertDialog.Builder(getContext());
         vUpdate = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_usuario_singular, null);
         builderUpdate.setView(vUpdate);
         dialogUp = builderUpdate.create();
-        dialog.cancel();
 
         if (tipo.equals("Nombre"))
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_nombre_nuevo));
             Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
             txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
             txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
 
@@ -642,9 +719,29 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 @Override
                 public void onClick(View v)
                 {
-                    tipo_registro = "Nombre";
-                    modificarUsuario updateUs = new modificarUsuario();
-                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
+                    {
+                        if (txtVariable.getText().toString().isEmpty())
+                        {
+                            txtVariable.setError("Debes completar este campo");
+                        }
+                        if (txtClaveUser.getText().toString().isEmpty())
+                        {
+                            txtClaveUser.setError("Debes completar este campo");
+                        }
+                    }
+                    else
+                    {
+                        tipo_registro = "Nombre";
+                        modificarUsuario updateUs = new modificarUsuario();
+                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    }
+                }
+            });
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogUp.cancel();
                 }
             });
         }
@@ -652,15 +749,36 @@ public class MisDatos extends Fragment implements View.OnClickListener
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_apellido_nuevo));
             Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
             txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
             txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
             btnModUs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
-                    tipo_registro = "Apellido";
-                    modificarUsuario updateUs = new modificarUsuario();
-                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
+                    {
+                        if (txtVariable.getText().toString().isEmpty())
+                        {
+                            txtVariable.setError("Debes completar este campo");
+                        }
+                        if (txtClaveUser.getText().toString().isEmpty())
+                        {
+                            txtClaveUser.setError("Debes completar este campo");
+                        }
+                    }
+                    else
+                    {
+                        tipo_registro = "Apellido";
+                        modificarUsuario updateUs = new modificarUsuario();
+                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    }
+                }
+            });
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogUp.cancel();
                 }
             });
 
@@ -669,15 +787,36 @@ public class MisDatos extends Fragment implements View.OnClickListener
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_nickname_nuevo));
             Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
             txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
             txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
             btnModUs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
-                    tipo_registro = "Nickname";
-                    modificarUsuario updateUs = new modificarUsuario();
-                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
+                    {
+                        if (txtVariable.getText().toString().isEmpty())
+                        {
+                            txtVariable.setError("Debes completar este campo");
+                        }
+                        if (txtClaveUser.getText().toString().isEmpty())
+                        {
+                            txtClaveUser.setError("Debes completar este campo");
+                        }
+                    }
+                    else
+                    {
+                        tipo_registro = "Nickname";
+                        modificarUsuario updateUs = new modificarUsuario();
+                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    }
+                }
+            });
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogUp.cancel();
                 }
             });
         }
@@ -685,15 +824,36 @@ public class MisDatos extends Fragment implements View.OnClickListener
         {
             manipularTexto(vUpdate, getResources().getString(R.string.tu_correo_nuevo));
             Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
+            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
             txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
             txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
             btnModUs.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
-                    tipo_registro = "Correo";
-                    modificarUsuario updateUs = new modificarUsuario();
-                    updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
+                    {
+                        if (txtVariable.getText().toString().isEmpty())
+                        {
+                            txtVariable.setError("Debes completar este campo");
+                        }
+                        if (txtClaveUser.getText().toString().isEmpty())
+                        {
+                            txtClaveUser.setError("Debes completar este campo");
+                        }
+                    }
+                    else
+                    {
+                        tipo_registro = "Correo";
+                        modificarUsuario updateUs = new modificarUsuario();
+                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                    }
+                }
+            });
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogUp.cancel();
                 }
             });
         }
@@ -933,7 +1093,14 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 {
                     if (jsonResult.getString("Clave").equals("Incorrecto"))
                     {
-                        txtClaveUser.setError("La clave es incorrecta.");
+                        if (tipo_registro.equals("Clave"))
+                        {
+                            txtActualClave.setError("La clave es incorrecta.");
+                        }
+                        else
+                        {
+                            txtClaveUser.setError("La clave es incorrecta.");
+                        }
                     }
                     else if (jsonResult.getString("Clave").equals("Correcto"))
                     {

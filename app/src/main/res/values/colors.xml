@@ -5,8 +5,15 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorNegro">#000000</color>
     <color name="colorCeleste">#2196f3</color>
+    <color name="colorCelesteClaro">#4fb1ff</color>
     <color name="colorVerde">#0fac4b</color>
+    <color name="colorVerdeClaro">#0dd659</color>
     <color name="colorRojo">#bc080b</color>
+    <color name="colorRojoClaro">#f40408</color>
+    <color name="colorAmarillo">#9e9e1a</color>
+    <color name="colorAmarilloClaro">#dada07</color>
     <color name="celesteClaro">#02e1ff</color>
     <color name="textoBlanco">#ffffff</color>
+    <color name="colorPurpura">#9e035d</color>
+    <color name="colorPurpuraClaro">#d2067d</color>
 </resources>
