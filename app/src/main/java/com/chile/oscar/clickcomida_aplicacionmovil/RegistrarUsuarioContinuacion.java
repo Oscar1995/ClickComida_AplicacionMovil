@@ -32,7 +32,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 {
     Validadores mValidar = new Validadores();
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
-    Button btnRegistroFinal;
+    Button btnRegistroFinal, botonVolver;
     TextView txtInformacion;
 
     String getCorreo;
@@ -52,8 +52,9 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         txtTelefono = (EditText)findViewById(R.id.etTelefonoRegistro);
         txtTelefonoOpcional = (EditText)findViewById(R.id.etTelefonoOpcionalRegistro);
 
-        txtInformacion = (TextView)findViewById(R.id.tvInfo);
-        btnRegistroFinal = (Button)findViewById(R.id.btnRegistrarUsuarioFinal);
+        txtInformacion = (TextView)findViewById(R.id.tvInfo_us);
+        botonVolver = (Button)findViewById(R.id.btnVolver_reg_uno);
+        btnRegistroFinal = (Button)findViewById(R.id.btnRegistrar_usuario);
 
         getCorreo = getIntent().getStringExtra("correo_usuario");
         getClave = getIntent().getStringExtra("clave_usuario");
@@ -62,6 +63,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
         txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
 
+        botonVolver.setOnClickListener(this);
         btnRegistroFinal.setOnClickListener(this);
     }
 
@@ -70,7 +72,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     {
         switch (v.getId())
         {
-            case R.id.btnRegistrarUsuarioFinal:
+            case R.id.btnRegistrar_usuario:
 
                 boolean isCorrectPasaje = false;
                 boolean isCorrectNumero = false;
@@ -132,6 +134,12 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                     ConsultarNick x = new ConsultarNick();
                     x.execute(txtNickname.getText().toString());
                 }
+                break;
+
+            case R.id.btnVolver_reg_uno:
+                Intent iBack = new Intent(RegistrarUsuarioContinuacion.this, RegistrarUsuario.class);
+                startActivity(iBack);
+                this.finish();
                 break;
         }
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,40 +9,58 @@
     android:weightSum="1">
 
 
+    <TextView
+        android:id="@+id/textView32"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorCeleste"
+        android:gravity="center"
+        android:text="@string/titulo_registrar"
+        android:textColor="@color/textoBlanco"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/estamos_casi_listo"
+        android:textColor="@color/colorNegro"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tvInfo_us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Hola te pediremos algunos datos
+antes de empezar a usar la aplicación"
+        android:textColor="@color/colorNegro" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
         <TextView
+            android:id="@+id/textView30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/estamos_casi_listo"
-            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Tu dirección"
             android:textColor="@color/colorNegro"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/tvInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="\n\ Hola te pediremos algunos datos
-antes de empezar a usar la aplicación"
-            android:textColor="@color/colorNegro"
-            android:gravity="center"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="\n\ Tu dirección"
-            android:textStyle="bold"
-            android:textColor="@color/colorNegro"
-            android:gravity="center"/>
+            android:textStyle="bold" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <EditText
                 android:id="@+id/etPasajeRegistro"
@@ -57,7 +75,9 @@ antes de empezar a usar la aplicación"
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <EditText
                 android:id="@+id/etNumeroRegistro"
@@ -72,16 +92,20 @@ antes de empezar a usar la aplicación"
         </android.support.design.widget.TextInputLayout>
 
         <TextView
+            android:id="@+id/textView31"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="\n\ Datos personales"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Datos personales"
             android:textColor="@color/colorNegro"
-            android:textStyle="bold"
-            android:gravity="center"/>
+            android:textStyle="bold" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <EditText
                 android:id="@+id/etNicknameRegistro"
@@ -96,7 +120,9 @@ antes de empezar a usar la aplicación"
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <EditText
                 android:id="@+id/etTelefonoRegistro"
@@ -111,7 +137,9 @@ antes de empezar a usar la aplicación"
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <EditText
                 android:id="@+id/etTelefonoOpcionalRegistro"
@@ -124,17 +152,37 @@ antes de empezar a usar la aplicación"
                 android:inputType="phone" />
         </android.support.design.widget.TextInputLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/btnRegistrarUsuarioFinal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorCeleste"
-                android:text="@string/registrar"
-                android:textColor="@color/textoBlanco" />
-        </RelativeLayout>
     </LinearLayout>
-</ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom">
+
+        <Button
+            android:id="@+id/btnVolver_reg_uno"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/colorbuttonred"
+            android:text="@string/titulo_volver" />
+
+        <Button
+            android:id="@+id/btnRegistrar_usuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@color/colorCeleste"
+            android:text="@string/registrar"
+            android:textColor="@color/textoBlanco" />
+
+    </LinearLayout>
+
+</LinearLayout>

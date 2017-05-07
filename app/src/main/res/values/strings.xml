@@ -138,4 +138,10 @@
     <string name="boton_cerrar">Cerrar</string>
     <string name="titulo_modificar_telefono">Selecciona un telefono en la lista para modificar</string>
     <string name="titulo_nuevo_numero">Nuevo numero</string>
+    <string name="Crear_tienda_virtual">Crear tienda virtual</string>
+    <string name="titulo_agregar_imagen">Imagen principal</string>
+    <string name="titulo_agregar_mas_fotos">Agrega fotos del interior de tu tienda, minimo 4 fotos</string>
+    <string name="titulo_registrar">REGISTRATE</string>
+    <string name="titulo_volver">VOLVER</string>
+    <string name="titulo_bienvvenido">BIENVENIDO A CLICK COMIDA</string>
 </resources>

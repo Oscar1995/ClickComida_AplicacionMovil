@@ -19,13 +19,14 @@
         android:weightSum="1">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textView28"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bienvenido a Click Comida"
-            android:textSize="20dp"
-            android:textColor="@color/colorNegro"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:background="@color/colorCeleste"
+            android:textColor="@color/textoBlanco"
+            android:textStyle="bold"
+            android:text="@string/titulo_bienvvenido" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -49,7 +50,8 @@
                 android:ems="10"
                 android:gravity="center"
                 android:hint="@string/texto_correo"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textIsSelectable="false" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout

@@ -46,8 +46,8 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
         txtClaveR = (EditText)findViewById(R.id.etClaveRep);
         txtNombre = (EditText)findViewById(R.id.etNombre);
         txtApellido = (EditText)findViewById(R.id.etApellido);
-        btnContinuar = (Button)findViewById(R.id.btnContinuar);
-        btnAtras = (Button)findViewById(R.id.btnback);
+        btnContinuar = (Button)findViewById(R.id.btnContinuar_r);
+        btnAtras = (Button)findViewById(R.id.btnRegresar_us);
 
         btnContinuar.setOnClickListener(this);
         btnAtras.setOnClickListener(this);
@@ -59,11 +59,11 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
     {
         switch (v.getId())
         {
-            case R.id.btnback:
+            case R.id.btnRegresar_us:
                 this.finish();
                 break;
 
-            case R.id.btnContinuar:
+            case R.id.btnContinuar_r:
                 String claveUsuario = "";
 
                 boolean isCorrectEmail = false;

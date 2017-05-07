@@ -1,20 +1,25 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,7 +35,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     private String mParam2;
 
     Button botonContinuar, botonUAutomatico;
-    ImageButton tImagen_uno, tImagen_dos, tImagen_tres, tImagen_cuatro, tImagen_cinco, tImagen_seis;
+    ImageButton tImagen_principal, tImagen_uno, tImagen_dos, tImagen_tres, tImagen_cuatro, tImagen_cinco, tImagen_seis;
     private OnFragmentInteractionListener mListener;
 
     public fragmentTienda()
@@ -66,8 +71,10 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
-        botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
+        /*botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
         botonUAutomatico = (Button)v.findViewById(R.id.btnUbicacionAutomatica);
+
+        tImagen_principal = (ImageButton)v.findViewById(R.id.imageButtonPrincipal);
         tImagen_uno = (ImageButton)v.findViewById(R.id.ibUno);
         tImagen_dos = (ImageButton)v.findViewById(R.id.ibDos);
         tImagen_tres = (ImageButton)v.findViewById(R.id.ibTres);
@@ -75,6 +82,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         tImagen_cinco = (ImageButton)v.findViewById(R.id.ibCinco);
         tImagen_seis = (ImageButton)v.findViewById(R.id.ibSeis);
 
+        tImagen_principal.setOnClickListener(this);
         tImagen_uno.setOnClickListener(this);
         tImagen_dos.setOnClickListener(this);
         tImagen_tres.setOnClickListener(this);
@@ -100,7 +108,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             {
 
             }
-        });
+        });*/
         return v;
 
     }
@@ -132,8 +140,11 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v)
     {
-        switch (v.getId())
+        /*switch (v.getId())
         {
+            case R.id.imageButtonPrincipal:
+                break;
+
             case R.id.ibUno:
                 posicion = 1;
                 dispatchTakePictureIntent();
@@ -163,19 +174,66 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 posicion = 6;
                 dispatchTakePictureIntent();
                 break;
-        }
+        }*/
     }
     int posicion = 0;
-    public interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener
+    {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    private void dispatchTakePictureIntent()
+    /*private void dispatchTakePictureIntent()
     {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null)
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
         {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null)
+            {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+            Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA))
+            {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+                Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
+                // Mostrar diálogo explicativo
+            }
+            else
+            {
+                // Solicitar permiso
+                Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
+                //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+            }
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case 1:
+                {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Toast.makeText(getContext(), "Permitido", Toast.LENGTH_SHORT).show();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Denegado", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -209,5 +267,5 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 tImagen_seis.setImageBitmap(imageBitmap);
             }
         }
-    }
+    }*/
 }
