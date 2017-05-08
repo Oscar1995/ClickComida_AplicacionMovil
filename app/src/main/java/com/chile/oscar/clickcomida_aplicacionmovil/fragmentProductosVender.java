@@ -73,30 +73,41 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
     public void onClick(View v)
     {
         switch (v.getId()) {
+            //Agregar productos
             case R.id.btnAgregarProd:
-                if (validarCampos(txtProducto, txtDescripcion, txtPrecio)) {
-                    if (nombreProd.contains(txtProducto.getText().toString())) {
+                if (validarCampos(txtProducto, txtDescripcion, txtPrecio))
+                {
+                    if (nombreProd.contains(txtProducto.getText().toString()))
+                    {
                         Toast.makeText(getContext(), "El nombre ya existe, elige otro.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        nombreProd.add(txtProducto.getText().toString());
-                        desProd.add(txtDescripcion.getText().toString());
-                        precioProd.add(txtPrecio.getText().toString());
-                        mostrarProd = new String[nombreProd.size()];
+                    }
+                    else
+                    {
+                        nombreProd.add(txtProducto.getText().toString().trim());
+                        desProd.add(txtDescripcion.getText().toString().trim());
+                        precioProd.add(txtPrecio.getText().toString().trim());
 
-                        for (int i = 0; i < nombreProd.size(); i++) {
+                        mostrarProd = new String[nombreProd.size()];
+                        for (int i = 0; i < nombreProd.size(); i++)
+                        {
                             mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
                         }
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
                         listaProductos.setAdapter(arrayAdapter);
+
+                        txtProducto.setText("");
+                        txtDescripcion.setText("");
+                        txtPrecio.setText("");
+
+                        Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
 
             //Modificar productos
             case R.id.btnModProd:
-                if (productoEncontrado) {
-                    final String dato = listaProductos.getItemAtPosition(posicionProducto).toString();
-
+                if (productoEncontrado)
+                {
                     AlertDialog.Builder builderModificar = new AlertDialog.Builder(getContext());
                     View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_productos_ventana, null);
                     builderModificar.setView(p);
@@ -113,26 +124,30 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     textDesProd.setText(desProd.get(posicionProducto));
                     textPreProd.setText(precioProd.get(posicionProducto));
 
-                    botonModProd.setOnClickListener(new View.OnClickListener() {
+                    botonModProd.setOnClickListener(new View.OnClickListener()
+                    {
                         @Override
-                        public void onClick(View v) {
-                            if (validarCampos(textNombreProd, textDesProd, textPreProd)) {
-                                if (nombreProd.contains(textNombreProd.getText().toString())) {
-                                    Toast.makeText(getContext(), "El producto ya exite con el nombre " + textNombreProd.getText().toString() + ". Elige otro nombre.", Toast.LENGTH_LONG).show();
-                                } else {
-                                    nombreProd.set(posicionProducto, textNombreProd.getText().toString());
-                                    desProd.set(posicionProducto, textDesProd.getText().toString());
-                                    precioProd.set(posicionProducto, textPreProd.getText().toString());
-
-                                    mostrarProd = new String[nombreProd.size()];
-                                    for (int i = 0; i < nombreProd.size(); i++) {
-                                        mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
-                                    }
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
-                                    listaProductos.setAdapter(arrayAdapter);
+                        public void onClick(View v)
+                        {
+                            if (validarCampos(textNombreProd, textDesProd, textPreProd))
+                            {
+                                int posicionActual = nombreProd.indexOf(textNombreProd.getText().toString());
+                                if (posicionActual == posicionProducto || posicionActual == -1)
+                                {
+                                    nombreProd.set(posicionProducto, textNombreProd.getText().toString().trim());
+                                    desProd.set(posicionProducto, textDesProd.getText().toString().trim());
+                                    precioProd.set(posicionProducto, textPreProd.getText().toString().trim());
+                                    cargarProductos();
                                     dialogMod.cancel();
                                     Toast.makeText(getContext(), "Producto modificado", Toast.LENGTH_SHORT).show();
+                                    productoEncontrado = false;
                                 }
+                                else
+                                {
+                                    String other_item = nombreProd.get(posicionActual);
+                                    Toast.makeText(getContext(), "El nombre " + other_item + " ya existe.", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         }
                     });
@@ -154,14 +169,9 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     nombreProd.remove(posicionProducto);
                     desProd.remove(posicionProducto);
                     precioProd.remove(posicionProducto);
-
-                    mostrarProd = new String[nombreProd.size()];
-                    for (int i = 0; i < nombreProd.size(); i++) {
-                        mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
-                    }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
-                    listaProductos.setAdapter(arrayAdapter);
+                    cargarProductos();
                     Toast.makeText(getContext(), "Producto eliminado", Toast.LENGTH_SHORT).show();
+                    productoEncontrado = false;
                 }
                 else
                 {
@@ -250,5 +260,14 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 dialogChangeDireccionTelefono.cancel();
             }
         });
+    }
+    public void cargarProductos()
+    {
+        mostrarProd = new String[nombreProd.size()];
+        for (int i = 0; i < nombreProd.size(); i++) {
+            mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
+        }
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
+        listaProductos.setAdapter(arrayAdapter);
     }
 }
