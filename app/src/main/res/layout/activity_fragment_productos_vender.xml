@@ -1,169 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.fragmentProductosVender">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
+            android:background="@color/colorCeleste"
             android:gravity="center"
             android:text="@string/titulo_productos_crear"
-            android:textColor="@color/colorNegro"
+            android:textColor="@color/textoBlanco"
             android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/lvProd"
+            android:layout_width="match_parent"
+            android:layout_height="259dp"
+            android:listSelector="@drawable/colorbuttonceleste"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="250dp"
-        android:layout_marginTop="33dp"
-        android:orientation="horizontal">
+        android:gravity="bottom"
+        android:orientation="vertical">
 
-        <ExpandableListView
-            android:id="@+id/elProductos"
+        <TextView
+            android:id="@+id/textView4"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="260dp">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/titulo_gestionar_producto"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView4"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/colorNegro"
-                android:textStyle="bold"
-                android:text="@string/titulo_gestionar_producto" />
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/etNombreProducto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/nombre_producto"
+                    android:inputType="textPersonName" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="60dp"
-            android:layout_marginRight="170dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+                <EditText
+                    android:id="@+id/etDescripcionProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/des_producto"
+                    android:inputType="text" />
 
-            <EditText
-                android:id="@+id/edNombreProducto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="@string/nombre_producto"
-                android:inputType="textPersonName" />
+                <EditText
+                    android:id="@+id/etPrecioProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:hint="@string/precio_venta"
+                    android:inputType="number" />
 
-            <EditText
-                android:id="@+id/editText3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="@string/des_producto"
-                android:inputType="textPersonName" />
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="@string/precio_venta"
-                android:inputType="textPersonName" />
-
-            <EditText
-                android:id="@+id/editText5"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="@string/categoria_producto"
-                android:inputType="textPersonName" />
+                android:layout_marginRight="10dp"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/imageButton4"
+                    android:layout_width="match_parent"
+                    android:layout_height="134dp"
+                    app:srcCompat="@drawable/ic_menu_camera" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="60dp"
-            android:layout_marginLeft="215dp"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            android:weightSum="1">
-
-            <ImageButton
-                android:id="@+id/imageButton8"
-                android:layout_width="118dp"
-                android:layout_height="116dp"
-                android:layout_marginTop="25dp"
-                app:srcCompat="@drawable/ic_menu_gallery" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="195dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnAgregarProducto"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnAgregarProd"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/agregar_producto"
-                android:textSize="12sp" />
+                android:background="@drawable/colorbutton"
+                android:text="@string/agregar_producto" />
 
             <Button
-                android:id="@+id/btnModificarProducto"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnModProd"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/modificar_producto"
-                android:textSize="12sp" />
+                android:background="@drawable/colorbuttonamarillo"
+                android:text="@string/modificar_producto" />
 
             <Button
-                android:id="@+id/btnEliminarProducto"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnEliminarProd"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/eliminar_producto"
-                android:textSize="12sp" />
+                android:background="@drawable/colorbuttonred"
+                android:text="@string/eliminar_producto" />
 
             <Button
-                android:id="@+id/btnContinuarTres"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnContinuar_prod"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/continuar"
-                android:textSize="12sp" />
+                android:background="@drawable/colorbuttonceleste"
+                android:text="@string/continuar" />
         </LinearLayout>
-    </RelativeLayout>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

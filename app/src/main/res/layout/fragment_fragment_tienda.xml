@@ -34,7 +34,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageButton"
+                    android:id="@+id/ibImagenPrincipal"
                     android:layout_width="130dp"
                     android:layout_height="132dp"
                     android:layout_marginLeft="15dp"

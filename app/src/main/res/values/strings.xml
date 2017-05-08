@@ -39,17 +39,17 @@
     <string name="horario_hasta">Pincha Aqui para fijar hora fin</string>
     <string name="boton_siguiente">Siguiente</string>
     <string name="horario_titulo">\nHorario de atención</string>
-    <string name="horario_descripcion">Selecciona CONTINUADO para fijar una hora de inicio y cierre. De lo contrario selecciona MAÑANA para fijar una un horario INICIO-FIN para la mañana y otra para la tarde.</string>
+    <string name="horario_descripcion">¿Tu tienda trabaja en horario continuado o mañana y tarde?</string>
     <string name="tomorrow">Mañana</string>
     <string name="tarde">Tarde</string>
-    <string name="titulo_productos_crear">\nProductos que vas a vender</string>
+    <string name="titulo_productos_crear">Productos que vas a vender</string>
     <string name="nombre_producto">Nombre del producto</string>
     <string name="des_producto">Descripción</string>
     <string name="precio_venta">Precio</string>
     <string name="agregar_producto">Agregar</string>
     <string name="modificar_producto">Modificar</string>
     <string name="eliminar_producto">Eliminar</string>
-    <string name="titulo_gestionar_producto">Gestiona los productos</string>
+    <string name="titulo_gestionar_producto">Gestiona tus productos</string>
     <string name="categoria_producto">Categoria</string>
     <string name="facebook_app_id">1583720611646445</string>
     <string name="mis_datos">Mis datos personales</string>
@@ -144,4 +144,10 @@
     <string name="titulo_registrar">REGISTRATE</string>
     <string name="titulo_volver">VOLVER</string>
     <string name="titulo_bienvvenido">BIENVENIDO A CLICK COMIDA</string>
+    <string name="titulo_horario_atencion">Horario de atención</string>
+    <string name="titulo_describe_tu_producto">DESCRIBE TU PRODUCTO QUE VAS A VENDER</string>
+    <string name="titulo_borrar_descripcion">BORRAR</string>
+    <string name="titulo_descripcion">Descripción</string>
+    <string name="titulo_guardar">GUARDAR</string>
+    <string name="titulo_modificar">MODIFICAR</string>
 </resources>

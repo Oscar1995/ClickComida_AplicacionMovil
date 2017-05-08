@@ -71,10 +71,9 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
-        /*botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
-        botonUAutomatico = (Button)v.findViewById(R.id.btnUbicacionAutomatica);
+        botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
 
-        tImagen_principal = (ImageButton)v.findViewById(R.id.imageButtonPrincipal);
+        tImagen_principal = (ImageButton)v.findViewById(R.id.ibImagenPrincipal);
         tImagen_uno = (ImageButton)v.findViewById(R.id.ibUno);
         tImagen_dos = (ImageButton)v.findViewById(R.id.ibDos);
         tImagen_tres = (ImageButton)v.findViewById(R.id.ibTres);
@@ -102,13 +101,6 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
 
             }
         });
-        botonUAutomatico.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-
-            }
-        });*/
         return v;
 
     }

@@ -41,11 +41,7 @@ public class fragmentTiendaDos extends Fragment
         final TextView textViewHoraDos = (TextView)view.findViewById(R.id.tvDosHora);
         final TextView textViewHoraTres = (TextView)view.findViewById(R.id.tvTresHora);
         final TextView textViewHoraCuatro = (TextView)view.findViewById(R.id.tvCuatroHora);
-        final RelativeLayout rUno = (RelativeLayout)view.findViewById(R.id.rlUno);
-        final RelativeLayout rDos = (RelativeLayout)view.findViewById(R.id.relative_Dos);
         Button botonSiguiente = (Button)view.findViewById(R.id.btnContinuarDos);
-
-        OcultarRelative(rUno, rDos);
 
         radioContinuado.setOnClickListener(new View.OnClickListener()
         {
@@ -56,9 +52,6 @@ public class fragmentTiendaDos extends Fragment
                 {
                     radioTomorrow.setChecked(false);
                 }
-                rUno.setVisibility(View.VISIBLE);
-                rDos.setVisibility(View.GONE);
-
                 textViewUno.setText(getResources().getString(R.string.horario_continuado));
             }
         });
@@ -71,8 +64,6 @@ public class fragmentTiendaDos extends Fragment
                 {
                     radioContinuado.setChecked(false);
                 }
-                rUno.setVisibility(View.VISIBLE);
-                rDos.setVisibility(View.VISIBLE);
 
                 textViewUno.setText(getResources().getString(R.string.tomorrow));
                 textViewDos.setText(getResources().getString(R.string.tarde));
@@ -121,11 +112,7 @@ public class fragmentTiendaDos extends Fragment
 
         return view;
     }
-    private void OcultarRelative(RelativeLayout rUno, RelativeLayout rDos)
-    {
-        rUno.setVisibility(View.GONE);
-        rDos.setVisibility(View.GONE);
-    }
+
     private void LlamarHora(final TextView texViewHora, final TextView textDos)
     {
         TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener()
