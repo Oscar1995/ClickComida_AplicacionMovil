@@ -132,7 +132,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v)
     {
-        /*switch (v.getId())
+        switch (v.getId())
         {
             case R.id.imageButtonPrincipal:
                 break;
@@ -166,7 +166,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 posicion = 6;
                 dispatchTakePictureIntent();
                 break;
-        }*/
+        }
     }
     int posicion = 0;
     public interface OnFragmentInteractionListener
@@ -174,7 +174,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    /*private void dispatchTakePictureIntent()
+    private void dispatchTakePictureIntent()
     {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
         {
@@ -183,49 +183,19 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
-            Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
         }
         else
         {
             if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA))
             {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
                 // Mostrar diálogo explicativo
             }
             else
             {
                 // Solicitar permiso
-                Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
                 //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
             }
-        }
-    }
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
-    {
-        switch (requestCode)
-        {
-            case 1:
-                {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    Toast.makeText(getContext(), "Permitido", Toast.LENGTH_SHORT).show();
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "Denegado", Toast.LENGTH_SHORT).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -259,5 +229,5 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 tImagen_seis.setImageBitmap(imageBitmap);
             }
         }
-    }*/
+    }
 }

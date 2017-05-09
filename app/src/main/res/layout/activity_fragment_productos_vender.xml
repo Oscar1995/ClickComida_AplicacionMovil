@@ -27,7 +27,7 @@
         <ListView
             android:id="@+id/lvProd"
             android:layout_width="match_parent"
-            android:layout_height="259dp"
+            android:layout_height="446dp"
             android:listSelector="@drawable/colorbuttonceleste"/>
 
     </LinearLayout>
@@ -37,72 +37,6 @@
         android:layout_height="match_parent"
         android:gravity="bottom"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/titulo_gestionar_producto"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:orientation="vertical">
-
-                <EditText
-                    android:id="@+id/etNombreProducto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:gravity="center"
-                    android:hint="@string/nombre_producto"
-                    android:inputType="textPersonName" />
-
-                <EditText
-                    android:id="@+id/etDescripcionProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:gravity="center"
-                    android:hint="@string/des_producto"
-                    android:inputType="text" />
-
-                <EditText
-                    android:id="@+id/etPrecioProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:hint="@string/precio_venta"
-                    android:inputType="number" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/imageButton4"
-                    android:layout_width="match_parent"
-                    android:layout_height="134dp"
-                    app:srcCompat="@drawable/ic_menu_camera" />
-            </LinearLayout>
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
