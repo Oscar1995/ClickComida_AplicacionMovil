@@ -205,11 +205,22 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
+                    String json = "";
+                    JSONObject jsonObject = new JSONObject();
+                    try
+                    {
+                        jsonObject.put("correo", correo);
+                        json = jsonObject.toString();
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
                     String post_data = null;
-                    //post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8")+"&" +URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(clave,"UTF-8");
                     if (direccion.equals(getResources().getString(R.string.direccion_web) + "/Controlador/consultar_correo.php"))
                     {
-                        post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(correo,"UTF-8");
+                        post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     }
 
                     bufferedWriter.write(post_data);

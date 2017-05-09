@@ -195,6 +195,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
+
+
             String result = "";
             try
             {
@@ -206,14 +208,25 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
 
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
-                    String post_data= URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8")+"&" +URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+                    String json = "";
+                    JSONObject jsonObject = new JSONObject();
+                    try
+                    {
+                        jsonObject.put("correo", params[0]);
+                        jsonObject.put("clave", params[1]);
+                        json = jsonObject.toString();
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
 
-                    bufferedWriter.write(post_data);
+                    String post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
+
+                    /*bufferedWriter.write(post_data);
                     bufferedWriter.flush();
-                    bufferedWriter.close();
+                    bufferedWriter.close();*/
 
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
