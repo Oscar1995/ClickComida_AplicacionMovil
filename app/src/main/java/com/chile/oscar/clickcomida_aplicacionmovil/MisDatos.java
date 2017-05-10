@@ -878,7 +878,19 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
-                    String post_data= URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
+                    String json = "";
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("id", params[0]);
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    json = object.toString();
+
+                    String post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
@@ -930,7 +942,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
                     if (jsonResult.getString("telefonoDos").equals("false"))
                     {
-                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + "Vacio");
+                        eTel2.setText("");
                         tel2 = false;
                         vTelefonos = new String[1];
                         vTelefonos[0] = telefonoRestanteUno;
@@ -978,15 +990,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             dTres = true;
                         }
                     }
-                    if (dUno == true && dDos == false && dTres == false)
+                    if (dDos == false)
                     {
-                        calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + "Vacio");
-                        numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + "Vacio");
+                        calleDos.setText("");
+                        numCalleDos.setText("");
                     }
-                    else if (dUno == true && dDos == true && dTres == false)
+                    if (dTres == false)
                     {
-                        calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + "Vacio");
-                        numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + "Vacio");
+                        calleTres.setText("");
+                        numCalleTres.setText("");
                     }
                     progress.cancel();
 
@@ -1025,36 +1037,84 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
+                    String json = "";
+                    JSONObject object = new JSONObject();
+
                     String post_data = "";
                     if (tipo_registro.equals("Nombre"))
                     {
-                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("nombre_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("id", params[0]);
+                            object.put("nombre_us", params[1]);
+                            object.put("clave_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
                     }
                     else if(tipo_registro.equals("Apellido"))
                     {
-                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("apellido_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("id", params[0]);
+                            object.put("apellido_us", params[1]);
+                            object.put("clave_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
                     }
                     else if (tipo_registro.equals("Nickname"))
                     {
-                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("nickname_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("id", params[0]);
+                            object.put("nickname_us", params[1]);
+                            object.put("clave_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
                     }
                     else if (tipo_registro.equals("Clave"))
                     {
-                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_nueva_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("id", params[0]);
+                            object.put("clave_nueva_us", params[1]);
+                            object.put("clave_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
                     }
                     else if (tipo_registro.equals("Correo"))
                     {
-                        post_data = URLEncoder.encode("id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("correo_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("clave_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("id", params[0]);
+                            object.put("correo_us", params[1]);
+                            object.put("clave_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
                     }
 
                     bufferedWriter.write(post_data);
@@ -1187,13 +1247,24 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
+                    String json = "";
+                    JSONObject object = new JSONObject();
                     String post_data = "";
                     if (tipo_registro.equals("Direccion"))
                     {
-                        post_data = URLEncoder.encode("calle_antigua","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("calle_num_antigua","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("calle_nueva","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8") + "&" +
-                                URLEncoder.encode("calle_num_nueva","UTF-8")+"="+URLEncoder.encode(params[3],"UTF-8");
+                        try
+                        {
+                            object.put("calle_antigua", params[0]);
+                            object.put("calle_num_antigua", params[1]);
+                            object.put("calle_nueva", params[2]);
+                            object.put("calle_num_nueva", params[3]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     }
                     else if (tipo_registro.equals("Telefono"))
                     {
@@ -1292,17 +1363,37 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
+                    String json = "";
                     String post_data = "";
+                    JSONObject object = new JSONObject();
                     if (tipo_delete.equals("Telefono"))
                     {
-                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("telefono_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+                        try
+                        {
+                            object.put("user_id", params[0]);
+                            object.put("telefono_us", params[1]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     }
                     else if (tipo_delete.equals("Direccion"))
                     {
-                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("calle_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("callenum_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                        try
+                        {
+                            object.put("user_id", params[0]);
+                            object.put("calle_us", params[1]);
+                            object.put("callenum_us", params[2]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     }
 
                     bufferedWriter.write(post_data);
@@ -1392,13 +1483,23 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
+                    String json = "";
+                    JSONObject object = new JSONObject();
                     String post_data = "";
                     if (tipo_add.equals("Telefono"))
                     {
-                        post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("telefono_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8");
+                        try
+                        {
+                            object.put("user_id", params[0]);
+                            object.put("telefono_us", params[1]);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = object.toString();
+                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     }
-
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
                     bufferedWriter.close();
@@ -1474,9 +1575,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
-                    String post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                            URLEncoder.encode("calle_us","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                            URLEncoder.encode("numero_calle_us","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
+                    String json = "";
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("user_id", params[0]);
+                        object.put("calle_us", params[1]);
+                        object.put("numero_calle_us", params[2]);
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    json = object.toString();
+                    String post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
 
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();

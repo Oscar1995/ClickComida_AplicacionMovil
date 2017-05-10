@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
 
     Button botonContinuar, botonUAutomatico;
     ImageButton tImagen_principal, tImagen_uno, tImagen_dos, tImagen_tres, tImagen_cuatro, tImagen_cinco, tImagen_seis;
+    EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda;
     private OnFragmentInteractionListener mListener;
 
     public fragmentTienda()
@@ -81,6 +83,10 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         tImagen_cinco = (ImageButton)v.findViewById(R.id.ibCinco);
         tImagen_seis = (ImageButton)v.findViewById(R.id.ibSeis);
 
+        txtNombreTienda = (EditText)v.findViewById(R.id.etNombreTienda);
+        txtCalleTienda = (EditText)v.findViewById(R.id.etCalle);
+        txtNumeroTienda = (EditText)v.findViewById(R.id.etNumero);
+
         tImagen_principal.setOnClickListener(this);
         tImagen_uno.setOnClickListener(this);
         tImagen_dos.setOnClickListener(this);
@@ -89,16 +95,24 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         tImagen_cinco.setOnClickListener(this);
         tImagen_seis.setOnClickListener(this);
 
-        botonContinuar.setOnClickListener(new View.OnClickListener() {
+        botonContinuar.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view)
             {
+                //Guardar los datos en bundle
+                fragmentTienda fragment = new fragmentTienda();
+                Bundle args = new Bundle();
+                args.putString("nombre_tienda", txtNombreTienda.getText().toString());
+                args.putString("calle_tienda", txtCalleTienda.getText().toString());
+                args.putString("numero_tienda", txtNumeroTienda.getText().toString());
+                fragment.setArguments(args);
+
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, new fragmentTiendaDos());
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
-
             }
         });
         return v;
@@ -113,11 +127,14 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Context context)
+    {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+        if (context instanceof OnFragmentInteractionListener)
+        {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
+        } else
+        {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }

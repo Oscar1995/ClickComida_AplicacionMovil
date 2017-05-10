@@ -260,6 +260,7 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
                 if (!res.equals("0"))
                 {
                     txtCorreo.setError("Este correo ya se encuentra en uso.");
+                    Toast.makeText(getApplicationContext(), "Este correo ya esta en uso", Toast.LENGTH_LONG).show();
                 }
                 else
                 {

@@ -208,6 +208,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
 
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
                     String json = "";
                     JSONObject jsonObject = new JSONObject();
@@ -224,9 +226,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
                     String post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
 
-                    /*bufferedWriter.write(post_data);
+                    bufferedWriter.write(post_data);
                     bufferedWriter.flush();
-                    bufferedWriter.close();*/
+                    bufferedWriter.close();
 
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));

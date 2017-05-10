@@ -162,8 +162,19 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
-                    String post_data = null;
-                    post_data= URLEncoder.encode("nickname","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
+                    String json = "";
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("nickname", params[0]);
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    json = object.toString();
+
+                    String post_data= URLEncoder.encode("data_json","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
                     bufferedWriter.write(post_data);
                     bufferedWriter.flush();
                     bufferedWriter.close();
@@ -211,7 +222,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 }
                 else
                 {
-                    txtNickname.setError("Este nickname ya esta en uso.");
+                    txtNickname.setError("Este nickname ya esta en uso");
+                    Toast.makeText(getApplicationContext(), "Este nickname ya esta en uso", Toast.LENGTH_LONG).show();
                 }
             }
             catch (JSONException e)
