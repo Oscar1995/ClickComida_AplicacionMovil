@@ -27,16 +27,10 @@
         <ListView
             android:id="@+id/lvProd"
             android:layout_width="match_parent"
-            android:layout_height="177dp"
+            android:layout_height="444dp"
             android:listSelector="@drawable/colorbuttonceleste"/>
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/ivPrueba"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/com_facebook_close" />
 
     <LinearLayout
         android:layout_width="match_parent"

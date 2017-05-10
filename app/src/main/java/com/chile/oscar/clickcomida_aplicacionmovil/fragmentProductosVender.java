@@ -67,7 +67,6 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
 
     Button btnAgregar, btnModificar, btnEliminar, btnContinuar;
     ListView listaProductos;
-    ImageView imagenPrueba;
 
     List<String> nombreProd = new ArrayList<>();
     List<String> desProd = new ArrayList<>();
@@ -91,7 +90,6 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         btnEliminar = (Button)p.findViewById(R.id.btnEliminarProd);
         btnContinuar = (Button)p.findViewById(R.id.btnContinuar_prod);
         listaProductos = (ListView)p.findViewById(R.id.lvProd);
-        imagenPrueba = (ImageView)p.findViewById(R.id.ivPrueba);
 
         btnAgregar.setOnClickListener(this);
         btnModificar.setOnClickListener(this);
@@ -106,6 +104,10 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 productoEncontrado = true;
             }
         });
+
+        Bundle bundle = getArguments();
+        String imagenuno_tienda = bundle.getString("imagen_general");
+        Toast.makeText(getContext(), imagenuno_tienda, Toast.LENGTH_SHORT).show();
 
         return p;
     }
@@ -387,12 +389,8 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             botonImagen.setImageBitmap(imageBitmap);
-
-
             String imagenCodificada = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
             Bitmap imagenDecodificada = Codificacion.decodeBase64(imagenCodificada);
-
-            imagenPrueba.setImageBitmap(imagenDecodificada);
         }
     }
 
