@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -131,8 +132,18 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
                 if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
                 {
-                    ConsultarNick x = new ConsultarNick();
-                    x.execute(txtNickname.getText().toString());
+                    String json = "";
+                    JSONObject jsonObject = new JSONObject();
+                    try
+                    {
+                        jsonObject.put("nickname", txtNickname.getText().toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    json = jsonObject.toString();
+                    new ConsultarNick().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
                 }
                 break;
 
@@ -147,59 +158,59 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
     {
 
         @Override
-        protected String doInBackground(String... params) {
-            String result = "";
+        protected String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/consultar_nickname.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
                     try
                     {
-                        object.put("nickname", params[0]);
+                        conn.disconnect();
                     }
-                    catch (JSONException e)
+                    catch (Exception ex)
                     {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
-                    json = object.toString();
-
-                    String post_data= URLEncoder.encode("data_json","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
                 }
             }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
+            return null;
         }
 
         @Override
@@ -210,14 +221,51 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 JSONObject bringNick = new JSONObject(s);
                 if (bringNick.getString("Resultado").equals("0"))
                 {
-                    RegistrarUsuarioApp regUs = new RegistrarUsuarioApp();
                     if(txtTelefonoOpcional.getText().toString().isEmpty())
                     {
-                        regUs.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), "0");
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("nombre", getNombre);
+                            jsonObject.put("apellido", getApellido);
+                            jsonObject.put("nickname", txtNickname.getText().toString());
+                            jsonObject.put("correo", getCorreo);
+                            jsonObject.put("clave", getClave);
+                            jsonObject.put("calle", txtPasaje.getText().toString());
+                            jsonObject.put("numerocalle", txtNumeroPasaje.getText().toString());
+                            jsonObject.put("numero_telefono", txtTelefono.getText().toString());
+                            jsonObject.put("numero_telefono_opcional", "0");
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new RegistrarUsuarioApp().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_usuario.php", json);
                     }
                     else
                     {
-                        regUs.execute(getNombre, getApellido, txtNickname.getText().toString(), getCorreo, getClave, txtPasaje.getText().toString(), txtNumeroPasaje.getText().toString(), txtTelefono.getText().toString(), txtTelefonoOpcional.getText().toString());
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("nombre", getNombre);
+                            jsonObject.put("apellido", getApellido);
+                            jsonObject.put("nickname", txtNickname.getText().toString());
+                            jsonObject.put("correo", getCorreo);
+                            jsonObject.put("clave", getClave);
+                            jsonObject.put("calle", txtPasaje.getText().toString());
+                            jsonObject.put("numerocalle", txtNumeroPasaje.getText().toString());
+                            jsonObject.put("numero_telefono", txtTelefono.getText().toString());
+                            jsonObject.put("numero_telefono_opcional", txtTelefonoOpcional.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new RegistrarUsuarioApp().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_usuario.php", json);
                     }
                 }
                 else
@@ -237,55 +285,57 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/insertar_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String post_data = null;
-                    post_data= URLEncoder.encode("nombre","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8")+"&"+
-                            URLEncoder.encode("apellido","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8")+"&"+
-                            URLEncoder.encode("nickname","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8")+"&"+
-                            URLEncoder.encode("correo","UTF-8")+"="+URLEncoder.encode(params[3],"UTF-8")+"&"+
-                            URLEncoder.encode("clave","UTF-8")+"="+URLEncoder.encode(params[4],"UTF-8")+"&"+
-                            URLEncoder.encode("calle","UTF-8")+"="+URLEncoder.encode(params[5],"UTF-8")+"&"+
-                            URLEncoder.encode("numerocalle","UTF-8")+"="+URLEncoder.encode(params[6],"UTF-8")+"&"+
-                            URLEncoder.encode("numero_telefono","UTF-8")+"="+URLEncoder.encode(params[7],"UTF-8")+"&"+
-                            URLEncoder.encode("numero_telefono_opcional","UTF-8")+"="+URLEncoder.encode(params[8],"UTF-8");
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
 
         @Override

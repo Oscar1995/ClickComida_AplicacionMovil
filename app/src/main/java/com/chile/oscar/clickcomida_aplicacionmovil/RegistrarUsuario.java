@@ -7,15 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BackGroundWorker;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -171,8 +170,18 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-                    WebService wServ= new WebService();
-                    wServ.execute("consultar_correo", txtCorreo.getText().toString());
+                    String json = "";
+                    JSONObject jsonObject = new JSONObject();
+                    try
+                    {
+                        jsonObject.put("correo", txtCorreo.getText().toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    json = jsonObject.toString();
+                    new WebService().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_correo.php", json);
                 }
 
                 break;
@@ -183,71 +192,57 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
         @Override
         public String doInBackground(String... params)
         {
-            String direccion = "";
-            String tipo = params[0];
-            String correo = "";
-            String result = "";
-            if (tipo.equals("consultar_correo"))
-            {
-                direccion = getResources().getString(R.string.direccion_web) + "/Controlador/consultar_correo.php";
-                correo = params[1];
-            }
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(direccion);
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject jsonObject = new JSONObject();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
                     try
                     {
-                        jsonObject.put("correo", correo);
-                        json = jsonObject.toString();
+                        conn.disconnect();
                     }
-                    catch (JSONException e)
+                    catch (Exception ex)
                     {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
-
-                    String post_data = null;
-                    if (direccion.equals(getResources().getString(R.string.direccion_web) + "/Controlador/consultar_correo.php"))
-                    {
-                        post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    }
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
                 }
             }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
+            return null;
         }
 
         @Override

@@ -29,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -79,16 +80,35 @@ public class MisDatos extends Fragment implements View.OnClickListener
         Bundle bundle = getArguments();
         id = bundle.getString("IdUser");
 
-
-        TraerDatos obj = new TraerDatos();
-        obj.execute(id);
+        String json = "";
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", id);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        json = jsonObject.toString();
+        new TraerDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", json);
 
         return view;
     }
     public void cargar()
     {
-        TraerDatos obj = new TraerDatos();
-        obj.execute(id);
+        String json = "";
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", id);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        json = jsonObject.toString();
+        new TraerDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", json);
     }
 
     @Override
@@ -164,8 +184,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                             tipo_add = "Telefono";
                                             String tel = textoTel.getText().toString();
                                             telefono = tel;
-                                            agregarDatos addData = new agregarDatos();
-                                            addData.execute(id, tel);
+
+                                            String json = "";
+                                            JSONObject jsonObject = new JSONObject();
+                                            try
+                                            {
+                                                jsonObject.put("id", id);
+                                                jsonObject.put("telefono", tel);
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                            json = jsonObject.toString();
+                                            new agregarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", json);
                                         }
                                     }
                                     else
@@ -219,8 +251,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     }
                                     else
                                     {
-                                        agregarDireccion addDireccion = new agregarDireccion();
-                                        addDireccion.execute(id, txtCalle.getText().toString(), txtNumeroCalle.getText().toString());
+                                        String json = "";
+                                        JSONObject jsonObject = new JSONObject();
+                                        try
+                                        {
+                                            jsonObject.put("id", id);
+                                            jsonObject.put("callenueva", txtCalle.getText().toString());
+                                            jsonObject.put("numeronuevo", txtNumeroCalle.getText().toString());
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        json = jsonObject.toString();
+                                        new agregarDireccion().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", json);
                                     }
                                 }
                             }
@@ -394,8 +438,21 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     else
                                     {
                                         tipo_registro = "Direccion";
-                                        updateDireccion_or_telefono modificarDir = new updateDireccion_or_telefono();
-                                        modificarDir.execute(calleAntigua, calleNumAntigua, textNuevaCalle.getText().toString(), textNuevaCalleNumero.getText().toString());
+                                        String json = "";
+                                        JSONObject jsonObject = new JSONObject();
+                                        try
+                                        {
+                                            jsonObject.put("cant", calleAntigua);
+                                            jsonObject.put("nant", calleNumAntigua);
+                                            jsonObject.put("cnueva", textNuevaCalle.getText().toString());
+                                            jsonObject.put("nnueva", textNuevaCalleNumero.getText().toString());
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        json = jsonObject.toString();
+                                        new updateDireccion_or_telefono().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", json);
                                     }
                                 }
                                 else
@@ -463,8 +520,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     if (txtnuevoTel.getText().toString().length() >= 6)
                                     {
                                         tipo_registro = "Telefono";
-                                        updateDireccion_or_telefono updateTel = new updateDireccion_or_telefono();
-                                        updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
+                                        String json = "";
+                                        JSONObject jsonObject = new JSONObject();
+                                        try
+                                        {
+                                            jsonObject.put("id", id);
+                                            jsonObject.put("antiguo", telefono_ant);
+                                            jsonObject.put("nuevo", txtnuevoTel.getText().toString());
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        json = jsonObject.toString();
+                                        new updateDireccion_or_telefono().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", json);
                                     }
                                     else
                                     {
@@ -496,22 +565,14 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         swDelete = false;
                         dialogChangeDelete.show();
 
-                        String[] telefonos = null;
-                        if (eTel2.getText().toString().equals("Telefono 2: Vacio"))
-                        {
-                            telefonos = new String[]{eTel1.getText().toString()};
-                        }
-                        else
-                        {
-                            telefonos = new String[]{eTel1.getText().toString(), eTel2.getText().toString()};
-                        }
                         Button botonEliminar_t_d = (Button)p.findViewById(R.id.btnEliminar_d_f);
                         Button botonCerrar = (Button)p.findViewById(R.id.btnCancelar_d_f);
-                        final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, telefonos);
-                        listView.setAdapter(adapter);
+                        final ListView listaTelefono = (ListView)p.findViewById(R.id.lv_d_f);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, vTelefonos);
+                        listaTelefono.setAdapter(adapter);
 
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        listaTelefono.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                        {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                             {
@@ -526,20 +587,31 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             {
                                 if (swDelete)
                                 {
-                                    int listaTotal = listView.getAdapter().getCount();
+                                    int listaTotal = listaTelefono.getAdapter().getCount();
                                     if (listaTotal == 1)
                                     {
                                         Toast.makeText(getContext(), "Debes tener al menos 2 numeros de telefonos para eliminar uno, si este numero ya no lo usas podrias modificarlo.", Toast.LENGTH_LONG).show();
                                     }
                                     else
                                     {
-                                        String telName = listView.getItemAtPosition(positionDelete).toString();
+                                        String telName = listaTelefono.getItemAtPosition(positionDelete).toString();
                                         String[] arregloTel = telName.split(":");
                                         String onlyNumber = arregloTel[1].trim();
                                         tipo_delete = "Telefono";
-                                        eliminarDatos deleteData = new eliminarDatos();
-                                        deleteData.execute(id, onlyNumber);
 
+                                        String json = "";
+                                        JSONObject jsonObject = new JSONObject();
+                                        try
+                                        {
+                                            jsonObject.put("id", id);
+                                            jsonObject.put("telefono", onlyNumber);
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        json = jsonObject.toString();
+                                        new eliminarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", json);
                                     }
                                 }
                                 else
@@ -609,9 +681,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                         String[]arr_calle = calleLeft.split("Calle:");
                                         String calle = arr_calle[1].trim();
 
-
-                                        eliminarDatos deleteData = new eliminarDatos();
-                                        deleteData.execute(id, calle, numero);
+                                        String json = "";
+                                        JSONObject jsonObject = new JSONObject();
+                                        try
+                                        {
+                                            jsonObject.put("id", id);
+                                            jsonObject.put("calle", calle);
+                                            jsonObject.put("numero", numero);
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                        json = jsonObject.toString();
+                                        new eliminarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", json);
                                     }
                                 }
                                 else
@@ -733,8 +816,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else
                     {
                         tipo_registro = "Nombre";
-                        modificarUsuario updateUs = new modificarUsuario();
-                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("id", id);
+                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
                     }
                 }
             });
@@ -770,8 +865,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else
                     {
                         tipo_registro = "Apellido";
-                        modificarUsuario updateUs = new modificarUsuario();
-                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("id", id);
+                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
                     }
                 }
             });
@@ -808,8 +915,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else
                     {
                         tipo_registro = "Nickname";
-                        modificarUsuario updateUs = new modificarUsuario();
-                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("id", id);
+                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
                     }
                 }
             });
@@ -845,8 +964,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     else
                     {
                         tipo_registro = "Correo";
-                        modificarUsuario updateUs = new modificarUsuario();
-                        updateUs.execute(id, txtVariable.getText().toString(), txtClaveUser.getText().toString());
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("id", id);
+                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
                     }
                 }
             });
@@ -859,64 +990,62 @@ public class MisDatos extends Fragment implements View.OnClickListener
         }
         dialogUp.show();
     }
-    public class TraerDatos extends AsyncTask<String, Void, String>
+    public class TraerDatos extends AsyncTask<String, Void, String> //Enviar id
     {
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/datos_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
                     try
                     {
-                        object.put("id", params[0]);
+                        conn.disconnect();
                     }
-                    catch (JSONException e)
+                    catch (Exception ex)
                     {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
-                    json = object.toString();
-
-                    String post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
                 }
             }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
+            return null;
         }
 
         @Override
@@ -1023,125 +1152,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_datos_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
-
-                    String post_data = "";
-                    if (tipo_registro.equals("Nombre"))
-                    {
-                        try
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
                         {
-                            object.put("id", params[0]);
-                            object.put("nombre_us", params[1]);
-                            object.put("clave_us", params[2]);
+                            response.append(inputLine);
                         }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-                    }
-                    else if(tipo_registro.equals("Apellido"))
-                    {
-                        try
-                        {
-                            object.put("id", params[0]);
-                            object.put("apellido_us", params[1]);
-                            object.put("clave_us", params[2]);
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-                    }
-                    else if (tipo_registro.equals("Nickname"))
-                    {
-                        try
-                        {
-                            object.put("id", params[0]);
-                            object.put("nickname_us", params[1]);
-                            object.put("clave_us", params[2]);
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-                    }
-                    else if (tipo_registro.equals("Clave"))
-                    {
-                        try
-                        {
-                            object.put("id", params[0]);
-                            object.put("clave_nueva_us", params[1]);
-                            object.put("clave_us", params[2]);
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-                    }
-                    else if (tipo_registro.equals("Correo"))
-                    {
-                        try
-                        {
-                            object.put("id", params[0]);
-                            object.put("correo_us", params[1]);
-                            object.put("clave_us", params[2]);
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-                    }
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
         @Override
         protected void onPostExecute(String s)
@@ -1225,81 +1286,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = null;
-                if (tipo_registro.equals("Direccion"))
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_direccion_usuario.php");
-                }
-                else if (tipo_registro.equals("Telefono"))
-                {
-                    url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/actualizar_telefono_usuario.php");
-                }
-                try
-                {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
-                    String post_data = "";
-                    if (tipo_registro.equals("Direccion"))
-                    {
-                        try
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
                         {
-                            object.put("calle_antigua", params[0]);
-                            object.put("calle_num_antigua", params[1]);
-                            object.put("calle_nueva", params[2]);
-                            object.put("calle_num_nueva", params[3]);
+                            response.append(inputLine);
                         }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    }
-                    else if (tipo_registro.equals("Telefono"))
-                    {
-                        post_data = URLEncoder.encode("id_us","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                                URLEncoder.encode("num_an","UTF-8")+"="+URLEncoder.encode(params[1],"UTF-8") + "&" +
-                                URLEncoder.encode("num_new","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8");
-
-                        //updateTel.execute(id, telefono_ant, txtnuevoTel.getText().toString());
-                    }
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
 
         @Override
@@ -1349,78 +1386,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/eliminar_datos_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    String post_data = "";
-                    JSONObject object = new JSONObject();
-                    if (tipo_delete.equals("Telefono"))
-                    {
-                        try
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
                         {
-                            object.put("user_id", params[0]);
-                            object.put("telefono_us", params[1]);
+                            response.append(inputLine);
                         }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    }
-                    else if (tipo_delete.equals("Direccion"))
-                    {
-                        try
-                        {
-                            object.put("user_id", params[0]);
-                            object.put("calle_us", params[1]);
-                            object.put("callenum_us", params[2]);
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    }
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
 
         @Override
@@ -1469,62 +1485,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/insertar_datos_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
-                    String post_data = "";
-                    if (tipo_add.equals("Telefono"))
-                    {
-                        try
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
                         {
-                            object.put("user_id", params[0]);
-                            object.put("telefono_us", params[1]);
+                            response.append(inputLine);
                         }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = object.toString();
-                        post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-                    }
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
 
         @Override
@@ -1540,7 +1551,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         dialogChangeTelefono.cancel();
                         dialogCrudUsuario.cancel();
                         Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
-                        //eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + telefono);
                         cargar();
                     }
                 }
@@ -1561,60 +1571,57 @@ public class MisDatos extends Fragment implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/agregar_direccion_usuario.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject object = new JSONObject();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
                     try
                     {
-                        object.put("user_id", params[0]);
-                        object.put("calle_us", params[1]);
-                        object.put("numero_calle_us", params[2]);
+                        conn.disconnect();
                     }
-                    catch (JSONException e)
+                    catch (Exception ex)
                     {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
-                    json = object.toString();
-                    String post_data = URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json, "UTF-8");
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
                 }
             }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
+            return null;
         }
 
         @Override

@@ -6,18 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BackGroundWorker;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -25,16 +21,10 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,13 +32,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.Key;
-import java.util.ArrayList;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
@@ -143,8 +130,21 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                             progress.setMessage("Iniciando..");
                             progress.show();
 
+                            String json = "";
+                            JSONObject jsonObject = new JSONObject();
+                            try
+                            {
+                                jsonObject.put("correo", txtCorreo.getText().toString());
+                                jsonObject.put("clave", txtClave.getText().toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            json = jsonObject.toString();
+
                             VerificarCorreoClave x = new VerificarCorreoClave();
-                            x.execute(txtCorreo.getText().toString(), txtClave.getText().toString());
+                            x.execute(getResources().getString(R.string.direccion_web) + "Controlador/login.php", json);
                         }
                         catch (Exception ex)
                         {
@@ -195,64 +195,58 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         @Override
         public String doInBackground(String... params)
         {
-
-
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/login.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String json = "";
-                    JSONObject jsonObject = new JSONObject();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
                     try
                     {
-                        jsonObject.put("correo", params[0]);
-                        jsonObject.put("clave", params[1]);
-                        json = jsonObject.toString();
+                        conn.disconnect();
                     }
-                    catch (JSONException e)
+                    catch (Exception ex)
                     {
-                        e.printStackTrace();
+                        ex.printStackTrace();
                     }
-
-                    String post_data= URLEncoder.encode("json_data","UTF-8")+"="+URLEncoder.encode(json,"UTF-8");
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
                 }
             }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            return result;
+            return null;
         }
-
         @Override
         protected void onPostExecute(String s)
         {
