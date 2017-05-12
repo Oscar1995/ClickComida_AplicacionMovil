@@ -79,6 +79,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         botonVolver.setOnClickListener(this);
         btnRegistroFinal.setOnClickListener(this);
         btnMapa.setOnClickListener(this);
+
     }
 
     @Override

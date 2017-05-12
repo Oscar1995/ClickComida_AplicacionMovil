@@ -13,6 +13,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -25,14 +27,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallback, LocationListener
+public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallback, LocationListener, View.OnClickListener
 {
 
-    private GoogleMap mMap;
+    GoogleMap mMap;
     Marker prevMarker;
-    private LatLng location;
+    LatLng location;
     Location mLocation;
     LocationManager locationManager;
+    LatLng miPosicion;
+    Button botonTomarCordenadas;
+    Double longitud, latitud;
 
 
 
@@ -44,6 +49,9 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        botonTomarCordenadas = (Button)findViewById(R.id.btnFijar);
+        botonTomarCordenadas.setOnClickListener(this);
     }
 
     /**
@@ -70,21 +78,30 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
             return;
         }
         mMap.setMyLocationEnabled(true);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLocation = getMyLocation();
-        LatLng miPosiciom = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(miPosiciom));
-
-        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosiciom, 16);
-        mMap.animateCamera(miUbicacion);
-
+        try
+        {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            mLocation = getMyLocation();
+            LatLng miPosicion = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(miPosicion));
+            Toast.makeText(getApplicationContext(), "Hemos encontrado tu posición, toca la pantalla para que a futuro el repartidor vaya a esa dirección", Toast.LENGTH_LONG).show();
+        }
+        catch (Exception ex)
+        {
+            Toast.makeText(getApplicationContext(), "Hay un problema con el GPS.", Toast.LENGTH_SHORT).show();
+        }
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng)
             {
                 mMap.clear();
+                LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                Toast.makeText(getApplicationContext(), "Hola" + mMap.getMyLocation().getLatitude(), Toast.LENGTH_SHORT).show();
+
+                longitud = posicionLocal.longitude;
+                latitud = posicionLocal.latitude;
+
+                Toast.makeText(getApplicationContext(), "Hola" + posicionLocal.latitude, Toast.LENGTH_SHORT).show();
             }
         });
         //Toast.makeText(getApplicationContext(), "Mi latitud:" + lat, Toast.LENGTH_SHORT).show();
@@ -109,6 +126,8 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onLocationChanged(Location location)
     {
+        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
+        mMap.animateCamera(miUbicacion);
         Toast.makeText(getApplicationContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
     }
 
@@ -125,5 +144,20 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.btnFijar:
+                Intent intent = new Intent(MapsActivityReg.this, RegistrarUsuarioContinuacion.class);
+                intent.putExtra("lat", latitud);
+                intent.putExtra("lon", longitud);
+                startActivity(intent);
+                finish();
+                break;
+        }
     }
 }

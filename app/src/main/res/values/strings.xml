@@ -158,4 +158,8 @@
     <string name="titulo_mapa_indicanos">Indicar mi posición en el mapa</string>
     <string name="title_activity_maps_registro">Map</string>
     <string name="title_activity_maps_reg">Map</string>
+    <string name="titulo_fijar_posicion">Esta es mi posición</string>
+    <string name="titulo_cordenadas">Estan son tus coordenadas en el mapa</string>
+    <string name="titulo_latitud">Latitud</string>
+    <string name="titulo_longitud">Longitud</string>
 </resources>
