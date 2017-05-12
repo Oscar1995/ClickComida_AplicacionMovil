@@ -154,6 +154,12 @@ antes de empezar a usar la aplicación"
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/titulo_mapa_indicanos" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -2,8 +2,10 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +13,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,11 +40,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener
+public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback
 {
     Validadores mValidar = new Validadores();
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
-    Button btnRegistroFinal, botonVolver;
+    Button btnRegistroFinal, botonVolver, btnMapa;
     TextView txtInformacion;
 
     String getCorreo;
@@ -55,6 +66,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
         txtInformacion = (TextView)findViewById(R.id.tvInfo_us);
         botonVolver = (Button)findViewById(R.id.btnVolver_reg_uno);
+        btnMapa = (Button)findViewById(R.id.btnMap);
         btnRegistroFinal = (Button)findViewById(R.id.btnRegistrar_usuario);
 
         getCorreo = getIntent().getStringExtra("correo_usuario");
@@ -66,6 +78,7 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
         botonVolver.setOnClickListener(this);
         btnRegistroFinal.setOnClickListener(this);
+        btnMapa.setOnClickListener(this);
     }
 
     @Override
@@ -152,11 +165,29 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 startActivity(iBack);
                 this.finish();
                 break;
+
+            case R.id.btnMap:
+
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(R.layout.activity_maps_reg);
+                AlertDialog dialogCrudUsuario = builder.create();
+                dialogCrudUsuario.show();*/
+
+                Intent intent = new Intent(RegistrarUsuarioContinuacion.this, MapsActivityReg.class);
+                startActivity(intent);
+
+                break;
         }
     }
-    public class ConsultarNick extends AsyncTask<String, Void, String>
+
+    @Override
+    public void onMapReady(GoogleMap googleMap)
     {
 
+    }
+
+    public class ConsultarNick extends AsyncTask<String, Void, String>
+    {
         @Override
         protected String doInBackground(String... params)
         {

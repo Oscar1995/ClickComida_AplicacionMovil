@@ -13,10 +13,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -27,6 +29,8 @@ import java.text.ParseException;
 
 public class fragmentTiendaDos extends Fragment
 {
+    boolean continuado, tomorrow, h1, h2, h3, h4;
+    String[] dias;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -36,12 +40,35 @@ public class fragmentTiendaDos extends Fragment
         final RadioButton radioContinuado = (RadioButton)view.findViewById(R.id.rbtContinuado);
         final RadioButton radioTomorrow = (RadioButton)view.findViewById(R.id.rbtTomorrow);
         final TextView textViewUno = (TextView)view.findViewById(R.id.tvUno);
+
+        Spinner sStart = (Spinner)view.findViewById(R.id.s_start);
+        Spinner sEnd = (Spinner)view.findViewById(R.id.s_end);
+
         final TextView textViewDos = (TextView)view.findViewById(R.id.tvDos);
         final TextView textViewHoraUno = (TextView)view.findViewById(R.id.tvUnoHora);
         final TextView textViewHoraDos = (TextView)view.findViewById(R.id.tvDosHora);
         final TextView textViewHoraTres = (TextView)view.findViewById(R.id.tvTresHora);
         final TextView textViewHoraCuatro = (TextView)view.findViewById(R.id.tvCuatroHora);
+        final LinearLayout fechaArriba = (LinearLayout)view.findViewById(R.id.llfecha_uno);
+        final LinearLayout fechaAbajo = (LinearLayout)view.findViewById(R.id.llfecha_dos);
         Button botonSiguiente = (Button)view.findViewById(R.id.btnContinuarDos);
+
+        fechaArriba.setVisibility(View.GONE);
+        fechaAbajo.setVisibility(View.GONE);
+        textViewUno.setVisibility(View.GONE);
+        textViewDos.setVisibility(View.GONE);
+
+        continuado = false;
+        tomorrow = false;
+        h1 = false;
+        h2 = false;
+        h3 = false;
+        h4 = false;
+
+        dias = new String[]{"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dias);
+        sStart.setAdapter(adapter);
+        sEnd.setAdapter(adapter);
 
         radioContinuado.setOnClickListener(new View.OnClickListener()
         {
@@ -53,6 +80,16 @@ public class fragmentTiendaDos extends Fragment
                     radioTomorrow.setChecked(false);
                 }
                 textViewUno.setText(getResources().getString(R.string.horario_continuado));
+
+                textViewUno.setVisibility(View.VISIBLE);
+                fechaArriba.setVisibility(View.VISIBLE);
+
+                fechaAbajo.setVisibility(View.GONE);
+                textViewDos.setVisibility(View.GONE);
+                continuado = true;
+                tomorrow = false;
+                h3 = false;
+                h4 = false;
             }
         });
         radioTomorrow.setOnClickListener(new View.OnClickListener()
@@ -64,9 +101,13 @@ public class fragmentTiendaDos extends Fragment
                 {
                     radioContinuado.setChecked(false);
                 }
-
                 textViewUno.setText(getResources().getString(R.string.tomorrow));
                 textViewDos.setText(getResources().getString(R.string.tarde));
+
+                fechaAbajo.setVisibility(View.VISIBLE);
+                textViewDos.setVisibility(View.VISIBLE);
+                tomorrow = true;
+                continuado = false;
             }
         });
         textViewHoraUno.setOnClickListener(new View.OnClickListener()
@@ -75,7 +116,7 @@ public class fragmentTiendaDos extends Fragment
             public void onClick(View view)
             {
                 LlamarHora(textViewHoraUno, textViewHoraDos);
-
+                h1 = true;
             }
         });
         textViewHoraDos.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +124,7 @@ public class fragmentTiendaDos extends Fragment
             public void onClick(View view)
             {
                 LlamarHora(textViewHoraDos, textViewHoraUno);
+                h2 = true;
             }
         });
         textViewHoraTres.setOnClickListener(new View.OnClickListener() {
@@ -90,23 +132,33 @@ public class fragmentTiendaDos extends Fragment
             public void onClick(View view)
             {
                 LlamarHora(textViewHoraTres, textViewHoraCuatro);
+                h3 = true;
             }
         });
         textViewHoraCuatro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LlamarHora(textViewHoraCuatro, textViewHoraTres);
+                h4 = true;
             }
         });
         botonSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, new fragmentProductosVender());
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();
+                if (continuado && h1 && h2 || tomorrow && h1 && h2 && h3 & h4)
+                {
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, new fragmentProductosVender());
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Debes elegir un horario de atencion y especificar la hora que trabajara tu tienda.", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 

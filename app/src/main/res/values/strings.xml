@@ -150,4 +150,12 @@
     <string name="titulo_descripcion">Descripción</string>
     <string name="titulo_guardar">GUARDAR</string>
     <string name="titulo_modificar">MODIFICAR</string>
+    <string name="des_tiend">Cuentanos de que se trata tu tienda...</string>
+    <string name="titulo_dias">¿Que digas atenderas?</string>
+    <string name="titulo_dias_tienda">Dinos tu dia de inicio y fin</string>
+    <string name="inicio">Inicio</string>
+    <string name="fin">Fin</string>
+    <string name="titulo_mapa_indicanos">Indicar mi posición en el mapa</string>
+    <string name="title_activity_maps_registro">Map</string>
+    <string name="title_activity_maps_reg">Map</string>
 </resources>

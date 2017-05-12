@@ -105,9 +105,6 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
             }
         });
 
-        Bundle bundle = getArguments();
-        String imagenuno_tienda = bundle.getString("imagen_general");
-        Toast.makeText(getContext(), imagenuno_tienda, Toast.LENGTH_SHORT).show();
 
         return p;
     }

@@ -34,19 +34,13 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     String imagenGeneral = "";
-    String imagenUno = "";
-    String imagenDos = "";
-    String imagenTres = "";
-    String imagenCuatro = "";
-    String imagenCinco = "";
-    String imagenSeis = "";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    Button botonContinuar, botonUAutomatico;
-    ImageButton tImagen_principal, tImagen_uno, tImagen_dos, tImagen_tres, tImagen_cuatro, tImagen_cinco, tImagen_seis;
+    Button botonContinuar;
+    ImageButton tImagen_principal;
     EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda;
     private OnFragmentInteractionListener mListener;
 
@@ -85,43 +79,18 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
 
         tImagen_principal = (ImageButton)v.findViewById(R.id.ibImagenPrincipal);
-        tImagen_uno = (ImageButton)v.findViewById(R.id.ibUno);
-        tImagen_dos = (ImageButton)v.findViewById(R.id.ibDos);
-        tImagen_tres = (ImageButton)v.findViewById(R.id.ibTres);
-        tImagen_cuatro = (ImageButton)v.findViewById(R.id.ibCuatro);
-        tImagen_cinco = (ImageButton)v.findViewById(R.id.ibCinco);
-        tImagen_seis = (ImageButton)v.findViewById(R.id.ibSeis);
 
         txtNombreTienda = (EditText)v.findViewById(R.id.etNombreTienda);
         txtCalleTienda = (EditText)v.findViewById(R.id.etCalle);
         txtNumeroTienda = (EditText)v.findViewById(R.id.etNumero);
 
         tImagen_principal.setOnClickListener(this);
-        tImagen_uno.setOnClickListener(this);
-        tImagen_dos.setOnClickListener(this);
-        tImagen_tres.setOnClickListener(this);
-        tImagen_cuatro.setOnClickListener(this);
-        tImagen_cinco.setOnClickListener(this);
-        tImagen_seis.setOnClickListener(this);
 
         botonContinuar.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                //Guardar los datos en bundle
-                fragmentTienda fragment = new fragmentTienda();
-                Bundle args = new Bundle();
-                args.putString("nombre_tienda", txtNombreTienda.getText().toString());
-                args.putString("calle_tienda", txtCalleTienda.getText().toString());
-                args.putString("imagen_general", imagenGeneral);
-                args.putString("imagen_uno", imagenUno);
-                args.putString("imagen_dos", imagenDos);
-                args.putString("imagen_tres", imagenTres);
-                args.putString("imagen_cuatro", imagenCuatro);
-                if (imagenCinco != null)args.putString("imagen_cinco", imagenCinco);
-                if (imagenSeis!=null)args.putString("imagen_seis", imagenSeis);
-                fragment.setArguments(args);
 
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, new fragmentTiendaDos());
@@ -166,43 +135,11 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     {
         switch (v.getId())
         {
-            case R.id.imageButtonPrincipal:
-                posicion = 7;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibUno:
-                posicion = 1;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibDos:
-                posicion = 2;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibTres:
-                posicion = 3;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibCuatro:
-                posicion = 4;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibCinco:
-                posicion = 5;
-                dispatchTakePictureIntent();
-                break;
-
-            case R.id.ibSeis:
-                posicion = 6;
+            case R.id.ibImagenPrincipal:
                 dispatchTakePictureIntent();
                 break;
         }
     }
-    int posicion = 0;
     public interface OnFragmentInteractionListener
     {
         // TODO: Update argument type and name
@@ -238,41 +175,9 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            if (posicion == 1)
-            {
-                tImagen_uno.setImageBitmap(imageBitmap);
-                imagenUno = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if(posicion == 2)
-            {
-                tImagen_dos.setImageBitmap(imageBitmap);
-                imagenDos = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if(posicion == 3)
-            {
-                tImagen_tres.setImageBitmap(imageBitmap);
-                imagenTres = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if(posicion == 4)
-            {
-                tImagen_cuatro.setImageBitmap(imageBitmap);
-                imagenCuatro = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if(posicion == 5)
-            {
-                tImagen_cinco.setImageBitmap(imageBitmap);
-                imagenCinco = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if(posicion == 6)
-            {
-                tImagen_seis.setImageBitmap(imageBitmap);
-                imagenSeis = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
-            else if (posicion == 7)
-            {
-                tImagen_principal.setImageBitmap(imageBitmap);
-                imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            }
+
+            tImagen_principal.setImageBitmap(imageBitmap);
+            imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
         }
     }
 }

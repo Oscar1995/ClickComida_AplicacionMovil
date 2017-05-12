@@ -870,7 +870,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         try
                         {
                             jsonObject.put("id", id);
-                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("apellido_us", txtVariable.getText().toString());
                             jsonObject.put("clave_us", txtClaveUser.getText().toString());
                         }
                         catch (JSONException e)
@@ -919,16 +919,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         JSONObject jsonObject = new JSONObject();
                         try
                         {
-                            jsonObject.put("id", id);
-                            jsonObject.put("nombre_us", txtVariable.getText().toString());
-                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                            jsonObject.put("nickname", txtVariable.getText().toString());
                         }
                         catch (JSONException e)
                         {
                             e.printStackTrace();
                         }
                         json = jsonObject.toString();
-                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
+                        //Aqui llamar a consultar
+                        new consultarNickname().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
                     }
                 }
             });
@@ -969,7 +968,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         try
                         {
                             jsonObject.put("id", id);
-                            jsonObject.put("nombre_us", txtVariable.getText().toString());
+                            jsonObject.put("correo_us", txtVariable.getText().toString());
                             jsonObject.put("clave_us", txtClaveUser.getText().toString());
                         }
                         catch (JSONException e)
@@ -1147,6 +1146,108 @@ public class MisDatos extends Fragment implements View.OnClickListener
     String tipo_registro;
     String tipo_delete;
     String tipo_add;
+    public class consultarNickname extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = new JSONObject(s);
+                if (jsonResult != null)
+                {
+                    if (jsonResult.getString("Resultado").equals("0"))
+                    {
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+
+                            jsonObject.put("id", id);
+                            jsonObject.put("nickname_us", txtVariable.getText().toString());
+                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
+                    }
+                    else
+                    {
+                        txtVariable.setError("Este nickname ya esta en uso.");
+                        Toast.makeText(getContext(), "El nickname ya esta en uso.", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
     public class modificarUsuario extends AsyncTask<String, Void, String>
     {
         @Override

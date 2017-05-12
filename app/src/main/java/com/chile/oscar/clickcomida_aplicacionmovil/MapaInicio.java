@@ -38,13 +38,11 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
 
     @Override
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.activity_mapa_inicio, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
         mapFragment.getMapAsync(this);
-
-
         return view;
     }
 
@@ -69,12 +67,8 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
-
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        // Marcadores
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)));
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_REQUEST_CODE) {
