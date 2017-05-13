@@ -9,14 +9,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,7 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallback, LocationListener, View.OnClickListener
 {
-
+    private static final int LOCATION_REQUEST_CODE = 1;
     GoogleMap mMap;
     Marker prevMarker;
     LatLng location;
@@ -37,21 +40,18 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
     LocationManager locationManager;
     LatLng miPosicion;
     Button botonTomarCordenadas;
-    Double longitud, latitud;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_reg);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         botonTomarCordenadas = (Button)findViewById(R.id.btnFijar);
         botonTomarCordenadas.setOnClickListener(this);
+
     }
 
     /**
@@ -67,44 +67,65 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-        try
+        // Controles UI
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            mLocation = getMyLocation();
-            LatLng miPosicion = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(miPosicion));
-            Toast.makeText(getApplicationContext(), "Hemos encontrado tu posición, toca la pantalla para que a futuro el repartidor vaya a esa dirección", Toast.LENGTH_LONG).show();
+            mMap.setMyLocationEnabled(true);
         }
-        catch (Exception ex)
+        else
         {
-            Toast.makeText(getApplicationContext(), "Hay un problema con el GPS.", Toast.LENGTH_SHORT).show();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
+            {
+                // Mostrar diálogo explicativo
+            }
+            else
+            {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            }
         }
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+
+        //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //mLocation = getMyLocation();
+        //LatLng miPosicion = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(miPosicion));
+        //Toast.makeText(getApplicationContext(), "Hemos encontrado tu posición, toca la pantalla para que a futuro el repartidor vaya a esa dirección", Toast.LENGTH_LONG).show();
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        {
             @Override
             public void onMapClick(LatLng latLng)
             {
                 mMap.clear();
-                LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
 
-                longitud = posicionLocal.longitude;
-                latitud = posicionLocal.latitude;
-
-                Toast.makeText(getApplicationContext(), "Hola" + posicionLocal.latitude, Toast.LENGTH_SHORT).show();
+                Coordenadas.latitud = latLng.latitude;
+                Coordenadas.longitud = latLng.longitude;
             }
         });
         //Toast.makeText(getApplicationContext(), "Mi latitud:" + lat, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if (requestCode == LOCATION_REQUEST_CODE)
+        {
+            // ¿Permisos asignados?
+            if (permissions.length > 0 && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Error de permisos", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private Location getMyLocation()
@@ -126,9 +147,9 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onLocationChanged(Location location)
     {
-        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
-        mMap.animateCamera(miUbicacion);
-        Toast.makeText(getApplicationContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
+        //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
+        //mMap.animateCamera(miUbicacion);
+        //Toast.makeText(getApplicationContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -152,10 +173,6 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
         switch (v.getId())
         {
             case R.id.btnFijar:
-                Intent intent = new Intent(MapsActivityReg.this, RegistrarUsuarioContinuacion.class);
-                intent.putExtra("lat", latitud);
-                intent.putExtra("lon", longitud);
-                startActivity(intent);
                 finish();
                 break;
         }

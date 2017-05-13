@@ -37,7 +37,6 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
     private GoogleMap mMap;
 
     @Override
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.activity_mapa_inicio, container, false);
@@ -70,7 +69,8 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
         if (requestCode == LOCATION_REQUEST_CODE) {
             // ¿Permisos asignados?
             if (permissions.length > 0 && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

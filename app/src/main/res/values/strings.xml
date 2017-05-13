@@ -162,4 +162,5 @@
     <string name="titulo_cordenadas">Estan son tus coordenadas en el mapa</string>
     <string name="titulo_latitud">Latitud</string>
     <string name="titulo_longitud">Longitud</string>
+    <string name="titulo_mapa">Cambiar las coordenadas de mi ubicacion</string>
 </resources>

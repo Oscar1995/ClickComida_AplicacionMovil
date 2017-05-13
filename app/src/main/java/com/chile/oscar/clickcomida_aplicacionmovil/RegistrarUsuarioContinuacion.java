@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.CorrectionInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -40,7 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback
+public class RegistrarUsuarioContinuacion extends AppCompatActivity implements View.OnClickListener
 {
     Validadores mValidar = new Validadores();
     EditText txtPasaje, txtNumeroPasaje, txtNickname, txtTelefono, txtTelefonoOpcional;
@@ -73,8 +75,10 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
         getClave = getIntent().getStringExtra("clave_usuario");
         getNombre = getIntent().getStringExtra("nombre_usuario");
         getApellido = getIntent().getStringExtra("apellido_usuario");
-
         txtInformacion.setText("Hola " + getIntent().getStringExtra("nombre_usuario") + ", te pediremos algunos datos antes de empezar a usar la aplicación.");
+
+        Coordenadas.latitud = 0.0;
+        Coordenadas.longitud = 0.0;
 
         botonVolver.setOnClickListener(this);
         btnRegistroFinal.setOnClickListener(this);
@@ -146,18 +150,26 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
 
                 if (isCorrectPasaje == true && isCorrectNumero == true && isCorrectNickname == true && isCorrectTelefono == true && isCorrectTelefono == true)
                 {
-                    String json = "";
-                    JSONObject jsonObject = new JSONObject();
-                    try
+                    if (Coordenadas.longitud == 0.0 && Coordenadas.latitud == 0.0)
                     {
-                        jsonObject.put("nickname", txtNickname.getText().toString());
+                        Toast.makeText(getApplicationContext(), "Debes marcar tu posicion en el mapa en el boton \"INDICAR MI POSICION EN EL MAPA\"", Toast.LENGTH_LONG).show();
                     }
-                    catch (JSONException e)
+                    else
                     {
-                        e.printStackTrace();
+                        String json = "";
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("nickname", txtNickname.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        json = jsonObject.toString();
+                        new ConsultarNick().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
                     }
-                    json = jsonObject.toString();
-                    new ConsultarNick().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
+
                 }
                 break;
 
@@ -173,18 +185,11 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 builder.setView(R.layout.activity_maps_reg);
                 AlertDialog dialogCrudUsuario = builder.create();
                 dialogCrudUsuario.show();*/
-
                 Intent intent = new Intent(RegistrarUsuarioContinuacion.this, MapsActivityReg.class);
                 startActivity(intent);
 
                 break;
         }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-
     }
 
     public class ConsultarNick extends AsyncTask<String, Void, String>
@@ -268,6 +273,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                             jsonObject.put("numerocalle", txtNumeroPasaje.getText().toString());
                             jsonObject.put("numero_telefono", txtTelefono.getText().toString());
                             jsonObject.put("numero_telefono_opcional", "0");
+                            jsonObject.put("latitud_us", Coordenadas.latitud);
+                            jsonObject.put("longitud_us", Coordenadas.longitud);
                         }
                         catch (JSONException e)
                         {
@@ -291,6 +298,8 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                             jsonObject.put("numerocalle", txtNumeroPasaje.getText().toString());
                             jsonObject.put("numero_telefono", txtTelefono.getText().toString());
                             jsonObject.put("numero_telefono_opcional", txtTelefonoOpcional.getText().toString());
+                            jsonObject.put("latitud_us", Coordenadas.latitud);
+                            jsonObject.put("longitud_us", Coordenadas.longitud);
                         }
                         catch (JSONException e)
                         {
@@ -379,7 +388,9 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
-                    Toast.makeText(getApplicationContext(), "Te has registrado con exito, inicia sesion con las credenciales que te has registrado.", Toast.LENGTH_SHORT).show();
+                    Coordenadas.latitud = 0.0;
+                    Coordenadas.longitud = 0.0;
+                    Toast.makeText(getApplicationContext(), "Te has registrado con exito, inicia sesion con las credenciales que te has registrado.", Toast.LENGTH_LONG).show();
                     i = new Intent(RegistrarUsuarioContinuacion.this, Login.class);
                     startActivity(i);
                     finish();
