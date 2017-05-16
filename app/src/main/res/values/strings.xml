@@ -163,4 +163,10 @@
     <string name="titulo_latitud">Latitud</string>
     <string name="titulo_longitud">Longitud</string>
     <string name="titulo_mapa">Cambiar las coordenadas de mi ubicacion</string>
+    <string name="titulo_requisitos_postulantes">Requisitos para los postulantes</string>
+    <string name="titulo_postulantes">Agrega una breve descripción acerca de los requisitos para los postulantes</string>
+    <string name="titulo_numero_postulante">Numero de postulantes</string>
+    <string name="titulo_nuevo_nombre">Nuevo nombre</string>
+    <string name="titulo_aviso_tienda">Ya existe una tienda con el nombre</string>
+    <string name="titulo_nombre_tienda">Nombre tienda</string>
 </resources>

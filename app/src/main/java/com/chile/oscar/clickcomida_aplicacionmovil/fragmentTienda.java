@@ -14,34 +14,41 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.method.KeyListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 
 import static android.app.Activity.RESULT_OK;
 
 
 public class fragmentTienda extends Fragment implements View.OnClickListener
 {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     String imagenGeneral = "";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String id_usuario;
 
-    Button botonContinuar;
+    Button botonContinuar, btnMapa;
+    CheckBox checkBoxReparto;
     ImageButton tImagen_principal;
-    EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda;
+    EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda, txtDescripcion;
     private OnFragmentInteractionListener mListener;
 
     public fragmentTienda()
@@ -50,12 +57,16 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
 
     }
 
-    public static fragmentTienda newInstance(String param1, String param2)
+    public static Postulantes_Tienda newInstance(String... params)
     {
-        fragmentTienda fragment = new fragmentTienda();
+        Postulantes_Tienda fragment = new Postulantes_Tienda();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("IMAGEN_COD", params[0]);
+        args.putString("NOMBRE_TIENDA", params[1]);
+        args.putString("DES_TIENDA", params[2]);
+        args.putString("CALLE_TIENDA", params[3]);
+        args.putString("NUMERO_TIENDA", params[4]);
+        args.putString("ID_USUARIO", params[5]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,8 +77,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+           id_usuario = getArguments().getString("ID_USUARIO");
         }
     }
 
@@ -77,13 +87,13 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     {
         View v = inflater.inflate(R.layout.fragment_fragment_tienda, container, false);
         botonContinuar = (Button)v.findViewById(R.id.btnContinuarUno);
-
+        btnMapa = (Button)v.findViewById(R.id.btnMostrarMapaTienda);
+        checkBoxReparto = (CheckBox)v.findViewById(R.id.cbReparto);
         tImagen_principal = (ImageButton)v.findViewById(R.id.ibImagenPrincipal);
-
         txtNombreTienda = (EditText)v.findViewById(R.id.etNombreTienda);
         txtCalleTienda = (EditText)v.findViewById(R.id.etCalle);
         txtNumeroTienda = (EditText)v.findViewById(R.id.etNumero);
-
+        txtDescripcion = (EditText)v.findViewById(R.id.etDesTiendaGeneral);
         tImagen_principal.setOnClickListener(this);
 
         botonContinuar.setOnClickListener(new View.OnClickListener()
@@ -91,12 +101,45 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             @Override
             public void onClick(View view)
             {
-
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, new fragmentTiendaDos());
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();
+                if (imagenGeneral.isEmpty() || txtNombreTienda.getText().toString().isEmpty() || txtNumeroTienda.getText().toString().isEmpty() || txtDescripcion.getText().toString().isEmpty() && txtCalleTienda.getText().toString().isEmpty() && txtNumeroTienda.getText().toString().isEmpty())
+                {
+                    if (imagenGeneral.isEmpty())Toast.makeText(getContext(), "Debes agregar una imagen para tu tienda.", Toast.LENGTH_SHORT).show();
+                    if (txtNombreTienda.getText().toString().isEmpty())txtNombreTienda.setError("Debes completar este campo.");
+                    if (txtDescripcion.getText().toString().isEmpty())txtDescripcion.setError("Debes completar este campo.");
+                    if (txtCalleTienda.getText().toString().isEmpty())txtCalleTienda.setError("Debes completar este campo.");
+                    if (txtNumeroTienda.getText().toString().isEmpty())txtNumeroTienda.setError("Debes completar este campo.");
+                }
+                else
+                {
+                    if (checkBoxReparto.isChecked())
+                    {
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), id_usuario));
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
+                    }
+                    else
+                    {
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString()), id_usuario);
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
+                    }
+                }
+            }
+        });
+        btnMapa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                View pMap = getActivity().getLayoutInflater().inflate(R.layout.mapa_fragment_update, null);
+                SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapita_lindo);
+                builderMapa.setView(pMap);
+                AlertDialog mapUpdate = builderMapa.create();
+                mapUpdate.show();
             }
         });
         return v;
@@ -104,8 +147,10 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+    public void onButtonPressed(Uri uri)
+    {
+        if (mListener != null)
+        {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -140,6 +185,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 break;
         }
     }
+
     public interface OnFragmentInteractionListener
     {
         // TODO: Update argument type and name
@@ -175,9 +221,8 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-
             tImagen_principal.setImageBitmap(imageBitmap);
-            imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
+            imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.PNG, 60);
         }
     }
 }

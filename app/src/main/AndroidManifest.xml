@@ -12,8 +12,8 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -73,7 +73,8 @@
         <activity android:name=".MisDatos" />
         <activity
             android:name=".MapsActivityReg"
-            android:label="@string/title_activity_maps_reg"></activity>
+            android:label="@string/title_activity_maps_reg" />
+        <activity android:name=".Postulantes_Tienda"></activity>
     </application>
 
 </manifest>

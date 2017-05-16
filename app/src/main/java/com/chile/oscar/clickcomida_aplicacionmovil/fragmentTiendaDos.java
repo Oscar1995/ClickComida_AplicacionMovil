@@ -5,6 +5,8 @@ import android.graphics.ImageFormat;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
+import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -23,6 +26,18 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.ParseException;
@@ -31,6 +46,10 @@ public class fragmentTiendaDos extends Fragment
 {
     boolean continuado, tomorrow, h1, h2, h3, h4;
     String[] dias;
+    String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, id_usuario;
+
+    int posInicio = 0;
+    int posFin = 0;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -41,8 +60,8 @@ public class fragmentTiendaDos extends Fragment
         final RadioButton radioTomorrow = (RadioButton)view.findViewById(R.id.rbtTomorrow);
         final TextView textViewUno = (TextView)view.findViewById(R.id.tvUno);
 
-        Spinner sStart = (Spinner)view.findViewById(R.id.s_start);
-        Spinner sEnd = (Spinner)view.findViewById(R.id.s_end);
+        final Spinner sStart = (Spinner)view.findViewById(R.id.s_start);
+        final Spinner sEnd = (Spinner)view.findViewById(R.id.s_end);
 
         final TextView textViewDos = (TextView)view.findViewById(R.id.tvDos);
         final TextView textViewHoraUno = (TextView)view.findViewById(R.id.tvUnoHora);
@@ -51,10 +70,12 @@ public class fragmentTiendaDos extends Fragment
         final TextView textViewHoraCuatro = (TextView)view.findViewById(R.id.tvCuatroHora);
         final LinearLayout fechaArriba = (LinearLayout)view.findViewById(R.id.llfecha_uno);
         final LinearLayout fechaAbajo = (LinearLayout)view.findViewById(R.id.llfecha_dos);
+        final LinearLayout linearDias = (LinearLayout)view.findViewById(R.id.llDias);
         Button botonSiguiente = (Button)view.findViewById(R.id.btnContinuarDos);
 
         fechaArriba.setVisibility(View.GONE);
         fechaAbajo.setVisibility(View.GONE);
+        linearDias.setVisibility(View.GONE);
         textViewUno.setVisibility(View.GONE);
         textViewDos.setVisibility(View.GONE);
 
@@ -70,6 +91,31 @@ public class fragmentTiendaDos extends Fragment
         sStart.setAdapter(adapter);
         sEnd.setAdapter(adapter);
 
+        sStart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                posInicio = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sEnd.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                posFin = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         radioContinuado.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -83,6 +129,7 @@ public class fragmentTiendaDos extends Fragment
 
                 textViewUno.setVisibility(View.VISIBLE);
                 fechaArriba.setVisibility(View.VISIBLE);
+                linearDias.setVisibility(View.VISIBLE);
 
                 fechaAbajo.setVisibility(View.GONE);
                 textViewDos.setVisibility(View.GONE);
@@ -106,6 +153,8 @@ public class fragmentTiendaDos extends Fragment
 
                 fechaAbajo.setVisibility(View.VISIBLE);
                 textViewDos.setVisibility(View.VISIBLE);
+                linearDias.setVisibility(View.VISIBLE);
+
                 tomorrow = true;
                 continuado = false;
             }
@@ -149,10 +198,23 @@ public class fragmentTiendaDos extends Fragment
                 if (continuado && h1 && h2 || tomorrow && h1 && h2 && h3 & h4)
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, new fragmentProductosVender());
+                    if (continuado && h1 && h2)
+                    {
+                        //trans.replace(R.id.content_general, newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
+                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario));
+
+
+                    }
+                    else if (tomorrow && h1 && h2 && h3 & h4)
+                    {
+                        //trans.replace(R.id.content_general, newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), textViewHoraTres.getText().toString(), textViewHoraCuatro.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
+                        //new consultarTienda().execute()
+                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario));
+                    }
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
+
                 }
                 else
                 {
@@ -163,6 +225,61 @@ public class fragmentTiendaDos extends Fragment
         });
 
         return view;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null)
+        {
+            imagen_cod = getArguments().getString("IMAGEN_COD");
+            nombre_tienda = getArguments().getString("NOMBRE_TIENDA");
+            des_tienda = getArguments().getString("DES_TIENDA");
+            calle_tienda = getArguments().getString("CALLE_TIENDA");
+            numero_tienda = getArguments().getString("NUMERO_TIENDA");
+            desPos = getArguments().getString("DES_POSTULANTES");
+            numPos = getArguments().getString("NUM_POSTULANTES");
+            id_usuario = getArguments().getString("ID_USUARIO");
+        }
+    }
+    public String newInstance(boolean con, String... params)
+    {
+        JSONObject object = new JSONObject();
+        try
+        {
+            object.put("IMAGEN_COD", params[0]);
+            object.put("NOMBRE_TIENDA", params[1]);
+            object.put("DES_TIENDA", params[2]);
+            object.put("CALLE_TIENDA", params[3]);
+            object.put("NUMERO_TIENDA", params[4]);
+            object.put("DES_POSTULANTES", params[5]);
+            object.put("NUM_POSTULANTES", params[6]);
+            if (con)
+            {
+                object.put("HORA_1", params[7]);
+                object.put("HORA_2", params[8]);
+                object.put("DIA_INICIO", params[9]);
+                object.put("DIA_FIN", params[10]);
+                object.put("ID_USUARIO", params[11]);
+            }
+            else
+            {
+                object.put("HORA_1", params[7]);
+                object.put("HORA_2", params[8]);
+                object.put("HORA_3", params[9]);
+                object.put("HORA_4", params[10]);
+                object.put("DIA_INICIO", params[11]);
+                object.put("DIA_FIN", params[12]);
+                object.put("ID_USUARIO", params[13]);
+            }
+
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return object.toString();
     }
 
     private void LlamarHora(final TextView texViewHora, final TextView textDos)
@@ -198,8 +315,6 @@ public class fragmentTiendaDos extends Fragment
                     segundaHora = textDos.getText().toString();
                 }
                 texViewHora.setText(hora_dia);
-
-
             }
         }, Calendar.HOUR, Calendar.MINUTE, false);
         timePickerDialog.show();
@@ -234,4 +349,114 @@ public class fragmentTiendaDos extends Fragment
         }
 
     }*/
+    public class consultarTienda extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonResult = null;
+                boolean sw = false;
+                int result = s.indexOf("{\"Resultado\":\"Si\"}"); //Busca una palabra o simbolo dentro una cadena, retorna negativo si no lo encuentra, de lo contrario positivo si encuentra algo.
+                if (result != -1)
+                {
+                    sw = true;
+                    jsonResult = new JSONObject("{\"Resultado\":\"Si\"}");
+                }
+                else
+                {
+                    sw = false;
+                    jsonResult = new JSONObject(s);
+                }
+
+                if (jsonResult != null)
+                {
+                    if (sw == true)
+                    {
+                        Toast.makeText(getContext(), "Tu tienda ha sido creada, ahora puedes empezar agregar productos.", Toast.LENGTH_LONG).show();
+                    }
+                    else if (jsonResult.getString("Resultado").equals("1"))
+                    {
+                        Toast.makeText(getContext(), "El nombre de la tienda ya existe.", Toast.LENGTH_LONG).show();
+
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View p = getActivity().getLayoutInflater().inflate(R.layout.nombre_tienda, null);
+                        builderChange.setView(p);
+                        AlertDialog dialogTienda = builderChange.create();
+                        dialogTienda.show();
+                    }
+                    else if (jsonResult.getString("Resultado").equals("Error"))
+                    {
+                        Toast.makeText(getContext(), "Hay un error.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }
