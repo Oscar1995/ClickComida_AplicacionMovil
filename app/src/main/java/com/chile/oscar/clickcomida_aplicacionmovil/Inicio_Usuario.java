@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
@@ -139,7 +139,12 @@ public class Inicio_Usuario extends AppCompatActivity
         }
         else if (id == R.id.nav_manage)
         {
-
+            fragment = new StoreFragment();
+            Bundle args = new Bundle();
+            args.putString("user_id", idUsuario);
+            fragment.setArguments(args);
+            fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mi_tienda));
         }
         else if (id == R.id.nav_share)
         {

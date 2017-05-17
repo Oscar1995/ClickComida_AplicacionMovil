@@ -169,4 +169,5 @@
     <string name="titulo_nuevo_nombre">Nuevo nombre</string>
     <string name="titulo_aviso_tienda">Ya existe una tienda con el nombre</string>
     <string name="titulo_nombre_tienda">Nombre tienda</string>
+    <string name="titulo_mi_tienda">Mi tienda</string>
 </resources>
