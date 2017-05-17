@@ -55,8 +55,7 @@ public class StoreFragment extends Fragment
 
 
     Bitmap[] images;
-    String[] titulo = {"Este es un titulo", "2"};
-    String[] des = {"Esta es una descripcion", "2"};
+    String[] id, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
     ListView listViewStores;
 
 
@@ -115,8 +114,14 @@ public class StoreFragment extends Fragment
         String json = object.toString();
 
         new cargarTiendas().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarTienda.php", json);
-
         listViewStores = (ListView)view.findViewById(R.id.lvTiendas);
+        listViewStores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Toast.makeText(getContext(), "Cierre:" + end_day[position], Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
     class CustomAdapter extends BaseAdapter
@@ -146,7 +151,7 @@ public class StoreFragment extends Fragment
             TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
             imageView.setImageBitmap(images[position]);
-            textViewNombre.setText(titulo[position]);
+            textViewNombre.setText(name[position]);
             textViewDesStore.setText(des[position]);
 
             return convertView;
@@ -256,12 +261,46 @@ public class StoreFragment extends Fragment
             try
             {
                 JSONArray jsonArray = new JSONArray(s);
-                images = new Bitmap[jsonArray.length()];
+
+                int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
+                id = new String[tomarCuenta];
+                name = new String[tomarCuenta];
+                des = new String[tomarCuenta];
+                street = new String[tomarCuenta];
+                numberStreet = new String[tomarCuenta];
+                open_hour = new String[tomarCuenta];
+                close_hour = new String[tomarCuenta];
+                lunch_hour = new String[tomarCuenta];
+                lunch_after_hour = new String[tomarCuenta];
+                start_day = new String[tomarCuenta];
+                end_day = new String[tomarCuenta];
+                images = new Bitmap[tomarCuenta];
+
+                JSONObject jsonObject = null;
+                int cLocal = 0;
                 for (int i = 0; i < jsonArray.length(); i++)
                 {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+i));
-                    images[i] = bitmap;
+                    jsonObject = jsonArray.getJSONObject(i);
+                    if (i >= tomarCuenta)
+                    {
+                        Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
+                        images[cLocal] = bitmap;
+                        cLocal++;
+                    }
+                    else
+                    {
+                        id[i] = jsonObject.getString("id");
+                        name[i] = jsonObject.getString("name");
+                        des[i] = jsonObject.getString("description");
+                        street[i] = jsonObject.getString("street");
+                        numberStreet[i] = jsonObject.getString("number");
+                        open_hour[i] = jsonObject.getString("open_hour");
+                        close_hour[i] = jsonObject.getString("close_hour");
+                        lunch_hour[i] = jsonObject.getString("lunch_hour");
+                        lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
+                        start_day[i] = jsonObject.getString("start_day");
+                        end_day[i] = jsonObject.getString("end_day");
+                    }
                 }
                 CustomAdapter customAdapter = new CustomAdapter();
                 listViewStores.setAdapter(customAdapter);
