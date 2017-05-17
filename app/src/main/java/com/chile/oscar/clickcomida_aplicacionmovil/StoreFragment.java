@@ -1,5 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -57,6 +58,7 @@ public class StoreFragment extends Fragment
     Bitmap[] images;
     String[] id, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
     ListView listViewStores;
+    ProgressDialog progress;
 
 
     private OnFragmentInteractionListener mListener;
@@ -99,6 +101,10 @@ public class StoreFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando datos...");
+        progress.show();
+
         View view = inflater.inflate(R.layout.fragment_store, container, false);
 
 
@@ -260,50 +266,58 @@ public class StoreFragment extends Fragment
         {
             try
             {
-                JSONArray jsonArray = new JSONArray(s);
-
-                int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
-                id = new String[tomarCuenta];
-                name = new String[tomarCuenta];
-                des = new String[tomarCuenta];
-                street = new String[tomarCuenta];
-                numberStreet = new String[tomarCuenta];
-                open_hour = new String[tomarCuenta];
-                close_hour = new String[tomarCuenta];
-                lunch_hour = new String[tomarCuenta];
-                lunch_after_hour = new String[tomarCuenta];
-                start_day = new String[tomarCuenta];
-                end_day = new String[tomarCuenta];
-                images = new Bitmap[tomarCuenta];
-
-                JSONObject jsonObject = null;
-                int cLocal = 0;
-                for (int i = 0; i < jsonArray.length(); i++)
+                if (s.equals("[]"))
                 {
-                    jsonObject = jsonArray.getJSONObject(i);
-                    if (i >= tomarCuenta)
-                    {
-                        Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
-                        images[cLocal] = bitmap;
-                        cLocal++;
-                    }
-                    else
-                    {
-                        id[i] = jsonObject.getString("id");
-                        name[i] = jsonObject.getString("name");
-                        des[i] = jsonObject.getString("description");
-                        street[i] = jsonObject.getString("street");
-                        numberStreet[i] = jsonObject.getString("number");
-                        open_hour[i] = jsonObject.getString("open_hour");
-                        close_hour[i] = jsonObject.getString("close_hour");
-                        lunch_hour[i] = jsonObject.getString("lunch_hour");
-                        lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
-                        start_day[i] = jsonObject.getString("start_day");
-                        end_day[i] = jsonObject.getString("end_day");
-                    }
+                    Toast.makeText(getContext(), "Aun no tienes tiendas creadas.", Toast.LENGTH_LONG).show();
+                    progress.dismiss();
                 }
-                CustomAdapter customAdapter = new CustomAdapter();
-                listViewStores.setAdapter(customAdapter);
+                else
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
+                    id = new String[tomarCuenta];
+                    name = new String[tomarCuenta];
+                    des = new String[tomarCuenta];
+                    street = new String[tomarCuenta];
+                    numberStreet = new String[tomarCuenta];
+                    open_hour = new String[tomarCuenta];
+                    close_hour = new String[tomarCuenta];
+                    lunch_hour = new String[tomarCuenta];
+                    lunch_after_hour = new String[tomarCuenta];
+                    start_day = new String[tomarCuenta];
+                    end_day = new String[tomarCuenta];
+                    images = new Bitmap[tomarCuenta];
+
+                    JSONObject jsonObject = null;
+                    int cLocal = 0;
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        if (i >= tomarCuenta)
+                        {
+                            Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
+                            images[cLocal] = bitmap;
+                            cLocal++;
+                        }
+                        else
+                        {
+                            id[i] = jsonObject.getString("id");
+                            name[i] = jsonObject.getString("name");
+                            des[i] = jsonObject.getString("description");
+                            street[i] = jsonObject.getString("street");
+                            numberStreet[i] = jsonObject.getString("number");
+                            open_hour[i] = jsonObject.getString("open_hour");
+                            close_hour[i] = jsonObject.getString("close_hour");
+                            lunch_hour[i] = jsonObject.getString("lunch_hour");
+                            lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
+                            start_day[i] = jsonObject.getString("start_day");
+                            end_day[i] = jsonObject.getString("end_day");
+                        }
+                    }
+                    CustomAdapter customAdapter = new CustomAdapter();
+                    listViewStores.setAdapter(customAdapter);
+                    progress.dismiss();
+                }
             }
             catch (JSONException e)
             {
