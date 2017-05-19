@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,7 +48,7 @@ public class fragmentTiendaDos extends Fragment
 {
     boolean continuado, tomorrow, h1, h2, h3, h4;
     String[] dias;
-    String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, id_usuario;
+    String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, id_usuario, latitud, longitud;
 
     int posInicio = 0;
     int posFin = 0;
@@ -201,7 +203,7 @@ public class fragmentTiendaDos extends Fragment
                     if (continuado && h1 && h2)
                     {
                         //trans.replace(R.id.content_general, newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
-                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario));
+                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
 
 
                     }
@@ -209,7 +211,7 @@ public class fragmentTiendaDos extends Fragment
                     {
                         //trans.replace(R.id.content_general, newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), textViewHoraTres.getText().toString(), textViewHoraCuatro.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
                         //new consultarTienda().execute()
-                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario));
+                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
                     }
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
@@ -240,6 +242,8 @@ public class fragmentTiendaDos extends Fragment
             numero_tienda = getArguments().getString("NUMERO_TIENDA");
             desPos = getArguments().getString("DES_POSTULANTES");
             numPos = getArguments().getString("NUM_POSTULANTES");
+            latitud = getArguments().getString("LATITUD");
+            longitud = getArguments().getString("LONGITUD");
             id_usuario = getArguments().getString("ID_USUARIO");
         }
     }
@@ -262,6 +266,8 @@ public class fragmentTiendaDos extends Fragment
                 object.put("DIA_INICIO", params[9]);
                 object.put("DIA_FIN", params[10]);
                 object.put("ID_USUARIO", params[11]);
+                object.put("LATITUD", params[12]);
+                object.put("LONGITUD", params[13]);
             }
             else
             {
@@ -272,6 +278,8 @@ public class fragmentTiendaDos extends Fragment
                 object.put("DIA_INICIO", params[11]);
                 object.put("DIA_FIN", params[12]);
                 object.put("ID_USUARIO", params[13]);
+                object.put("LATITUD", params[14]);
+                object.put("LONGITUD", params[15]);
             }
 
         }
@@ -430,7 +438,12 @@ public class fragmentTiendaDos extends Fragment
                 {
                     if (sw == true)
                     {
-                        Toast.makeText(getContext(), "Tu tienda ha sido creada, ahora puedes empezar agregar productos.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Tu tienda ha sido creada, entra la pestaña llamada mis tiendas.", Toast.LENGTH_LONG).show();
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, new MapaInicio());
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                        trans.addToBackStack(null);
+                        trans.commit();
                     }
                     else if (jsonResult.getString("Resultado").equals("1"))
                     {

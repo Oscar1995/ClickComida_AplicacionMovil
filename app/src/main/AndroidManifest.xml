@@ -74,7 +74,13 @@
         <activity
             android:name=".MapsActivityReg"
             android:label="@string/title_activity_maps_reg" />
-        <activity android:name=".Postulantes_Tienda"></activity>
+        <activity android:name=".Postulantes_Tienda" />
+        <activity
+            android:name=".MapsActivityTienda"
+            android:label="@string/title_activity_maps_tienda" />
+        <activity
+            android:name=".MapsActivityPrueba"
+            android:label="@string/title_activity_maps_prueba"></activity>
     </application>
 
 </manifest>

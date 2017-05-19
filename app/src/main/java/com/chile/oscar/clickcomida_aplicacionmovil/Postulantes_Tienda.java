@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class Postulantes_Tienda extends Fragment
 {
-    String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, id_usuario;
+    String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, id_usuario, latitud, longitud;
 
     @Nullable
     @Override
@@ -41,7 +41,7 @@ public class Postulantes_Tienda extends Fragment
                 {
                     int numPos = numberPickerNumeroPostulantes.getValue();
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, editTextDescripcion.getText().toString(), String.valueOf(numPos), id_usuario));
+                    trans.replace(R.id.content_general, newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, editTextDescripcion.getText().toString(), String.valueOf(numPos), id_usuario, latitud, longitud));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
@@ -62,6 +62,8 @@ public class Postulantes_Tienda extends Fragment
             calle_tienda = getArguments().getString("CALLE_TIENDA");
             numero_tienda = getArguments().getString("NUMERO_TIENDA");
             id_usuario = getArguments().getString("ID_USUARIO");
+            latitud = getArguments().getString("LATITUD");
+            longitud = getArguments().getString("LONGITUD");
         }
     }
     public static fragmentTiendaDos newInstance(String... params)
@@ -76,6 +78,9 @@ public class Postulantes_Tienda extends Fragment
         args.putString("DES_POSTULANTES", params[5]);
         args.putString("NUM_POSTULANTES", params[6]);
         args.putString("ID_USUARIO", params[7]);
+        args.putString("LATITUD", params[8]);
+        args.putString("LONGITUD", params[9]);
+
         fragment.setArguments(args);
         return fragment;
     }

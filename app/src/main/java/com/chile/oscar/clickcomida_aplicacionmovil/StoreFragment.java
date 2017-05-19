@@ -2,12 +2,12 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +43,7 @@ import java.net.URL;
  * Use the {@link StoreFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoreFragment extends Fragment
+public class StoreFragment extends Fragment implements StoreFragmentSelected.OnFragmentInteractionListener
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -63,29 +62,31 @@ public class StoreFragment extends Fragment
 
     private OnFragmentInteractionListener mListener;
 
-    public StoreFragment() {
+    public StoreFragment()
+    {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment StoreFragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static StoreFragment newInstance(String param1, String param2)
+
+    public static StoreFragmentSelected newInstance(String... params)
     {
-        StoreFragment fragment = new StoreFragment();
+        StoreFragmentSelected fragment = new StoreFragmentSelected();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("imagen_tienda", params[0]);
+        args.putString("nombre_tienda", params[1]);
+        args.putString("des_tienda", params[2]);
+        args.putString("calle_tienda", params[3]);
+        args.putString("numero_tienda", params[4]);
+        args.putString("start_day", params[5]);
+        args.putString("end_day", params[6]);
+        args.putString("open_hour", params[7]);
+        args.putString("close_hour", params[8]);
+        args.putString("lunch_open_hour", params[9]);
+        args.putString("lunch_after_hour", params[10]);
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -118,18 +119,29 @@ public class StoreFragment extends Fragment
             e.printStackTrace();
         }
         String json = object.toString();
-
         new cargarTiendas().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarTienda.php", json);
+
         listViewStores = (ListView)view.findViewById(R.id.lvTiendas);
         listViewStores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Toast.makeText(getContext(), "Cierre:" + end_day[position], Toast.LENGTH_SHORT).show();
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, newInstance(Codificacion.encodeToBase64(images[position], Bitmap.CompressFormat.PNG, 60), name[position], des[position], street[position]
+                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position]));
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
             }
         });
         return view;
     }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
     class CustomAdapter extends BaseAdapter
     {
 
@@ -152,8 +164,8 @@ public class StoreFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.imagenStore);
-            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtNombreStore);
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.imagenOption);
+            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
             TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
             imageView.setImageBitmap(images[position]);

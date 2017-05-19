@@ -7,31 +7,22 @@
 
     <ImageView
         android:id="@+id/imagenOption"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
         app:srcCompat="@drawable/clock" />
 
     <TextView
         android:id="@+id/txtOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/imagenOption"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="12dp"
-        android:layout_toEndOf="@+id/imagenOption"
         android:text="Nombre de la tienda"
         android:textStyle="bold"
-        android:textColor="@color/colorNegro" />
-
-    <TextView
-        android:id="@+id/txtDesStore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Descripcion"
         android:textColor="@color/colorNegro"
+        android:layout_marginStart="54dp"
         android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/txtOption" />
+        android:layout_toEndOf="@+id/imagenOption" />
+
 </RelativeLayout>

@@ -1,12 +1,11 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
-import android.app.ActionBar;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,23 +14,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.method.KeyListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+
+import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -39,6 +39,7 @@ import static android.app.Activity.RESULT_OK;
 public class fragmentTienda extends Fragment implements View.OnClickListener
 {
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_PICTURE = 2;
 
     String imagenGeneral = "";
 
@@ -49,6 +50,9 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     CheckBox checkBoxReparto;
     ImageButton tImagen_principal;
     EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda, txtDescripcion;
+
+    int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
+    String[]des = {"Tomar foto", "Ir a galeria", "Cancelar"};
     private OnFragmentInteractionListener mListener;
 
     public fragmentTienda()
@@ -67,6 +71,23 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         args.putString("CALLE_TIENDA", params[3]);
         args.putString("NUMERO_TIENDA", params[4]);
         args.putString("ID_USUARIO", params[5]);
+        args.putString("LONGITUD", params[6]);
+        args.putString("LATITUD", params[7]);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    public static fragmentTiendaDos fragTiendaDos(String id, String... params)
+    {
+        fragmentTiendaDos fragment = new fragmentTiendaDos();
+        Bundle args = new Bundle();
+        args.putString("IMAGEN_COD", params[0]);
+        args.putString("NOMBRE_TIENDA", params[1]);
+        args.putString("DES_TIENDA", params[2]);
+        args.putString("CALLE_TIENDA", params[3]);
+        args.putString("NUMERO_TIENDA", params[4]);
+        args.putString("LONGITUD", params[5]);
+        args.putString("LATITUD", params[6]);
+        args.putString("ID_USUARIO", id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,21 +132,28 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 }
                 else
                 {
-                    if (checkBoxReparto.isChecked())
+                    if (Coordenadas.latitud == 0.0 && Coordenadas.longitud == 0.0)
                     {
-                        FragmentTransaction trans = getFragmentManager().beginTransaction();
-                        trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), id_usuario));
-                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                        trans.addToBackStack(null);
-                        trans.commit();
+                        Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa.", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
-                        FragmentTransaction trans = getFragmentManager().beginTransaction();
-                        trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString()), id_usuario);
-                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                        trans.addToBackStack(null);
-                        trans.commit();
+                        if (checkBoxReparto.isChecked())
+                        {
+                            FragmentTransaction trans = getFragmentManager().beginTransaction();
+                            trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), id_usuario, String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
+                            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                            trans.addToBackStack(null);
+                            trans.commit();
+                        }
+                        else
+                        {
+                            FragmentTransaction trans = getFragmentManager().beginTransaction();
+                            trans.replace(R.id.content_general, fragTiendaDos(id_usuario, imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
+                            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                            trans.addToBackStack(null);
+                            trans.commit();
+                        }
                     }
                 }
             }
@@ -134,12 +162,18 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             @Override
             public void onClick(View v)
             {
-                AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                View pMap = getActivity().getLayoutInflater().inflate(R.layout.mapa_fragment_update, null);
-                SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapita_lindo);
-                builderMapa.setView(pMap);
-                AlertDialog mapUpdate = builderMapa.create();
-                mapUpdate.show();
+                Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, new MapsActivityTienda());
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
+
+                /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                View p = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                builderChange.setView(p);
+                AlertDialog dialogChangeDireccionn = builderChange.create();
+                dialogChangeDireccionn.show();*/
             }
         });
         return v;
@@ -181,8 +215,72 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.ibImagenPrincipal:
-                dispatchTakePictureIntent();
+                //dispatchTakePictureIntent();
+                AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
+                builderChange.setView(p);
+
+                ListView listViewPhoto_Gallery = (ListView)p.findViewById(R.id.lvPhoto_Gallery);
+
+                CustomAdapter customAdapter = new CustomAdapter();
+                listViewPhoto_Gallery.setAdapter(customAdapter);
+                final AlertDialog dialogAlert = builderChange.create();
+                dialogAlert.show();
+
+                listViewPhoto_Gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        if (position == 0)
+                        {
+                            dialogAlert.dismiss();
+                            dispatchTakePictureIntent();
+                        }
+                        else if(position == 1)
+                        {
+                            dialogAlert.dismiss();
+                            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            intent.setType("image/*");
+                            startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                        }
+                        else if (position ==2)
+                        {
+                            dialogAlert.dismiss();
+                        }
+                    }
+                });
                 break;
+        }
+    }
+    class CustomAdapter extends BaseAdapter
+    {
+
+        @Override
+        public int getCount() {
+            return images.length; //Indico las veces que debe recorrer
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_photo_galley_cancel, null);
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.imagenOption);
+            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
+
+            imageView.setImageResource(images[position]);
+            textViewNombre.setText(des[position]);
+
+            return convertView;
         }
     }
 
@@ -222,7 +320,25 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             tImagen_principal.setImageBitmap(imageBitmap);
-            imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.PNG, 60);
+            imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.PNG, 100);
+        }
+        else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK)
+        {
+            Uri path = data.getData();
+            try
+            {
+                int HeightButton = tImagen_principal.getHeight();
+                int WidthButton = tImagen_principal.getWidth();
+
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
+                Bitmap rotado = Codificacion.RotarBitmap(Codificacion.bajarResolucion(bitmap, WidthButton, HeightButton), 90);
+                tImagen_principal.setImageBitmap(rotado);
+                imagenGeneral = Codificacion.encodeToBase64(rotado, Bitmap.CompressFormat.PNG, 100);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

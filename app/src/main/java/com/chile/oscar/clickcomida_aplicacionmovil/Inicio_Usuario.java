@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
@@ -51,8 +51,6 @@ public class Inicio_Usuario extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment myFrag = new MapaInicio();
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
 
         View hView = navigationView.getHeaderView(0);
         TextView vCorreo = (TextView)hView.findViewById(R.id.tvCorreoUsuarioMenu);
@@ -67,6 +65,12 @@ public class Inicio_Usuario extends AppCompatActivity
 
         //Este cambia el valor del titulo del navigation_drawer
         getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+
+        Fragment myFrag = new MapaInicio();
+        Bundle args = new Bundle();
+        args.putString("ID_USUARIO", idUsuario);
+        myFrag.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
 
 
     }

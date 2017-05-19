@@ -170,4 +170,12 @@
     <string name="titulo_aviso_tienda">Ya existe una tienda con el nombre</string>
     <string name="titulo_nombre_tienda">Nombre tienda</string>
     <string name="titulo_mi_tienda">Mi tienda</string>
+    <string name="titulo_tienda_seleccionada">Tienda</string>
+    <string name="titulo_detalles">Detalles de la tienda</string>
+    <string name="titulo_modificar_detalles">Modificar detalles</string>
+    <string name="titulo_horario_atencion_selected">Horario de atención</string>
+    <string name="titulo_necesita_repartidores">Esta tienda necesita repartidores</string>
+    <string name="title_activity_maps_tienda">Map</string>
+    <string name="title_activity_maps_prueba">Map</string>
+    <string name="titulo_seleccion_opcion">Selecciona una opción</string>
 </resources>
