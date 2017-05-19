@@ -1,7 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -274,7 +273,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_photo_galley_cancel, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.imagenOption);
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
             TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
 
             imageView.setImageResource(images[position]);

@@ -5,13 +5,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 
 /**
@@ -84,6 +87,7 @@ public class StoreFragmentSelected extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_store_fragment_selected, container, false);
 
+        Button buttonMostrarProductos = (Button)view.findViewById(R.id.btnMostrarProductosTienda);
         TextView textViewNombrePrincipal = (TextView)view.findViewById(R.id.tvTituloTienda);
         TextView textViewNombre = (TextView)view.findViewById(R.id.tvNameTiendaSelected);
         TextView textViewDes = (TextView)view.findViewById(R.id.tvDesSelected);
@@ -98,15 +102,8 @@ public class StoreFragmentSelected extends Fragment
         textViewCalle.setText(getResources().getString(R.string.calle_tienda) + ": " + calle);
         textViewNumero.setText(getResources().getString(R.string.titulo_calle_numero_usuario) + ": " + numero);
 
-        String[] start = open_hour.split(":");
-        String a = start[0];
-        String b = start[1];
-        String openupdate = a + ":" + b;
-
-        String[] end = close_hour.split(":");
-        String ae = end[0];
-        String be = end[1];
-        String closeupdate = ae + ":" + be;
+        String openupdate = new MetodosCreados().HoraNormal(open_hour);
+        String closeupdate = new MetodosCreados().HoraNormal(close_hour);
 
         if (lunch_hour == "null" && lunch_after_hour == "null")
         {
@@ -114,19 +111,24 @@ public class StoreFragmentSelected extends Fragment
         }
         else
         {
-            String[] startlunch = open_hour.split(":");
-            String alunch = startlunch[0];
-            String blunch = startlunch[1];
-            String openupdatelunch = alunch + ":" + blunch;
-
-            String[] endlunch = close_hour.split(":");
-            String aclose_lunch = endlunch[0];
-            String bclose_lunch = endlunch[1];
-            String closeupdatelunch = aclose_lunch + ":" + bclose_lunch;
+            String openupdatelunch = new MetodosCreados().HoraNormal(lunch_hour);
+            String closeupdatelunch = new MetodosCreados().HoraNormal(lunch_after_hour);
             textViewHorario.setText("De " + start_day + " a " + end_day + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
         }
-
         imageView.setImageBitmap(imagenTienda);
+
+        buttonMostrarProductos.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, new showProducts_me());
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
+            }
+        });
         return view;
     }
 

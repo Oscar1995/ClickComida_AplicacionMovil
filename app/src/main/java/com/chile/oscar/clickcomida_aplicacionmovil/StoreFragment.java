@@ -164,7 +164,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.imagenOption);
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
             TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
             TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
