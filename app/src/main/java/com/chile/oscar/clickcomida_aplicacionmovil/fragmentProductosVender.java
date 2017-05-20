@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -34,9 +35,11 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -63,22 +66,21 @@ import static android.app.Activity.RESULT_OK;
 public class fragmentProductosVender extends Fragment implements View.OnClickListener, View.OnFocusChangeListener
 {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
-    String mCurrentPhotoPath;
 
     Button btnAgregar, btnModificar, btnEliminar, btnContinuar;
     ListView listaProductos;
+    String store_id;
 
     List<String> nombreProd = new ArrayList<>();
     List<String> desProd = new ArrayList<>();
     List<String> precioProd = new ArrayList<>();
-    List<String> listaMostrar = new ArrayList<>();
+    List<String> photosProd = new ArrayList<>();
+    Bitmap imageBitmap;
+    List<JSONObject> jsonObjects = new ArrayList<>();
 
     EditText txtProducto;
 
     ImageButton botonImagen;
-    String foto;
-    File file;
-    Uri output;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -104,13 +106,21 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 productoEncontrado = true;
             }
         });
-
-
         return p;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null)
+        {
+            store_id = getArguments().getString("store_id");
+        }
+    }
+
     int posicionProducto;
-    boolean productoEncontrado = false;
+    boolean productoEncontrado = false, fotoTomada = false;
     String[] mostrarProd;
     @Override
     public void onClick(View v)
@@ -147,23 +157,33 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                             }
                             else
                             {
-                                nombreProd.add(txtProducto.getText().toString().trim());
-                                desProd.add(txtDescripcion.getText().toString().trim());
-                                precioProd.add(txtPrecio.getText().toString().trim());
-
-                                mostrarProd = new String[nombreProd.size()];
-                                for (int i = 0; i < nombreProd.size(); i++)
+                                if (fotoTomada)
                                 {
-                                    mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
+                                    nombreProd.add(txtProducto.getText().toString().trim());
+                                    desProd.add(txtDescripcion.getText().toString().trim());
+                                    precioProd.add(txtPrecio.getText().toString().trim());
+                                    photosProd.add(Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
+                                    mostrarProd = new String[nombreProd.size()];
+
+                                    for (int i = 0; i < nombreProd.size(); i++)
+                                    {
+                                        mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
+                                    }
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
+                                    listaProductos.setAdapter(arrayAdapter);
+
+                                    txtProducto.setText("");
+                                    txtDescripcion.setText("");
+                                    txtPrecio.setText("");
+                                    botonImagen.setImageResource(R.drawable.ic_menu_camera);
+
+                                    Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
+                                    fotoTomada = false;
                                 }
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
-                                listaProductos.setAdapter(arrayAdapter);
-
-                                txtProducto.setText("");
-                                txtDescripcion.setText("");
-                                txtPrecio.setText("");
-
-                                Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes tomar una foto para el producto.", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
                     }
@@ -261,27 +281,26 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 break;
 
             case R.id.btnContinuar_prod:
-                String jsonEnviar = "[{";
-                int longitud = (nombreProd.size() - 1);
+
                 for (int i=0; i<nombreProd.size(); i++)
                 {
-                    if (longitud == i)
+                    try
                     {
-                        jsonEnviar += "\""+"Nombre"+"\""+":"+"\""+nombreProd.get(i)+"\""+", "+"\""+"Descripcion"+"\""+":"+"\""+desProd.get(i)+"\""+", "+"\""+"Precio"+"\""+":"+"\""+precioProd.get(i)+"\""+"}";
+                        JSONObject object = new JSONObject();
+                        object.put("Nombre", nombreProd.get(i));
+                        object.put("Descripcion", desProd.get(i));
+                        object.put("Precio", precioProd.get(i));
+                        object.put("Fotos", photosProd.get(i));
+                        object.put("store_id", store_id);
+                        jsonObjects.add(object);
                     }
-                    else
+                    catch (JSONException e)
                     {
-                        jsonEnviar += "\""+"Nombre"+"\""+":"+"\""+nombreProd.get(i)+"\""+", "+"\""+"Descripcion"+"\""+":"+"\""+desProd.get(i)+"\""+", "+"\""+"Precio"+"\""+":"+"\""+precioProd.get(i)+"\""+"}, {";
-                        //    [{"Nombre":"Papa", "Descripcion":"Este es una papa", "Precio":"390"}, {"Nombre":"Palta", "Descripcion":"Este es una palta", "Precio":"800"}]
+                        e.printStackTrace();
                     }
-
                 }
-                jsonEnviar += "]";
-
-                StringTokenizer stringTokenizer = new StringTokenizer(jsonEnviar, "{");
-                int nTotal = (stringTokenizer.countTokens() - 1);
-
-                //new agregarProductos().execute(jsonEnviar, nTotal+"");
+                String x = jsonObjects.toString();
+                new agregarProductos().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_productos.php" ,jsonObjects.toString());
 
                 break;
 
@@ -384,10 +403,9 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
         {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = (Bitmap) extras.get("data");
             botonImagen.setImageBitmap(imageBitmap);
-            String imagenCodificada = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
-            Bitmap imagenDecodificada = Codificacion.decodeBase64(imagenCodificada);
+            fotoTomada = true;
         }
     }
 
@@ -396,48 +414,57 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         @Override
         public String doInBackground(String... params)
         {
-            String result = "";
+            HttpURLConnection conn = null;
             try
             {
-                URL url = new URL(getResources().getString(R.string.direccion_web) + "/Controlador/insertar_productos.php");
-                try
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
                 {
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
-                    String post_data = URLEncoder.encode("json_us","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8") + "&" +
-                            URLEncoder.encode("cant_us","UTF-8")+"="+URLEncoder.encode(params[0],"UTF-8");
-
-                    bufferedWriter.write(post_data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                    String line="";
-                    while ((line = bufferedReader.readLine())!=null)
-                    {
-                        result+=line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
                 }
             }
-            catch (MalformedURLException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-            return result;
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
         }
 
         @Override
@@ -445,17 +472,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         {
             try
             {
-                String a = s;
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
+                JSONObject object = new JSONObject(s);
             }
             catch (JSONException e)
             {

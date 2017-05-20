@@ -55,7 +55,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
 
 
     Bitmap[] images;
-    String[] id, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
+    String[] id_store, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
     ListView listViewStores;
     ProgressDialog progress;
 
@@ -84,6 +84,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         args.putString("close_hour", params[8]);
         args.putString("lunch_open_hour", params[9]);
         args.putString("lunch_after_hour", params[10]);
+        args.putString("tienda_id", params[11]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,7 +129,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
             {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, newInstance(Codificacion.encodeToBase64(images[position], Bitmap.CompressFormat.PNG, 60), name[position], des[position], street[position]
-                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position]));
+                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position], id_store[position]));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
@@ -287,7 +288,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                 {
                     JSONArray jsonArray = new JSONArray(s);
                     int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
-                    id = new String[tomarCuenta];
+                    id_store = new String[tomarCuenta];
                     name = new String[tomarCuenta];
                     des = new String[tomarCuenta];
                     street = new String[tomarCuenta];
@@ -313,7 +314,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                         }
                         else
                         {
-                            id[i] = jsonObject.getString("id");
+                            id_store[i] = jsonObject.getString("id");
                             name[i] = jsonObject.getString("name");
                             des[i] = jsonObject.getString("description");
                             street[i] = jsonObject.getString("street");
