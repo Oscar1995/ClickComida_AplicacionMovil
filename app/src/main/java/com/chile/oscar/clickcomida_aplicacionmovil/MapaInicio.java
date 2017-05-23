@@ -70,6 +70,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
     String[] street, number, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, user_id;
     ArrayList<String> nameStore, desStore;
     ArrayList<Double> latitude, longitude;
+    int pos;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -133,12 +134,20 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             {
                 if (marker.isFlat())
                 {
-                    int pos = nameStore.indexOf(marker.getTitle());
-                    FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance("imagen", nameStore.get(pos), "Descripcion", street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
-                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    trans.addToBackStack(null);
-                    trans.commit();
+                    pos = nameStore.indexOf(marker.getTitle());
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("name_store", nameStore.get(pos));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+
+
+                    new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
                 }
@@ -338,6 +347,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
                     //longitude = new Double[jsonArray.length()];
 
                     nameStore = new ArrayList<String>();
+                    desStore = new ArrayList<String>();
                     latitude = new ArrayList<Double>();
                     longitude = new ArrayList<Double>();
 
@@ -348,6 +358,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
                         jsonObject = jsonArray.getJSONObject(i);
                         idStore[i] = Integer.parseInt(jsonObject.getString("id"));
                         nameStore.add(jsonObject.getString("name"));
+                        desStore.add(jsonObject.getString("description"));
                         street[i] = jsonObject.getString("street");
                         number[i] = jsonObject.getString("number");
                         open_hour[i] = jsonObject.getString("open_hour");
@@ -378,6 +389,82 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             catch (JSONException e)
             {
                 String x = e.getMessage();
+            }
+        }
+    }
+    public class cargarImagen extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject object = new JSONObject(s);
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
             }
         }
     }

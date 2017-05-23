@@ -213,7 +213,7 @@ public class MostrarProductosMios extends Fragment
 
                 imageView.setImageBitmap(imagesProducts.get(position));
                 textViewNombre.setText(nameProducts.get(position));
-                textViewDesStore.setText(priceProducts[position]);
+                textViewDesStore.setText(priceProducts[position] + "");
             }
             catch (Exception ex)
             {

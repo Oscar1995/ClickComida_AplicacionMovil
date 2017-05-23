@@ -376,11 +376,25 @@ public class MisDatos extends Fragment implements View.OnClickListener, OnMapRea
                                         txtNuevaClaveRep.setError("Completa este campo");
                                     }
                                 } else {
-                                    if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString())) {
+                                    if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString()))
+                                    {
                                         tipo_registro = "Clave";
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("id", id);
+                                            object.put("clave_nueva_us", txtNuevaClave.getText().toString());
+                                            object.put("clave_us", txtActualClave.getText().toString());
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
                                         modificarUsuario updateUs = new modificarUsuario();
-                                        updateUs.execute(id, txtNuevaClave.getText().toString(), txtActualClave.getText().toString());
-                                    } else {
+                                        updateUs.execute(getResources().getString(R.string.direccion_web)+ "Controlador/actualizar_datos_usuario.php", object.toString());
+                                    }
+                                    else
+                                        {
                                         txtNuevaClaveRep.setError("La clave no coincide con la de arriba.");
                                     }
                                 }

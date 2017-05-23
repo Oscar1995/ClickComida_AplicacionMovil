@@ -76,6 +76,8 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
     List<String> precioProd = new ArrayList<>();
     List<String> photosProd = new ArrayList<>();
     Bitmap imageBitmap;
+    String tipo = "";
+    ImageButton buttonPhotoProduct;
     List<JSONObject> jsonObjects = new ArrayList<>();
 
     EditText txtProducto;
@@ -199,6 +201,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     @Override
                     public void onClick(View v)
                     {
+                        tipo = "Agregar";
                         dispatchTakePictureIntent();
                     }
                 });
@@ -219,10 +222,13 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     final EditText textPreProd = (EditText) pUpdate.findViewById(R.id.etPrecioProdMod);
                     Button botonModProd = (Button) pUpdate.findViewById(R.id.btnModProd);
                     Button botonModCerrar = (Button) pUpdate.findViewById(R.id.btnModCerrar);
+                    buttonPhotoProduct = (ImageButton)pUpdate.findViewById(R.id.ibModProducts);
 
                     textNombreProd.setText(nombreProd.get(posicionProducto));
                     textDesProd.setText(desProd.get(posicionProducto));
                     textPreProd.setText(precioProd.get(posicionProducto));
+                    buttonPhotoProduct.setImageBitmap(Codificacion.decodeBase64(photosProd.get(posicionProducto)));
+
 
                     botonModProd.setOnClickListener(new View.OnClickListener()
                     {
@@ -237,6 +243,8 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                                     nombreProd.set(posicionProducto, textNombreProd.getText().toString().trim());
                                     desProd.set(posicionProducto, textDesProd.getText().toString().trim());
                                     precioProd.set(posicionProducto, textPreProd.getText().toString().trim());
+                                    photosProd.set(posicionProducto, Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
+                                    buttonPhotoProduct.setImageResource(R.drawable.ic_menu_camera);
                                     cargarProductos();
                                     dialogMod.cancel();
                                     Toast.makeText(getContext(), "Producto modificado", Toast.LENGTH_SHORT).show();
@@ -249,6 +257,14 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                                 }
 
                             }
+                        }
+                    });
+                    buttonPhotoProduct.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            tipo = "Modificar";
+                            dispatchTakePictureIntent();
                         }
                     });
                     botonModCerrar.setOnClickListener(new View.OnClickListener() {
@@ -404,7 +420,8 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-            botonImagen.setImageBitmap(imageBitmap);
+            if (tipo == "Agregar")botonImagen.setImageBitmap(imageBitmap);
+            if (tipo == "Modificar")buttonPhotoProduct.setImageBitmap(imageBitmap);
             fotoTomada = true;
         }
     }
@@ -473,6 +490,16 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
             try
             {
                 JSONObject object = new JSONObject(s);
+                String resultado = object.getString("Resultado");
+                if (resultado.equals("Si"))
+                {
+                    Toast.makeText(getContext(), "Productos agregados con exito.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Algo paso.", Toast.LENGTH_SHORT).show();
+                }
+
             }
             catch (JSONException e)
             {
