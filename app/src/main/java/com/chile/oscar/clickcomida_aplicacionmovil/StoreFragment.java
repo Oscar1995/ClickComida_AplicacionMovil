@@ -35,39 +35,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link StoreFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link StoreFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class StoreFragment extends Fragment implements StoreFragmentSelected.OnFragmentInteractionListener
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
+    private OnFragmentInteractionListener mListener;
     private String id_usuario;
-
-
     Bitmap[] images;
     String[] id_store, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
     ListView listViewStores;
     ProgressDialog progress;
 
-
-    private OnFragmentInteractionListener mListener;
-
     public StoreFragment()
     {
-        // Required empty public constructor
-    }
 
-    // TODO: Rename and change types and number of parameters
+    }
 
     public static StoreFragmentSelected newInstance(String... params)
     {
@@ -147,7 +127,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
     {
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
             return images.length; //Indico las veces que debe recorrer
         }
 
@@ -164,14 +145,22 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
-            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
-            TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
+            try
+            {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
+                TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
+                TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
-            imageView.setImageBitmap(images[position]);
-            textViewNombre.setText(name[position]);
-            textViewDesStore.setText(des[position]);
+                imageView.setImageBitmap(images[position]);
+                textViewNombre.setText(name[position]);
+                textViewDesStore.setText(des[position]);
+            }
+            catch (Exception ex)
+            {
+                Toast.makeText(getContext(), "Intentalo otra vez", Toast.LENGTH_SHORT).show();
+            }
+
 
             return convertView;
         }
@@ -201,16 +190,6 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener
     {
         // TODO: Update argument type and name
@@ -267,7 +246,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                     }
                     catch (Exception ex)
                     {
-                        ex.printStackTrace();
+                        Toast.makeText(getContext(), "Intentalo de nuevo.", Toast.LENGTH_SHORT).show();
+                        //ex.printStackTrace();
                     }
                 }
             }
@@ -334,7 +314,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
             }
             catch (JSONException e)
             {
-                e.printStackTrace();
+                Toast.makeText(getContext(), "Intentalo de nuevo.", Toast.LENGTH_SHORT).show();
+               // e.printStackTrace();
             }
         }
     }

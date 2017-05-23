@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, showProducts_me.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;

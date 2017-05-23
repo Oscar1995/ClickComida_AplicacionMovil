@@ -32,6 +32,7 @@ public class MapsActivityTienda extends Fragment implements OnMapReadyCallback, 
 {
 
     private GoogleMap mMap;
+    private String tipo;
     private static final int LOCATION_REQUEST_CODE = 1;
 
     @Nullable

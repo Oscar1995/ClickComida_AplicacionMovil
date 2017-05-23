@@ -181,4 +181,5 @@
     <string name="titulo_productos">Productos</string>
     <string name="titulo_mod_tienda">Modificar datos</string>
     <string name="titulo_mis_productos">Productos de mi tienda</string>
+    <string name="titulo_agregar_coordendas">Indicar mi posicion en el mapa</string>
 </resources>

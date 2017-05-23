@@ -29,6 +29,11 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 
@@ -162,11 +167,57 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             public void onClick(View v)
             {
                 Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                /*FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, new MapsActivityTienda());
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
-                trans.commit();
+                trans.commit();*/
+                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                builderMapa.setView(pMap);
+                final AlertDialog mapUpdate = builderMapa.create();
+                mapUpdate.show();
+
+
+                map.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(final GoogleMap googleMap) {
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                            @Override
+                            public void onMapClick(LatLng latLng)
+                            {
+                                googleMap.clear();
+                                //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                Coordenadas.latitud = latLng.latitude;
+                                Coordenadas.longitud = latLng.longitude;
+                            }
+                        });
+                    }
+                });
+                botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        getFragmentManager().beginTransaction().remove(map).commit();
+                        mapUpdate.dismiss();
+                    }
+                });
 
                 /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                 View p = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);

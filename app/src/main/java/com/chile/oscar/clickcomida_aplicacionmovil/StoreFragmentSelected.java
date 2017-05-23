@@ -42,9 +42,9 @@ public class StoreFragmentSelected extends Fragment
 
 
     // TODO: Rename and change types and number of parameters
-    public static showProducts_me newInstance(String store_id, String store_name)
+    public static MostrarProductosMios newInstance(String store_id, String store_name)
     {
-        showProducts_me fragment = new showProducts_me();
+        MostrarProductosMios fragment = new MostrarProductosMios();
         Bundle args = new Bundle();
         args.putString("store_id", store_id);
         args.putString("store_name", store_name);

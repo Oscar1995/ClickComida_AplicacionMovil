@@ -1,7 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,33 +39,30 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link showProducts_me.OnFragmentInteractionListener} interface
+ * {@link MostrarProductosMios.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link showProducts_me#newInstance} factory method to
+ * Use the {@link MostrarProductosMios#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class showProducts_me extends Fragment
+public class MostrarProductosMios extends Fragment
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    ListView listViewProductos;
+    String store_id, store_name;
+    ArrayList<Bitmap> imagesProducts = new ArrayList<>();
+    ArrayList<Integer> idProducts = new ArrayList<>();
+    ArrayList<String> nameProducts = new ArrayList<>();
+    ArrayList<String> desProducts = new ArrayList<>();
+    int[] priceProducts;
+    int[] arrCont = new int[2];
+    ListView lvProd;
+    ProgressDialog progress;
     private OnFragmentInteractionListener mListener;
 
-    String store_id, store_name;
-
-    int[] images = {R.drawable.ic_cancelar};
-    String[] des = {"Descripcion"};
-
-    ArrayList<String> descripcion;
-
-    public showProducts_me()
+    public MostrarProductosMios()
     {
         // Required empty public constructor
     }
 
 
-    // TODO: Rename and change types and number of parameters
     public static fragmentProductosVender newInstance(String store_id)
     {
         fragmentProductosVender fragment = new fragmentProductosVender();
@@ -85,25 +81,32 @@ public class showProducts_me extends Fragment
             store_name = getArguments().getString("store_name");
         }
     }
-    int posCol = 0;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_show_products_me, container, false);
-        TextView textView = (TextView)v.findViewById(R.id.txtTitulo_me);
+        View view = inflater.inflate(R.layout.fragment_mostrar_productos_mios, container, false);
+
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando productos...");
+        progress.show();
+
+        TextView textView = (TextView)view.findViewById(R.id.txtTitulo_me);
         textView.setText(getResources().getString(R.string.titulo_mis_productos) + " " + store_name);
-        descripcion = new ArrayList<String>();
-        descripcion.add("Manzana");
-        descripcion.add("Pera");
-        descripcion.add("Naranja");
-        listViewProductos = (ListView)v.findViewById(R.id.lvProductosTienda_me);
-        listViewProductos.setAdapter(new CustomAdapter());
 
-
-        Button buttonAdd = (Button)v.findViewById(R.id.btnAgregarProductos_me);
-
+        JSONObject object = new JSONObject();
+        try
+        {
+            object.put("store_id", store_id);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        lvProd = (ListView)view.findViewById(R.id.listaNuevaProd);
+        new getProducts().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargarProductos.php", object.toString());
+        Button buttonAdd = (Button)view.findViewById(R.id.btnAgregarProductos_me);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -115,7 +118,9 @@ public class showProducts_me extends Fragment
                 trans.commit();
             }
         });
-        return v;
+        //String[] ejemplo = {"Uno", "Dos"};
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, ejemplo);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -152,16 +157,20 @@ public class showProducts_me extends Fragment
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener
+    {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    class CustomAdapter extends BaseAdapter
+    int a = 0;
+    int con = 0;
+
+    class CustomAdapterProducts extends BaseAdapter
     {
 
         @Override
         public int getCount() {
-            return 6;
+            return imagesProducts.size();
         }
 
         @Override
@@ -177,56 +186,45 @@ public class showProducts_me extends Fragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_product, null);
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
 
-            ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
+            /*ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
             ImageView imageViewProdDos = (ImageView)convertView.findViewById(R.id.ivDosProducts);
-            ImageView imageViewProdTres = (ImageView)convertView.findViewById(R.id.ivTresProducts);
+            ImageView imageViewProdTres = (ImageView)convertView.findViewById(R.id.ivTresProducts);*
 
-            final TextView textViewUno = (TextView)convertView.findViewById(R.id.txtDesUno);
+            /*final TextView textViewUno = (TextView)convertView.findViewById(R.id.txtDesUno);
             final TextView textViewDos = (TextView)convertView.findViewById(R.id.txtDesDos);
-            final TextView textViewTres = (TextView)convertView.findViewById(R.id.txtDesTres);
+            final TextView textViewTres = (TextView)convertView.findViewById(R.id.txtDesTres);*/
 
-            imageViewProd.setImageResource(images[0]);
-            imageViewProdDos.setImageResource(images[0]);
-            imageViewProdTres.setImageResource(images[0]);
-
-            textViewUno.setText("Manzana");
-            textViewDos.setText("Pera");
-            textViewTres.setText("Naranja");
-
-
-            imageViewProd.setOnClickListener(new View.OnClickListener()
+            try
             {
-                @Override
-                public void onClick(View v)
-                {
-                    int pos = descripcion.indexOf(textViewUno.getText());
-                    Toast.makeText(getContext(), "pos:" + pos, Toast.LENGTH_SHORT).show();
-                }
-            });
-            imageViewProdDos.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    int pos = descripcion.indexOf(textViewDos.getText());
-                    Toast.makeText(getContext(), "pos:" + pos, Toast.LENGTH_SHORT).show();
-                }
-            });
-            imageViewProdTres.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v) {
-                    int pos = descripcion.indexOf(textViewTres.getText());
-                    Toast.makeText(getContext(), "pos:" + pos, Toast.LENGTH_SHORT).show();
-                }
-            });
+                /*imageViewProdTres.setImageBitmap(imagesProducts.get(position + a));
+                textViewTres.setText(nameProducts.get(position + a));
 
+                imageViewProdDos.setImageBitmap(imagesProducts.get(position + a));
+                textViewDos.setText(nameProducts.get(position + a));
 
+                imageViewProd.setImageBitmap(imagesProducts.get(position + a));
+                textViewUno.setText(nameProducts.get(position + a));*/
+
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
+                TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
+                TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
+
+                imageView.setImageBitmap(imagesProducts.get(position));
+                textViewNombre.setText(nameProducts.get(position));
+                textViewDesStore.setText(priceProducts[position]);
+            }
+            catch (Exception ex)
+            {
+
+            }
             return convertView;
         }
     }
+    int m3 = 3;
+    int col = 1;
+    int totalProd;
     public class getProducts extends AsyncTask<String, Void, String>
     {
         @Override
@@ -288,7 +286,55 @@ public class showProducts_me extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
+            try
+            {
+                if (s.equals("[]"))
+                {
+                    Toast.makeText(getContext(), "Aun no tienes productos registrados.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
+                    priceProducts = new int[tomarCuenta];
+                    JSONObject jsonObject = null;
+                    int cLocal = 0;
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        if (i >= tomarCuenta)
+                        {
+                            Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
+                            imagesProducts.add(bitmap);
+                            cLocal++;
+                        }
+                        else
+                        {
+                            idProducts.add(Integer.parseInt(jsonObject.getString("id")));
+                            nameProducts.add(jsonObject.getString("name"));
+                            desProducts.add(jsonObject.getString("description"));
+                            priceProducts[i] = Integer.parseInt(jsonObject.getString("price"));
+                        }
+                    }
+                    for (int i =0; i<nameProducts.size() +1; i++)
+                    {
+                        if (m3 == i)
+                        {
+                            m3+=3;
+                            col +=1;
+                        }
+                    }
 
+                    totalProd = nameProducts.size();
+                    lvProd.setAdapter(new CustomAdapterProducts());
+                    progress.dismiss();
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
+
 }

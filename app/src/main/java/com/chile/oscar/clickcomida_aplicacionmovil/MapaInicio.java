@@ -102,10 +102,10 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             {
                 if (marker.isFlat())
                 {
-                    Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
                 }
-                int pos = nameStore.indexOf(marker.getTitle());
-                Toast.makeText(getContext(), "Posicion de la tienda en el arreglo: " +pos, Toast.LENGTH_SHORT).show();
+                //int pos = nameStore.indexOf(marker.getTitle());
+                //Toast.makeText(getContext(), "Posicion de la tienda en el arreglo: " +pos, Toast.LENGTH_SHORT).show();
             }
         });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
@@ -113,8 +113,8 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Double dis = new Coordenadas().CalcularDistancias(mLocation.getLatitude(), mLocation.getLongitude(), marker.getPosition().latitude, marker.getPosition().longitude);
-                Toast.makeText(getContext(), "Distancia:" +dis , Toast.LENGTH_SHORT).show();
+                //Double dis = new Coordenadas().CalcularDistancias(mLocation.getLatitude(), mLocation.getLongitude(), marker.getPosition().latitude, marker.getPosition().longitude);
+                //Toast.makeText(getContext(), "Distancia:" +dis , Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -281,61 +281,65 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
         {
             try
             {
-                JSONArray jsonArray = new JSONArray(s);
-                JSONObject jsonObject = null;
 
-                idStore = new int[jsonArray.length()];
-                street = new String[jsonArray.length()];
-                number = new String[jsonArray.length()];
-                open_hour = new String[jsonArray.length()];
-                close_hour = new String[jsonArray.length()];
-                lunch_hour = new String[jsonArray.length()];
-                lunch_after_hour = new String[jsonArray.length()];
-                start_day = new String[jsonArray.length()];
-                end_day = new String[jsonArray.length()];
-                //latitude = new Double[jsonArray.length()];
-                //longitude = new Double[jsonArray.length()];
-
-                nameStore = new ArrayList<String>();
-                latitude = new ArrayList<Double>();
-                longitude = new ArrayList<Double>();
-
-                user_id = new String[jsonArray.length()];
-
-                for (int i = 0; i < jsonArray.length(); i++)
+                if (s != null)
                 {
-                    jsonObject = jsonArray.getJSONObject(i);
-                    idStore[i] = Integer.parseInt(jsonObject.getString("id"));
-                    nameStore.add(jsonObject.getString("name"));
-                    street[i] = jsonObject.getString("street");
-                    number[i] = jsonObject.getString("number");
-                    open_hour[i] = jsonObject.getString("open_hour");
-                    close_hour[i] = jsonObject.getString("close_hour");
-                    lunch_hour[i] = jsonObject.getString("lunch_hour");
-                    lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
-                    start_day[i] = jsonObject.getString("start_day");
-                    end_day[i] = jsonObject.getString("end_day");
-                    latitude.add(Double.parseDouble(jsonObject.getString("latitude")));
-                    longitude.add(Double.parseDouble(jsonObject.getString("longitude")));
-                    user_id[i] = jsonObject.getString("user_id");
-                }
-                for (int i=0; i<nameStore.size(); i++)
-                {
-                    LatLng coordenadas = new LatLng(latitude.get(i), longitude.get(i));
-                    if (user_id[i].equals(Coordenadas.id))
-                    {
-                        mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).flat(true).snippet("Pincha este cuadro para mas información")).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    }
-                    else
-                    {
-                        mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).snippet("Pincha este cuadro para mas información"));
-                    }
+                    JSONArray jsonArray = new JSONArray(s);
+                    JSONObject jsonObject = null;
 
+                    idStore = new int[jsonArray.length()];
+                    street = new String[jsonArray.length()];
+                    number = new String[jsonArray.length()];
+                    open_hour = new String[jsonArray.length()];
+                    close_hour = new String[jsonArray.length()];
+                    lunch_hour = new String[jsonArray.length()];
+                    lunch_after_hour = new String[jsonArray.length()];
+                    start_day = new String[jsonArray.length()];
+                    end_day = new String[jsonArray.length()];
+                    //latitude = new Double[jsonArray.length()];
+                    //longitude = new Double[jsonArray.length()];
+
+                    nameStore = new ArrayList<String>();
+                    latitude = new ArrayList<Double>();
+                    longitude = new ArrayList<Double>();
+
+                    user_id = new String[jsonArray.length()];
+
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        idStore[i] = Integer.parseInt(jsonObject.getString("id"));
+                        nameStore.add(jsonObject.getString("name"));
+                        street[i] = jsonObject.getString("street");
+                        number[i] = jsonObject.getString("number");
+                        open_hour[i] = jsonObject.getString("open_hour");
+                        close_hour[i] = jsonObject.getString("close_hour");
+                        lunch_hour[i] = jsonObject.getString("lunch_hour");
+                        lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
+                        start_day[i] = jsonObject.getString("start_day");
+                        end_day[i] = jsonObject.getString("end_day");
+                        latitude.add(Double.parseDouble(jsonObject.getString("latitude")));
+                        longitude.add(Double.parseDouble(jsonObject.getString("longitude")));
+                        user_id[i] = jsonObject.getString("user_id");
+                    }
+                    for (int i=0; i<nameStore.size(); i++)
+                    {
+                        LatLng coordenadas = new LatLng(latitude.get(i), longitude.get(i));
+                        if (user_id[i].equals(Coordenadas.id))
+                        {
+                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).flat(true).snippet("Pincha este cuadro para mas información")).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        }
+                        else
+                        {
+                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).snippet("Pincha este cuadro para mas información"));
+                        }
+
+                    }
                 }
             }
             catch (JSONException e)
             {
-                e.printStackTrace();
+                String x = e.getMessage();
             }
         }
     }

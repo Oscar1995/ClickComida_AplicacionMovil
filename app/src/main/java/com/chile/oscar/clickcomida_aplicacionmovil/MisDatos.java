@@ -2,6 +2,7 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 
 import android.Manifest;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
+import android.view.InflateException;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,18 +27,24 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +62,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class MisDatos extends Fragment implements View.OnClickListener {
+public class MisDatos extends Fragment implements View.OnClickListener, OnMapReadyCallback
+{
     private static final int LOCATION_REQUEST_CODE = 1;
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle, calleDos, numCalleDos, calleTres, numCalleTres;
     EditText txtVariable, txtClaveUser, txtActualClave;
@@ -83,8 +93,7 @@ public class MisDatos extends Fragment implements View.OnClickListener {
         numCalleDos = (TextView) view.findViewById(R.id.txtNumeros_misdatos_d);
         calleTres = (TextView) view.findViewById(R.id.txtCallemisdatos_t);
         numCalleTres = (TextView) view.findViewById(R.id.txtNumeromisdatos_t);
-
-
+        ;
         fbUpdateUser.setOnClickListener(this);
 
         Bundle bundle = getArguments();
@@ -135,7 +144,7 @@ public class MisDatos extends Fragment implements View.OnClickListener {
     boolean tel1 = false, tel2 = false;
 
     public void createdd() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View v = getActivity().getLayoutInflater().inflate(R.layout.crud_datos_usuario, null);
         builder.setView(v);
         dialogCrudUsuario = builder.create();
@@ -212,34 +221,108 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                         final EditText txtNumeroCalle = (EditText) p.findViewById(R.id.txtNumero_usuario_dir);
                         Button btnDir = (Button) p.findViewById(R.id.btnCancelarDireccion);
                         Button botonModificarDi = (Button) p.findViewById(R.id.btnModificarDireccion);
-                        botonModificarDi.setOnClickListener(new View.OnClickListener() {
+                        Button botonAgregarCoordenadas = (Button)p.findViewById(R.id.btnAddDireccionCoor);
+                        botonModificarDi.setOnClickListener(new View.OnClickListener()
+                        {
                             @Override
                             public void onClick(View v) {
                                 int lonDir = direcciones.length;
                                 if (lonDir == 3) {
                                     Toast.makeText(getContext(), "Ya tienes tres direcciones, puedes eliminar una direccion o modificar una.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    if (txtCalle.getText().toString().isEmpty() || txtNumeroCalle.getText().toString().isEmpty()) {
-                                        if (txtCalle.getText().toString().isEmpty()) {
+                                }
+                                else
+                                {
+                                    if(txtCalle.getText().toString().isEmpty() || txtNumeroCalle.getText().toString().isEmpty())
+                                    {
+                                        if (txtCalle.getText().toString().isEmpty())
+                                        {
                                             txtCalle.setError("Completa este campo.");
                                         }
-                                        if (txtNumeroCalle.getText().toString().isEmpty()) {
+                                        if (txtNumeroCalle.getText().toString().isEmpty())
+                                        {
                                             txtNumeroCalle.setError("Completa este campo.");
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         String json = "";
                                         JSONObject jsonObject = new JSONObject();
-                                        try {
+                                        try
+                                        {
                                             jsonObject.put("id", id);
                                             jsonObject.put("callenueva", txtCalle.getText().toString());
                                             jsonObject.put("numeronuevo", txtNumeroCalle.getText().toString());
-                                        } catch (JSONException e) {
+                                            jsonObject.put("lat_us", Coordenadas.latitud);
+                                            jsonObject.put("lon_us", Coordenadas.longitud);
+                                        }
+                                        catch (JSONException e)
+                                        {
                                             e.printStackTrace();
                                         }
                                         json = jsonObject.toString();
                                         new agregarDireccion().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", json);
                                     }
                                 }
+                            }
+                        });
+                        botonAgregarCoordenadas.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                                View pMap = null;
+                                try
+                                {
+                                    pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                                }
+                                catch (InflateException ie)
+                                {
+                                    String err = ie.getMessage();
+                                    String x = "";
+                                }
+
+                                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+                                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                                builderMapa.setView(pMap);
+                                final AlertDialog mapUpdate = builderMapa.create();
+                                mapUpdate.show();
+
+
+                                map.getMapAsync(new OnMapReadyCallback() {
+                                    @Override
+                                    public void onMapReady(final GoogleMap googleMap) {
+                                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            // TODO: Consider calling
+                                            //    ActivityCompat#requestPermissions
+                                            // here to request the missing permissions, and then overriding
+                                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                            //                                          int[] grantResults)
+                                            // to handle the case where the user grants the permission. See the documentation
+                                            // for ActivityCompat#requestPermissions for more details.
+                                            return;
+                                        }
+                                        googleMap.setMyLocationEnabled(true);
+                                        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                            @Override
+                                            public void onMapClick(LatLng latLng)
+                                            {
+                                                googleMap.clear();
+                                                //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                                googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                                Coordenadas.latitud = latLng.latitude;
+                                                Coordenadas.longitud = latLng.longitude;
+                                            }
+                                        });
+                                    }
+                                });
+                                botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        getFragmentManager().beginTransaction().remove(map).commit();
+                                        mapUpdate.dismiss();
+                                    }
+                                });
                             }
                         });
                         btnDir.setOnClickListener(new View.OnClickListener() {
@@ -250,7 +333,7 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                         });
                     }
                 }
-                if (positionCrudSelected == 1) //Modificar
+                if (positionCrudSelected == 1) //TODO: Modificar
                 {
                     if (positionElement == 0) {
                         //Nombre
@@ -327,7 +410,7 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                             final EditText textNuevaCalle = (EditText) p.findViewById(R.id.eNuevaCalle);
                             final EditText textNuevaCalleNumero = (EditText) p.findViewById(R.id.eNuevoNumeroCalle);
 
-                            Button botonCoordenadasUpdate = (Button) p.findViewById(R.id.btnAbrirMapa);
+                            final Button botonCoordenadasUpdate = (Button) p.findViewById(R.id.btnAbrirMapa);
                             Button botonMod = (Button) p.findViewById(R.id.btnModificarDireccion_us);
                             Button botonCerrar = (Button) p.findViewById(R.id.btnCerrarDireccion_us);
                             final ListView lvDirecciones = (ListView) p.findViewById(R.id.lvListaDirecciones);
@@ -335,8 +418,9 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                             linearUno.setVisibility(View.GONE);
                             linearDos.setVisibility(View.GONE);
                             linearTres.setVisibility(View.GONE);
+                            botonCoordenadasUpdate.setVisibility(View.GONE);
 
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
+                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
                             lvDirecciones.setAdapter(adapter);
 
                             lvDirecciones.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -364,6 +448,7 @@ public class MisDatos extends Fragment implements View.OnClickListener {
 
                                     linearDos.setVisibility(View.VISIBLE);
                                     linearTres.setVisibility(View.VISIBLE);
+                                    botonCoordenadasUpdate.setVisibility(View.VISIBLE);
                                 }
                             });
 
@@ -387,6 +472,8 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                                                 jsonObject.put("nant", calleNumAntigua);
                                                 jsonObject.put("cnueva", textNuevaCalle.getText().toString());
                                                 jsonObject.put("nnueva", textNuevaCalleNumero.getText().toString());
+                                                jsonObject.put("latitud", Coordenadas.latitud);
+                                                jsonObject.put("longitud", Coordenadas.longitud);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -404,53 +491,56 @@ public class MisDatos extends Fragment implements View.OnClickListener {
                                     dialogChangeDireccionUpdate.cancel();
                                 }
                             });
-                            botonCoordenadasUpdate.setOnClickListener(new View.OnClickListener()
-                            {
+                            botonCoordenadasUpdate.setOnClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onClick(View v)
-                                {
-                                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                    final View layout = inflater.inflate(R.layout.mapa_fragment_update, null);
+                                public void onClick(View v) {
+
+                                    final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                                    View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                                    final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                                    Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                                    builderMapa.setView(pMap);
+                                    final AlertDialog mapUpdate = builderMapa.create();
+                                    mapUpdate.show();
 
 
-
-                                    try
-                                    {
-                                        //SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapita_lindo);
-                                        MapFragment mapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.mapita_lindo);
-                                        mapFragment.getMapAsync(new OnMapReadyCallback()
-                                        {
-                                            @Override
-                                            public void onMapReady(GoogleMap googleMap)
-                                            {
-                                                GoogleMap mMap = googleMap;
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext()).setView(layout);
-                                                AlertDialog alertDialog = builder.create();
-                                                alertDialog.show();
-
-                                            }
-                                        });
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        String x = ex.getMessage();
-                                    }
-
-
-
-                                   /*AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                                    View pMap = getActivity().getLayoutInflater().inflate(R.layout.mapa_fragment_update, null);
-                                    SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapita_lindo);
-                                    supportMapFragment.getMapAsync(new OnMapReadyCallback()
-                                    {
+                                    map.getMapAsync(new OnMapReadyCallback() {
                                         @Override
-                                        public void onMapReady(GoogleMap googleMap) {
-
+                                        public void onMapReady(final GoogleMap googleMap) {
+                                            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                                // TODO: Consider calling
+                                                //    ActivityCompat#requestPermissions
+                                                // here to request the missing permissions, and then overriding
+                                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                //                                          int[] grantResults)
+                                                // to handle the case where the user grants the permission. See the documentation
+                                                // for ActivityCompat#requestPermissions for more details.
+                                                return;
+                                            }
+                                            googleMap.setMyLocationEnabled(true);
+                                            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                                @Override
+                                                public void onMapClick(LatLng latLng)
+                                                {
+                                                    googleMap.clear();
+                                                    //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                                    Coordenadas.latitud = latLng.latitude;
+                                                    Coordenadas.longitud = latLng.longitude;
+                                                }
+                                            });
                                         }
                                     });
-                                    builderMapa.setView(pMap);
-                                    AlertDialog mapUpdate = builderMapa.create();
-                                    mapUpdate.show();*/
+                                    botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v)
+                                        {
+                                            getFragmentManager().beginTransaction().remove(map).commit();
+                                            mapUpdate.dismiss();
+                                        }
+                                    });
                                 }
                             });
 
@@ -961,6 +1051,11 @@ public class MisDatos extends Fragment implements View.OnClickListener {
             });
         }
         dialogUp.show();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
     }
 
     public class TraerDatos extends AsyncTask<String, Void, String> //Enviar id
