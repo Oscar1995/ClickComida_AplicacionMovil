@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,13 +68,26 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
 
     int[] idStore;
     String[] street, number, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, user_id;
-    ArrayList<String> nameStore;
+    ArrayList<String> nameStore, desStore;
     ArrayList<Double> latitude, longitude;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.activity_mapa_inicio, container, false);
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+        View view = null;
+        SupportMapFragment mapFragment = null;
+        try
+        {
+             view = inflater.inflate(R.layout.activity_mapa_inicio, container, false);
+             mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+        }
+        catch (Exception ex)
+        {
+            ViewGroup viewGroup = null;
+            viewGroup.removeView(view);
+            getFragmentManager().beginTransaction().remove(mapFragment).commit();
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+        }
+
         mapFragment.getMapAsync(this);
 
         JSONObject object = new JSONObject();
@@ -86,10 +100,27 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             e.printStackTrace();
         }
         new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
-
         return view;
     }
-
+    public static StoreFragmentSelected newInstance(String... params)
+    {
+        StoreFragmentSelected fragment = new StoreFragmentSelected();
+        Bundle args = new Bundle();
+        args.putString("imagen_tienda", params[0]);
+        args.putString("nombre_tienda", params[1]);
+        args.putString("des_tienda", params[2]);
+        args.putString("calle_tienda", params[3]);
+        args.putString("numero_tienda", params[4]);
+        args.putString("start_day", params[5]);
+        args.putString("end_day", params[6]);
+        args.putString("open_hour", params[7]);
+        args.putString("close_hour", params[8]);
+        args.putString("lunch_open_hour", params[9]);
+        args.putString("lunch_after_hour", params[10]);
+        args.putString("tienda_id", params[11]);
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
@@ -102,6 +133,13 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             {
                 if (marker.isFlat())
                 {
+                    int pos = nameStore.indexOf(marker.getTitle());
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, newInstance("imagen", nameStore.get(pos), "Descripcion", street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
+
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
                 }
                 //int pos = nameStore.indexOf(marker.getTitle());
