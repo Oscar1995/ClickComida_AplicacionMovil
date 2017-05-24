@@ -15,8 +15,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,37 +73,42 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
     String[] street, number, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, user_id;
     ArrayList<String> nameStore, desStore;
     ArrayList<Double> latitude, longitude;
+    View view;
     int pos;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = null;
-        SupportMapFragment mapFragment = null;
         try
         {
-             view = inflater.inflate(R.layout.activity_mapa_inicio, container, false);
-             mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+            view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+            mapFragment.getMapAsync(this);
         }
-        catch (Exception ex)
+        catch (InflateException ex)
         {
-            ViewGroup viewGroup = null;
-            viewGroup.removeView(view);
-            getFragmentManager().beginTransaction().remove(mapFragment).commit();
-            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+
         }
 
-        mapFragment.getMapAsync(this);
 
-        JSONObject object = new JSONObject();
-        try
+
+        if (new Validadores().isNetDisponible(getContext()))
         {
-            object.put("nada", null);
+            JSONObject object = new JSONObject();
+            try
+            {
+                object.put("nada", null);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
         }
-        catch (JSONException e)
+        else
         {
-            e.printStackTrace();
+            Toast.makeText(getContext(), "Debes estar conectado a una red para ver las tiendas.", Toast.LENGTH_SHORT).show();
         }
-        new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
+
         return view;
     }
     public static StoreFragmentSelected newInstance(String... params)
@@ -456,11 +464,14 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
             try
             {
                 JSONObject object = new JSONObject(s);
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();
+                if (object != null)
+                {
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
+                }
             }
             catch (JSONException e)
             {

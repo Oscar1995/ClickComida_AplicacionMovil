@@ -156,20 +156,24 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                     }
                     else
                     {
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
+                        if (new Validadores().isNetDisponible(getApplicationContext()))
                         {
-                            jsonObject.put("nickname", txtNickname.getText().toString());
+                            JSONObject jsonObject = new JSONObject();
+                            try
+                            {
+                                jsonObject.put("nickname", txtNickname.getText().toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            new ConsultarNick().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", jsonObject.toString());
                         }
-                        catch (JSONException e)
+                        else
                         {
-                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.debes_estar_conectado), Toast.LENGTH_SHORT).show();
                         }
-                        json = jsonObject.toString();
-                        new ConsultarNick().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
                     }
-
                 }
                 break;
 
@@ -185,9 +189,16 @@ public class RegistrarUsuarioContinuacion extends AppCompatActivity implements V
                 builder.setView(R.layout.activity_maps_reg);
                 AlertDialog dialogCrudUsuario = builder.create();
                 dialogCrudUsuario.show();*/
-                Intent intent = new Intent(RegistrarUsuarioContinuacion.this, MapsActivityReg.class);
-                startActivity(intent);
 
+                if (new Validadores().isNetDisponible(getApplicationContext()))
+                {
+                    Intent intent = new Intent(RegistrarUsuarioContinuacion.this, MapsActivityReg.class);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.debes_estar_conectado), Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

@@ -27,6 +27,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,11 +61,11 @@ public class fragmentTiendaDos extends Fragment
 
         final RadioButton radioContinuado = (RadioButton)view.findViewById(R.id.rbtContinuado);
         final RadioButton radioTomorrow = (RadioButton)view.findViewById(R.id.rbtTomorrow);
-        final TextView textViewUno = (TextView)view.findViewById(R.id.tvUno);
 
         final Spinner sStart = (Spinner)view.findViewById(R.id.s_start);
         final Spinner sEnd = (Spinner)view.findViewById(R.id.s_end);
 
+        final TextView textViewUno = (TextView)view.findViewById(R.id.tvUno);
         final TextView textViewDos = (TextView)view.findViewById(R.id.tvDos);
         final TextView textViewHoraUno = (TextView)view.findViewById(R.id.tvUnoHora);
         final TextView textViewHoraDos = (TextView)view.findViewById(R.id.tvDosHora);
@@ -153,6 +154,8 @@ public class fragmentTiendaDos extends Fragment
                 textViewUno.setText(getResources().getString(R.string.tomorrow));
                 textViewDos.setText(getResources().getString(R.string.tarde));
 
+                textViewUno.setVisibility(View.VISIBLE);
+                fechaArriba.setVisibility(View.VISIBLE);
                 fechaAbajo.setVisibility(View.VISIBLE);
                 textViewDos.setVisibility(View.VISIBLE);
                 linearDias.setVisibility(View.VISIBLE);
@@ -202,16 +205,51 @@ public class fragmentTiendaDos extends Fragment
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
                     if (continuado && h1 && h2)
                     {
+                        if (posInicio <= posFin)
+                        {
+                            if (new Validadores().CompararHoras(false, getContext(), textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString()))
+                            {
+                                if (new Validadores().isNetDisponible(getContext()))
+                                {
+                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), getResources().getString(R.string.debes_estar_conectado), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "El dia de inicio debe ser menor o igual al dia de termino.", Toast.LENGTH_SHORT).show();
+                        }
                         //trans.replace(R.id.content_general, newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
-                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
-
 
                     }
                     else if (tomorrow && h1 && h2 && h3 & h4)
                     {
+                        if (posInicio <= posFin)
+                        {
+                            if (new Validadores().CompararHoras(true, getContext(), textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), textViewHoraTres.getText().toString(), textViewHoraCuatro.getText().toString()))
+                            {
+                                if (new Validadores().isNetDisponible(getContext()))
+                                {
+                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), getResources().getString(R.string.debes_estar_conectado), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "El dia de inicio debe ser menor o igual al dia de termino.", Toast.LENGTH_SHORT).show();
+                        }
+
                         //trans.replace(R.id.content_general, newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString(), textViewHoraDos.getText().toString(), textViewHoraTres.getText().toString(), textViewHoraCuatro.getText().toString(), sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString()));
                         //new consultarTienda().execute()
-                        new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+
                     }
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
@@ -327,36 +365,7 @@ public class fragmentTiendaDos extends Fragment
         }, Calendar.HOUR, Calendar.MINUTE, false);
         timePickerDialog.show();
     }
-    /*private void CompararHoras(String horaI, String HoraF, TextView txtUno, TextView txtDos)
-    {
-        String[] hora_minutos = horaI.split(":");
-        int hora = Integer.parseInt(hora_minutos[0]);
-        int minutos = Integer.parseInt(hora_minutos[1]);
 
-        String[] hora_minutosContraparte = HoraF.split(":");
-        int hora_ContraParte = Integer.parseInt(hora_minutosContraparte[0]);
-        int minuto_ContraParte = Integer.parseInt(hora_minutosContraparte[1]);
-
-        if (hora == hora_ContraParte)
-        {
-            if (minutos > minuto_ContraParte)
-            {
-                txtUno.setText("Debe ser menor de la hora: " + horaI);
-            }
-            else if (minutos == minuto_ContraParte)
-            {
-                txtDos.setText("Las horas no deben ser iguales.");
-            }
-        }
-        else
-        {
-            if (hora > hora_ContraParte)
-            {
-                txtUno.setText("Este debe ser menor a la hora: " + HoraF);
-            }
-        }
-
-    }*/
     public class consultarTienda extends AsyncTask<String, Void, String>
     {
         @Override

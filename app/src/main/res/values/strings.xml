@@ -108,6 +108,7 @@
     <string name="tu_correo_nuevo">Nuevo correo electronico</string>
     <string name="tu_clave_nuevo">Nueva clave</string>
     <string name="tu_clave_nuevo_rep">Repite tu nueva clave</string>
+    <string name="debes_estar_conectado">Debes estar conectado a una red.</string>
 
     <string name="ingrese_clave_actual">Ingrese clave actual</string>
     <string name="modificar_boton">Modificar</string>

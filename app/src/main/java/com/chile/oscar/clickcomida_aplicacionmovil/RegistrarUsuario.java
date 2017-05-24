@@ -170,18 +170,24 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
                 }
                 if (isCorrectEmail == true && isCorrectClave == true && isCorrectClave == true && isCorrectClaveR == true && isCorrectNombre == true && isCorrectApellido == true)
                 {
-                    String json = "";
-                    JSONObject jsonObject = new JSONObject();
-                    try
+                    if (new Validadores().isNetDisponible(getApplicationContext()))
                     {
-                        jsonObject.put("correo", txtCorreo.getText().toString());
+                        JSONObject jsonObject = new JSONObject();
+                        try
+                        {
+                            jsonObject.put("correo", txtCorreo.getText().toString());
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        new WebService().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_correo.php", jsonObject.toString());
                     }
-                    catch (JSONException e)
+                    else
                     {
-                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Debes estar conectado a una red para continuar.", Toast.LENGTH_SHORT).show();
                     }
-                    json = jsonObject.toString();
-                    new WebService().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_correo.php", json);
+
                 }
 
                 break;

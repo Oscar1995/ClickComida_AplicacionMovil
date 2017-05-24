@@ -18,7 +18,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 public class Inicio_Usuario extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener
@@ -36,7 +40,8 @@ public class Inicio_Usuario extends AppCompatActivity
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -76,11 +81,16 @@ public class Inicio_Usuario extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
+        {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else
+        {
+            //getFragmentManager().beginTransaction().remove(map).commit();
             super.onBackPressed();
         }
     }
@@ -167,7 +177,15 @@ public class Inicio_Usuario extends AppCompatActivity
         }
         if (fragmentoSeleccionado == true)
         {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_general, fragment).commit();
+            if (new Validadores().isNetDisponible(getApplicationContext()))
+            {
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_general, fragment).commit();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Debes estar conectado a una red.", Toast.LENGTH_SHORT).show();
+            }
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -175,7 +193,7 @@ public class Inicio_Usuario extends AppCompatActivity
         return true;
     }
 
-
+    @Override
     public void onFragmentInteraction(Uri uri)
     {
 

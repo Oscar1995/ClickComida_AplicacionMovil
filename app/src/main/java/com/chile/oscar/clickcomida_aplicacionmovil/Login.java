@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -49,9 +52,18 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        if (cargarPreferencias())
+        {
+            i = new Intent(Login.this, Inicio_Usuario.class);
+            i.putExtra("id_user_login", uId);
+            i.putExtra("correo_usuario", uCorreo);
+            i.putExtra("nombre_usuario", uNombre);
+            startActivity(i);
+            this.finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         btnIniciar = (Button)findViewById(R.id.btnIniciarSesion);
         btnRegistro = (Button)findViewById(R.id.btnRegistrate);
         botonFacebook = (LoginButton)findViewById(R.id.btnFacebook);
@@ -62,16 +74,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
         btnOlvidado.setOnClickListener(this);
-
-        if (cargarPreferencias())
-        {
-            i = new Intent(Login.this, Inicio_Usuario.class);
-            i.putExtra("id_user_login", uId);
-            i.putExtra("correo_usuario", uCorreo);
-            i.putExtra("nombre_usuario", uNombre);
-            startActivity(i);
-            this.finish();
-        }
         botonFacebook.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -143,13 +145,22 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                             }
                             json = jsonObject.toString();
 
-                            VerificarCorreoClave x = new VerificarCorreoClave();
-                            x.execute(getResources().getString(R.string.direccion_web) + "Controlador/login.php", json);
+                            if (new Validadores().isNetDisponible(getApplicationContext()))
+                            {
+                                VerificarCorreoClave x = new VerificarCorreoClave();
+                                x.execute(getResources().getString(R.string.direccion_web) + "Controlador/login.php", json);
+                            }
+                            else
+                            {
+                                Toast.makeText(getApplicationContext(), "Debes estar conectado a una red para iniciar sesión.", Toast.LENGTH_SHORT).show();
+                                progress.dismiss();
+                            }
+
                         }
                         catch (Exception ex)
                         {
-                            progress.cancel();
-                            Toast.makeText(getApplicationContext(), "El usuario y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "El correo y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                            progress.dismiss();
                         }
 
                     }
@@ -266,7 +277,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "Correo y/o clave son incorrectos.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "El correo y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
                 }
             }
             catch (JSONException e)
