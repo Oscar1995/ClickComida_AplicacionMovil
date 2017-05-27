@@ -130,6 +130,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                         {
                             progress = new ProgressDialog(this);
                             progress.setMessage("Iniciando..");
+                            progress.setCanceledOnTouchOutside(false);
                             progress.show();
 
                             String json = "";

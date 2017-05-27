@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/ivUnoProducts"
+        android:id="@+id/ivProductoImage"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="5dp"
@@ -23,6 +23,6 @@
         android:textColor="@color/colorNegro"
         android:layout_marginStart="54dp"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/ivUnoProducts" />
+        android:layout_toEndOf="@+id/ivProductoImage" />
 
 </RelativeLayout>

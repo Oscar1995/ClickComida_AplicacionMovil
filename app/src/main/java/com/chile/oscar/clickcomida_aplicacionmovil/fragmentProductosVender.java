@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -79,6 +80,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
     String tipo = "";
     ImageButton buttonPhotoProduct;
     List<JSONObject> jsonObjects = new ArrayList<>();
+    ProgressDialog progress;
 
     EditText txtProducto;
 
@@ -120,7 +122,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
             store_id = getArguments().getString("store_id");
         }
     }
-
+    boolean prodDb = false;
     int posicionProducto;
     boolean productoEncontrado = false, fotoTomada = false;
     String[] mostrarProd;
@@ -145,6 +147,36 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 Button botonAgre = (Button)p.findViewById(R.id.botonAdd);
                 Button botonCerr = (Button)p.findViewById(R.id.botonClose);
                 botonImagen = (ImageButton)p.findViewById(R.id.ibProduct);
+                txtProducto.setOnFocusChangeListener(new View.OnFocusChangeListener()
+                {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus)
+                    {
+                        if (hasFocus == false)
+                        {
+                            if (!txtProducto.getText().toString().isEmpty())
+                            {
+                                progress = new ProgressDialog(getContext());
+                                progress.setMessage("Comprobando nombre..");
+                                progress.setCanceledOnTouchOutside(false);
+                                progress.show();
+
+                                JSONObject object = new JSONObject();
+                                try
+                                {
+                                    object.put("Nombre", txtProducto.getText().toString());
+                                    object.put("Id", store_id);
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                                new ConsultarProducto().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultarProducto.php", object.toString());
+                            }
+
+                        }
+                    }
+                });
 
                 botonAgre.setOnClickListener(new View.OnClickListener()
                 {
@@ -153,40 +185,48 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     {
                         if (validarCampos(txtProducto, txtDescripcion, txtPrecio))
                         {
-                            if (nombreProd.contains(txtProducto.getText().toString()))
+                            if (prodDb == false)
                             {
-                                Toast.makeText(getContext(), "El nombre ya existe, elige otro.", Toast.LENGTH_SHORT).show();
-                            }
-                            else
-                            {
-                                if (fotoTomada)
+                                if (nombreProd.contains(txtProducto.getText().toString()))
                                 {
-                                    nombreProd.add(txtProducto.getText().toString().trim());
-                                    desProd.add(txtDescripcion.getText().toString().trim());
-                                    precioProd.add(txtPrecio.getText().toString().trim());
-                                    photosProd.add(Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
-                                    mostrarProd = new String[nombreProd.size()];
-
-                                    for (int i = 0; i < nombreProd.size(); i++)
-                                    {
-                                        mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
-                                    }
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
-                                    listaProductos.setAdapter(arrayAdapter);
-
-                                    txtProducto.setText("");
-                                    txtDescripcion.setText("");
-                                    txtPrecio.setText("");
-                                    botonImagen.setImageResource(R.drawable.ic_menu_camera);
-
-                                    Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
-                                    fotoTomada = false;
+                                    Toast.makeText(getContext(), "El nombre ya existe, elige otro.", Toast.LENGTH_SHORT).show();
                                 }
                                 else
                                 {
-                                    Toast.makeText(getContext(), "Debes tomar una foto para el producto.", Toast.LENGTH_SHORT).show();
+                                    if (fotoTomada)
+                                    {
+                                        nombreProd.add(txtProducto.getText().toString().trim());
+                                        desProd.add(txtDescripcion.getText().toString().trim());
+                                        precioProd.add(txtPrecio.getText().toString().trim());
+                                        photosProd.add(Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
+                                        mostrarProd = new String[nombreProd.size()];
+
+                                        for (int i = 0; i < nombreProd.size(); i++)
+                                        {
+                                            mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
+                                        }
+                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
+                                        listaProductos.setAdapter(arrayAdapter);
+
+                                        txtProducto.setText("");
+                                        txtDescripcion.setText("");
+                                        txtPrecio.setText("");
+                                        botonImagen.setImageResource(R.drawable.ic_menu_camera);
+
+                                        Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
+                                        fotoTomada = false;
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getContext(), "Debes tomar una foto para el producto.", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
+                            else
+                            {
+                                Toast.makeText(getContext(), "El producto " + txtProducto.getText().toString() + ", ya se encuentra en la base de datos.", Toast.LENGTH_LONG).show();
+                            }
+
                         }
                     }
                 });
@@ -505,6 +545,91 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
             {
                 e.printStackTrace();
             }
+        }
+    }
+    public class ConsultarProducto extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        Toast.makeText(getContext(), "Intentalo de nuevo.", Toast.LENGTH_SHORT).show();
+                        //ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject object = new JSONObject(s);
+                String res = object.getString("Resultado");
+                if (res.equals("Si"))
+                {
+                    txtProducto.setError("Este producto ya lo tienes registrado en tu tienda.");
+                    Toast.makeText(getContext(), txtProducto.getText().toString() + " ya existe en la base de datos.", Toast.LENGTH_SHORT).show();
+                    prodDb = true;
+                }
+                else if (res.equals("No"))
+                {
+                    prodDb = false;
+                }
+                progress.dismiss();
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
         }
     }
 }

@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.showProducts_me">
 
     <!-- TODO: Update blank fragment layout -->
@@ -28,13 +28,37 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <AutoCompleteTextView
+                    android:id="@+id/acProductosMios"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/btnBuscarProd"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/titulo_buscar"
+                    android:textColorLink="@drawable/colorbutton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ListView
-                    android:id="@+id/listaNuevaProd"
+                <GridView
+                    android:id="@+id/gvProductos"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="48dp" />
+                    android:layout_height="wrap_content"
+                    android:numColumns="3"
+                    android:listSelector="@color/colorAmarillo"/>
+
             </LinearLayout>
 
         </LinearLayout>
@@ -52,6 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/colorbutton"
+                android:elevation="0dp"
                 android:text="@string/agregar_producto" />
 
             <Button
@@ -71,6 +96,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/colorbuttonred"
                 android:text="@string/eliminar_producto" />
+
         </LinearLayout>
+
     </RelativeLayout>
 </FrameLayout>

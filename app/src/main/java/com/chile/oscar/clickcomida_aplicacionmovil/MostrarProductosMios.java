@@ -11,8 +11,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -53,8 +57,11 @@ public class MostrarProductosMios extends Fragment
     ArrayList<String> desProducts = new ArrayList<>();
     int[] priceProducts;
     int[] arrCont = new int[2];
-    ListView lvProd;
+    int posProd;
+    GridView gvProductos;
     ProgressDialog progress;
+    AutoCompleteTextView autoCompleteTextViewProd;
+    boolean pulsado = false;
     private OnFragmentInteractionListener mListener;
 
     public MostrarProductosMios()
@@ -81,10 +88,60 @@ public class MostrarProductosMios extends Fragment
             store_name = getArguments().getString("store_name");
         }
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    boolean unProd = false;
+    class ImagenDesPrecio extends BaseAdapter
     {
+
+        @Override
+        public int getCount()
+        {
+            if (unProd == false)
+            {
+                return imagesProducts.size();
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        @Override
+        public Object getItem(int position)
+        {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_product, null);
+            ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivProductoImage);
+            TextView textViewNom = (TextView)convertView.findViewById(R.id.txtNombreProd);
+            if (unProd)
+            {
+
+                imageViewProd.setImageBitmap(imagesProducts.get(posProd));
+                textViewNom.setText(nameProducts.get(posProd));
+            }
+            else
+            {
+                imageViewProd.setImageBitmap(imagesProducts.get(position));
+                textViewNom.setText(nameProducts.get(position));
+            }
+
+            //ImageView imageView = new ImageView(getContext());
+            //imageView.setImageBitmap(imagesProducts.get(position));
+            //imageView.setLayoutParams(new GridView.LayoutParams(260, 260));
+            return convertView;
+        }
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_mostrar_productos_mios, container, false);
 
@@ -92,6 +149,11 @@ public class MostrarProductosMios extends Fragment
         progress.setMessage("Cargando productos...");
         progress.show();
 
+        Button buttonBuscar = (Button)view.findViewById(R.id.btnBuscarProd);
+        Button buttonMod = (Button)view.findViewById(R.id.btnModificarProductos_me);
+        Button buttonDel = (Button)view.findViewById(R.id.btnEliminarProductos_me);
+
+        autoCompleteTextViewProd = (AutoCompleteTextView)view.findViewById(R.id.acProductosMios);
         TextView textView = (TextView)view.findViewById(R.id.txtTitulo_me);
         textView.setText(getResources().getString(R.string.titulo_mis_productos) + " " + store_name);
 
@@ -104,7 +166,56 @@ public class MostrarProductosMios extends Fragment
         {
             e.printStackTrace();
         }
-        lvProd = (ListView)view.findViewById(R.id.listaNuevaProd);
+        gvProductos= (GridView) view.findViewById(R.id.gvProductos);
+        gvProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                if (unProd)
+                {
+                    String nombre = nameProducts.get(posProd);
+                    Toast.makeText(getContext(), "Nombre: " + nombre, Toast.LENGTH_SHORT).show();
+                    pulsado = true;
+                }
+                else
+                {
+                    String nombre = nameProducts.get(position);
+                    Toast.makeText(getContext(), "Nombre: " + nombre, Toast.LENGTH_SHORT).show();
+                    pulsado = true;
+                }
+
+            }
+        });
+        buttonBuscar.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (nameProducts.contains(autoCompleteTextViewProd.getText().toString()))
+                {
+                    nameProducts.add("Mostrar todos");
+                    String[] prod = new String[1];
+                    posProd = nameProducts.indexOf(autoCompleteTextViewProd.getText().toString());
+                    prod[0] = nameProducts.get(nameProducts.indexOf(autoCompleteTextViewProd.getText().toString()));
+                    if (prod[0].equals("Mostrar todos"))
+                    {
+                        unProd = false;
+                        nameProducts.remove(nameProducts.indexOf("Mostrar todos"));
+                    }
+                    else
+                    {
+                        unProd = true;
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nameProducts);
+                        autoCompleteTextViewProd.setAdapter(arrayAdapter);
+                        Toast.makeText(getContext(), "Para volver a mostrar todos tus productos escribe, Mostrar todos.", Toast.LENGTH_LONG).show();
+
+                    }
+                    pulsado = false;
+                    gvProductos.setAdapter(new ImagenDesPrecio());
+                    autoCompleteTextViewProd.setText("");
+                }
+            }
+        });
         new getProducts().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargarProductos.php", object.toString());
         Button buttonAdd = (Button)view.findViewById(R.id.btnAgregarProductos_me);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +227,21 @@ public class MostrarProductosMios extends Fragment
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
+            }
+        });
+        buttonMod.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (pulsado)
+                {
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Debes seleccionar un producto para modificarlo.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         //String[] ejemplo = {"Uno", "Dos"};
@@ -162,69 +288,6 @@ public class MostrarProductosMios extends Fragment
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    int a = 0;
-    int con = 0;
-
-    class CustomAdapterProducts extends BaseAdapter
-    {
-
-        @Override
-        public int getCount() {
-            return imagesProducts.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
-
-            /*ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
-            ImageView imageViewProdDos = (ImageView)convertView.findViewById(R.id.ivDosProducts);
-            ImageView imageViewProdTres = (ImageView)convertView.findViewById(R.id.ivTresProducts);*
-
-            /*final TextView textViewUno = (TextView)convertView.findViewById(R.id.txtDesUno);
-            final TextView textViewDos = (TextView)convertView.findViewById(R.id.txtDesDos);
-            final TextView textViewTres = (TextView)convertView.findViewById(R.id.txtDesTres);*/
-
-            try
-            {
-                /*imageViewProdTres.setImageBitmap(imagesProducts.get(position + a));
-                textViewTres.setText(nameProducts.get(position + a));
-
-                imageViewProdDos.setImageBitmap(imagesProducts.get(position + a));
-                textViewDos.setText(nameProducts.get(position + a));
-
-                imageViewProd.setImageBitmap(imagesProducts.get(position + a));
-                textViewUno.setText(nameProducts.get(position + a));*/
-
-                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
-                TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
-                TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
-
-                imageView.setImageBitmap(imagesProducts.get(position));
-                textViewNombre.setText(nameProducts.get(position));
-                textViewDesStore.setText(priceProducts[position] + "");
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return convertView;
-        }
-    }
-    int m3 = 3;
-    int col = 1;
-    int totalProd;
     public class getProducts extends AsyncTask<String, Void, String>
     {
         @Override
@@ -291,6 +354,7 @@ public class MostrarProductosMios extends Fragment
                 if (s.equals("[]"))
                 {
                     Toast.makeText(getContext(), "Aun no tienes productos registrados.", Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
                 }
                 else
                 {
@@ -316,17 +380,9 @@ public class MostrarProductosMios extends Fragment
                             priceProducts[i] = Integer.parseInt(jsonObject.getString("price"));
                         }
                     }
-                    for (int i =0; i<nameProducts.size() +1; i++)
-                    {
-                        if (m3 == i)
-                        {
-                            m3+=3;
-                            col +=1;
-                        }
-                    }
-
-                    totalProd = nameProducts.size();
-                    lvProd.setAdapter(new CustomAdapterProducts());
+                    gvProductos.setAdapter(new ImagenDesPrecio());
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nameProducts);
+                    autoCompleteTextViewProd.setAdapter(arrayAdapter);
                     progress.dismiss();
                 }
             }

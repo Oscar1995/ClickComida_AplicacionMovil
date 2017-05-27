@@ -84,7 +84,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
     {
         // Inflate the layout for this fragment
         progress = new ProgressDialog(getContext());
-        progress.setMessage("Cargando datos...");
+        progress.setMessage("Cargando tiendas...");
+        progress.setCanceledOnTouchOutside(false);
         progress.show();
 
         View view = inflater.inflate(R.layout.fragment_store, container, false);
@@ -148,7 +149,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
             try
             {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
-                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
                 TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 

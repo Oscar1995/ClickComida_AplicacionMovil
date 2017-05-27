@@ -57,10 +57,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapaInicio extends Fragment implements OnMapReadyCallback
-{
+public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
-    private static final int LOCATION_REQUEST_CODE = 1;
+    private static final int LOCATION_REQUEST_CODE = 123;
 
     private GoogleMap mMap;
     Marker prevMarker;
@@ -75,44 +74,34 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
     ArrayList<Double> latitude, longitude;
     View view;
     int pos;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        try
-        {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        try {
             view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
             mapFragment.getMapAsync(this);
-        }
-        catch (InflateException ex)
-        {
+        } catch (InflateException ex) {
 
         }
 
 
-
-        if (new Validadores().isNetDisponible(getContext()))
-        {
+        if (new Validadores().isNetDisponible(getContext())) {
             JSONObject object = new JSONObject();
-            try
-            {
+            try {
                 object.put("nada", null);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
-        }
-        else
-        {
+        } else {
             Toast.makeText(getContext(), "Debes estar conectado a una red para ver las tiendas.", Toast.LENGTH_SHORT).show();
         }
 
         return view;
     }
-    public static StoreFragmentSelected newInstance(String... params)
-    {
+
+    public static StoreFragmentSelected newInstance(String... params) {
         StoreFragmentSelected fragment = new StoreFragmentSelected();
         Bundle args = new Bundle();
         args.putString("imagen_tienda", params[0]);
@@ -130,10 +119,34 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))
+            {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            }
+            else
+            {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
         {
@@ -153,11 +166,17 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
                         e.printStackTrace();
                     }
 
-
-
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, new StoreOtherUser());
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
                 }
                 //int pos = nameStore.indexOf(marker.getTitle());
                 //Toast.makeText(getContext(), "Posicion de la tienda en el arreglo: " +pos, Toast.LENGTH_SHORT).show();
@@ -173,7 +192,6 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
                 return false;
             }
         });
-
         try
         {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -190,40 +208,34 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
         }
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         // Controles UI
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-            mMap.setMyLocationEnabled(true);
-        }
-        else
-        {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))
-            {
-                // Mostrar diálogo explicativo
-            }
-            else
-            {
-                // Solicitar permiso
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-            }
-        }
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+
     }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
-        if (requestCode == LOCATION_REQUEST_CODE) {
-            // ¿Permisos asignados?
-            if (permissions.length > 0 && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                mMap.setMyLocationEnabled(true);
-            }
-            else
+        switch (requestCode)
+        {
+            case 123:
             {
-                Toast.makeText(getContext(), "Error de permisos", Toast.LENGTH_SHORT).show();
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Negado", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
             }
         }
+        // other 'case' lines to check for other
+        // permissions this app might request
     }
 
     @Override
@@ -249,7 +261,6 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback
         }
         return myLocation;
     }
-
     /*@Override
     public void onLocationChanged(Location location)
     {

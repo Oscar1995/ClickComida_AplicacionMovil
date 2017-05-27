@@ -100,7 +100,7 @@
     <string name="modificar_elemento_usuario">Modificar</string>
     <string name="tu_nombre_actual">Tu nombre actual</string>
 
-    <string name="direccion_web">http://clickcomidaoficial.esy.es/</string>
+    <string name="direccion_web">http://clickcomida.esy.es/</string>
 
     <string name="tu_nombre_nuevo">Nuevo nombre</string>
     <string name="tu_apellido_nuevo">Nuevo apellido</string>
@@ -183,4 +183,8 @@
     <string name="titulo_mod_tienda">Modificar datos</string>
     <string name="titulo_mis_productos">Productos de mi tienda</string>
     <string name="titulo_agregar_coordendas">Indicar mi posicion en el mapa</string>
+    <string name="titulo_favorito">Agregar a mis favoritos</string>
+    <string name="titulo_comentarios">Comentarios de los usuarios que han comprado en la tienda</string>
+    <string name="titulo_comentar">Comentar</string>
+    <string name="titulo_buscar">Buscar</string>
 </resources>

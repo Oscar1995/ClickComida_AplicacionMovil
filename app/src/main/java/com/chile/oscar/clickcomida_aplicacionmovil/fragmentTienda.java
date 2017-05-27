@@ -324,7 +324,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_photo_galley_cancel, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivUnoProducts);
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
             TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
 
             imageView.setImageResource(images[position]);
