@@ -49,7 +49,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="center"
-                android:hint="@string/texto_correo"
+                android:hint="@string/titulo_correo_nickname"
                 android:inputType="textPersonName"
                 android:textIsSelectable="false" />
         </android.support.design.widget.TextInputLayout>

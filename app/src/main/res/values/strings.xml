@@ -187,4 +187,10 @@
     <string name="titulo_comentarios">Comentarios de los usuarios que han comprado en la tienda</string>
     <string name="titulo_comentar">Comentar</string>
     <string name="titulo_buscar">Buscar</string>
+    <string name="titulo_modificacion_datos">Modificación de datos</string>
+    <string name="titulo_tenda">Tienda</string>
+    <string name="horario_m">Mañana</string>
+    <string name="horario_t">Tarde</string>
+    <string name="titulo_mover_marcador">Puedes mover el marcador</string>
+    <string name="titulo_correo_nickname">Correo Electronico o Nickname</string>
 </resources>

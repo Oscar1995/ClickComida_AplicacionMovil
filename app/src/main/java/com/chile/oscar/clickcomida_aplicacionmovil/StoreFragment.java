@@ -40,7 +40,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
     private OnFragmentInteractionListener mListener;
     private String id_usuario;
     Bitmap[] images;
-    String[] id_store, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day;
+    String[] id_store, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, latitud, longitud;
     ListView listViewStores;
     ProgressDialog progress;
 
@@ -65,6 +65,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         args.putString("lunch_open_hour", params[9]);
         args.putString("lunch_after_hour", params[10]);
         args.putString("tienda_id", params[11]);
+        args.putString("latitud", params[12]);
+        args.putString("longitud", params[13]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -110,7 +112,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
             {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, newInstance(Codificacion.encodeToBase64(images[position], Bitmap.CompressFormat.PNG, 60), name[position], des[position], street[position]
-                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position], id_store[position]));
+                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position], id_store[position], latitud[position], longitud[position]));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
@@ -280,6 +282,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                     lunch_after_hour = new String[tomarCuenta];
                     start_day = new String[tomarCuenta];
                     end_day = new String[tomarCuenta];
+                    latitud = new String[tomarCuenta];
+                    longitud = new String[tomarCuenta];
                     images = new Bitmap[tomarCuenta];
 
                     JSONObject jsonObject = null;
@@ -306,6 +310,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                             lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
                             start_day[i] = jsonObject.getString("start_day");
                             end_day[i] = jsonObject.getString("end_day");
+                            latitud[i] = jsonObject.getString("latitude");
+                            longitud[i] = jsonObject.getString("longitude");
                         }
                     }
                     CustomAdapter customAdapter = new CustomAdapter();

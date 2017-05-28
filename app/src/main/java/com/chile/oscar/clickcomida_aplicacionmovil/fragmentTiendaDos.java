@@ -211,7 +211,7 @@ public class fragmentTiendaDos extends Fragment
                             {
                                 if (new Validadores().isNetDisponible(getContext()))
                                 {
-                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(true, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", "00:00:00", "00:00:00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
                                 }
                                 else
                                 {
@@ -234,7 +234,7 @@ public class fragmentTiendaDos extends Fragment
                             {
                                 if (new Validadores().isNetDisponible(getContext()))
                                 {
-                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(false, imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
                                 }
                                 else
                                 {
@@ -285,7 +285,7 @@ public class fragmentTiendaDos extends Fragment
             id_usuario = getArguments().getString("ID_USUARIO");
         }
     }
-    public String newInstance(boolean con, String... params)
+    public String newInstance(String... params)
     {
         JSONObject object = new JSONObject();
         try
@@ -297,28 +297,15 @@ public class fragmentTiendaDos extends Fragment
             object.put("NUMERO_TIENDA", params[4]);
             object.put("DES_POSTULANTES", params[5]);
             object.put("NUM_POSTULANTES", params[6]);
-            if (con)
-            {
-                object.put("HORA_1", params[7]);
-                object.put("HORA_2", params[8]);
-                object.put("DIA_INICIO", params[9]);
-                object.put("DIA_FIN", params[10]);
-                object.put("ID_USUARIO", params[11]);
-                object.put("LATITUD", params[12]);
-                object.put("LONGITUD", params[13]);
-            }
-            else
-            {
-                object.put("HORA_1", params[7]);
-                object.put("HORA_2", params[8]);
-                object.put("HORA_3", params[9]);
-                object.put("HORA_4", params[10]);
-                object.put("DIA_INICIO", params[11]);
-                object.put("DIA_FIN", params[12]);
-                object.put("ID_USUARIO", params[13]);
-                object.put("LATITUD", params[14]);
-                object.put("LONGITUD", params[15]);
-            }
+            object.put("HORA_1", params[7]);
+            object.put("HORA_2", params[8]);
+            object.put("HORA_3", params[9]);
+            object.put("HORA_4", params[10]);
+            object.put("DIA_INICIO", params[11]);
+            object.put("DIA_FIN", params[12]);
+            object.put("ID_USUARIO", params[13]);
+            object.put("LATITUD", params[14]);
+            object.put("LONGITUD", params[15]);
 
         }
         catch (JSONException e)

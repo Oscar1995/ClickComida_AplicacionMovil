@@ -49,6 +49,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     CallbackManager callbackManager = CallbackManager.Factory.create();
     Intent i = null;
     ProgressDialog progress;
+    Boolean itsEmail = false;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -124,20 +125,21 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
                 if (nCaracterCorreo > 0 && nCaracterClave > 0)
                 {
+                    progress = new ProgressDialog(this);
+                    progress.setMessage("Iniciando..");
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
+
                     if (txtCorreo.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
                     {
                         try
                         {
-                            progress = new ProgressDialog(this);
-                            progress.setMessage("Iniciando..");
-                            progress.setCanceledOnTouchOutside(false);
-                            progress.show();
-
                             String json = "";
                             JSONObject jsonObject = new JSONObject();
                             try
                             {
                                 jsonObject.put("correo", txtCorreo.getText().toString());
+                                jsonObject.put("nickname", null);
                                 jsonObject.put("clave", txtClave.getText().toString());
                             }
                             catch (JSONException e)
@@ -148,6 +150,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
                             if (new Validadores().isNetDisponible(getApplicationContext()))
                             {
+                                itsEmail = true;
                                 VerificarCorreoClave x = new VerificarCorreoClave();
                                 x.execute(getResources().getString(R.string.direccion_web) + "Controlador/login.php", json);
                             }
@@ -167,7 +170,29 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                     }
                     else
                     {
-                        txtCorreo.setError("Formato invalido.");
+                        if (new Validadores().isNetDisponible(getApplicationContext()))
+                        {
+                            JSONObject jsonObject = new JSONObject();
+                            try
+                            {
+                                jsonObject.put("correo", null);
+                                jsonObject.put("nickname", txtCorreo.getText().toString());
+                                jsonObject.put("clave", txtClave.getText().toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            itsEmail = false;
+                            VerificarCorreoClave x = new VerificarCorreoClave();
+                            x.execute(getResources().getString(R.string.direccion_web) + "Controlador/login.php", jsonObject.toString());
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "Debes estar conectado a una red para iniciar sesión.", Toast.LENGTH_SHORT).show();
+                            progress.dismiss();
+                        }
                     }
                 }
                 else
@@ -268,18 +293,26 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
-                    guardarPreferencias(jsonResult.getString("Id"), txtCorreo.getText().toString(), jsonResult.getString("Nombre"));
+                    guardarPreferencias(jsonResult.getString("Id"), jsonResult.getString("Correo"), jsonResult.getString("Nombre"));
                     i = new Intent(Login.this, Inicio_Usuario.class);
                     i.putExtra("id_user_login", jsonResult.getString("Id"));
-                    i.putExtra("correo_usuario", txtCorreo.getText().toString());
+                    i.putExtra("correo_usuario", jsonResult.getString("Correo"));
                     i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
                     startActivity(i);
                     finish();
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "El correo y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
-                    progress.dismiss();
+                    if (itsEmail)
+                    {
+                        Toast.makeText(getApplicationContext(), "El correo y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                        progress.dismiss();
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "El nickname y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
+                        progress.dismiss();
+                    }
                 }
             }
             catch (JSONException e)

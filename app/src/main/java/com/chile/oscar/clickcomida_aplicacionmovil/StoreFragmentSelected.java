@@ -1,10 +1,12 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,13 +22,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,18 +68,18 @@ import static android.app.Activity.RESULT_OK;
  * Use the {@link StoreFragmentSelected#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoreFragmentSelected extends Fragment
-{
+public class StoreFragmentSelected extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     // TODO: Rename and change types of parameters
-    String nombre, des, calle, numero, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, store_id;;
+    String nombre, des, calle, numero, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, store_id, latitud, longitud;
     Bitmap imagenTienda;
+    String tipo;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_PICTURE = 2;
     int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
-    String[]desc = {"Tomar foto", "Ir a galeria", "Cancelar"};
+    String[] desc = {"Tomar foto", "Ir a galeria", "Cancelar"};
     ImageView imageViewTienda;
 
     private OnFragmentInteractionListener mListener;
@@ -75,8 +90,7 @@ public class StoreFragmentSelected extends Fragment
 
 
     // TODO: Rename and change types and number of parameters
-    public static MostrarProductosMios newInstance(String store_id, String store_name)
-    {
+    public static MostrarProductosMios newInstance(String store_id, String store_name) {
         MostrarProductosMios fragment = new MostrarProductosMios();
         Bundle args = new Bundle();
         args.putString("store_id", store_id);
@@ -86,11 +100,9 @@ public class StoreFragmentSelected extends Fragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
+        if (getArguments() != null) {
             imagenTienda = Codificacion.decodeBase64(getArguments().getString("imagen_tienda"));
             nombre = getArguments().getString("nombre_tienda");
             des = getArguments().getString("des_tienda");
@@ -103,25 +115,27 @@ public class StoreFragmentSelected extends Fragment
             lunch_hour = getArguments().getString("lunch_open_hour");
             lunch_after_hour = getArguments().getString("lunch_after_hour");
             store_id = getArguments().getString("tienda_id");
+            latitud = getArguments().getString("latitud");
+            longitud = getArguments().getString("longitud");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_store_fragment_selected, container, false);
 
-        Button buttonMostrarProductos = (Button)view.findViewById(R.id.btnMostrarProductosTienda);
-        Button buttonModificarFoto = (Button)view.findViewById(R.id.btnModificarFoto);
-        TextView textViewNombrePrincipal = (TextView)view.findViewById(R.id.tvTituloTienda);
-        TextView textViewNombre = (TextView)view.findViewById(R.id.tvNameTiendaSelected);
-        TextView textViewDes = (TextView)view.findViewById(R.id.tvDesSelected);
-        TextView textViewCalle= (TextView)view.findViewById(R.id.tvCalleSelected);
-        TextView textViewNumero = (TextView)view.findViewById(R.id.tvNumeroSelected);
-        TextView textViewHorario = (TextView)view.findViewById(R.id.tvHorarioSelected);
-        imageViewTienda = (ImageView)view.findViewById(R.id.ivTiendaSelected);
+        Button buttonMostrarProductos = (Button) view.findViewById(R.id.btnMostrarProductosTienda);
+        Button buttonModificarFoto = (Button) view.findViewById(R.id.btnModificarFoto);
+        Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
+        TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
+        TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
+        TextView textViewDes = (TextView) view.findViewById(R.id.tvDesSelected);
+        final TextView textViewCalle = (TextView) view.findViewById(R.id.tvCalleSelected);
+        TextView textViewNumero = (TextView) view.findViewById(R.id.tvNumeroSelected);
+        TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
+        imageViewTienda = (ImageView) view.findViewById(R.id.ivTiendaSelected);
 
         textViewNombrePrincipal.setText(getResources().getString(R.string.titulo_tienda_seleccionada) + " " + nombre);
         textViewNombre.setText(getResources().getString(R.string.nombre_tienda) + ": " + nombre);
@@ -132,23 +146,21 @@ public class StoreFragmentSelected extends Fragment
         String openupdate = new MetodosCreados().HoraNormal(open_hour);
         String closeupdate = new MetodosCreados().HoraNormal(close_hour);
 
-        if (lunch_hour == "null" && lunch_after_hour == "null")
+        if (lunch_hour.equals("00:00:00") && lunch_after_hour.equals("00:00:00"))
         {
             textViewHorario.setText("De " + start_day + " a " + end_day + ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
         }
         else
-        {
+            {
             String openupdatelunch = new MetodosCreados().HoraNormal(lunch_hour);
             String closeupdatelunch = new MetodosCreados().HoraNormal(lunch_after_hour);
             textViewHorario.setText("De " + start_day + " a " + end_day + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
         }
         imageViewTienda.setImageBitmap(imagenTienda);
 
-        buttonMostrarProductos.setOnClickListener(new View.OnClickListener()
-        {
+        buttonMostrarProductos.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
                 trans.replace(R.id.content_general, newInstance(store_id, nombre));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -156,16 +168,14 @@ public class StoreFragmentSelected extends Fragment
                 trans.commit();
             }
         });
-        buttonModificarFoto.setOnClickListener(new View.OnClickListener()
-        {
+        buttonModificarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                 View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
                 builderChange.setView(p);
 
-                ListView listViewPhoto_Gallery = (ListView)p.findViewById(R.id.lvPhoto_Gallery);
+                ListView listViewPhoto_Gallery = (ListView) p.findViewById(R.id.lvPhoto_Gallery);
 
 
                 listViewPhoto_Gallery.setAdapter(new CustomAdapter());
@@ -174,26 +184,157 @@ public class StoreFragmentSelected extends Fragment
 
                 listViewPhoto_Gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                    {
-                        if (position == 0)
-                        {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) {
                             dialogAlert.dismiss();
                             dispatchTakePictureIntent();
-                        }
-                        else if(position == 1)
-                        {
+                        } else if (position == 1) {
                             dialogAlert.dismiss();
                             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                             intent.setType("image/*");
                             startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                        }
-                        else if (position ==2)
-                        {
+                        } else if (position == 2) {
                             dialogAlert.dismiss();
                         }
                     }
                 });
+            }
+        });
+        buttonModificarDatos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder builderMod = new AlertDialog.Builder(getContext());
+                View vMod = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_tienda, null);
+                final EditText editTextNombreTienda = (EditText) vMod.findViewById(R.id.etTiendaMod);
+                final EditText editTextDesTienda = (EditText) vMod.findViewById(R.id.etDesMod);
+                final EditText editTextCalle = (EditText) vMod.findViewById(R.id.etCalleMod);
+                final EditText editTextNum = (EditText) vMod.findViewById(R.id.etNumMod);
+                LinearLayout linearLayoutUno = (LinearLayout) vMod.findViewById(R.id.llHorarioUno);
+                LinearLayout linearLayoutDos = (LinearLayout) vMod.findViewById(R.id.llHorarioDos);
+                TextView textViewTituloUno = (TextView) vMod.findViewById(R.id.tvTituloUno);
+                TextView textViewTituloDos = (TextView) vMod.findViewById(R.id.tvTituloDos);
+                final TextView textViewHora1 = (TextView) vMod.findViewById(R.id.tvHora1);
+                final TextView textViewHora2 = (TextView) vMod.findViewById(R.id.tvHora2);
+                final TextView textViewHora3 = (TextView) vMod.findViewById(R.id.tvHora3);
+                final TextView textViewHora4 = (TextView) vMod.findViewById(R.id.tvHora4);
+                //MapView mapViewTienda = (MapView)vMod.findViewById(R.id.mpTienda);
+                Button buttonModTienda = (Button) vMod.findViewById(R.id.btnModTienda);
+
+                SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mpTienda);
+
+                linearLayoutUno.setVisibility(View.GONE);
+                linearLayoutDos.setVisibility(View.GONE);
+
+                editTextNombreTienda.setText(nombre);
+                editTextDesTienda.setText(des);
+                editTextCalle.setText(calle);
+                editTextNum.setText(numero);
+
+                if (lunch_hour == "null" && lunch_after_hour == "null") {
+                    linearLayoutUno.setVisibility(View.VISIBLE);
+                    textViewTituloUno.setText(getResources().getString(R.string.horario_continuado));
+                    textViewHora1.setText(new MetodosCreados().HoraNormal(open_hour));
+                    textViewHora2.setText(new MetodosCreados().HoraNormal(close_hour));
+                } else {
+                    linearLayoutUno.setVisibility(View.VISIBLE);
+                    linearLayoutDos.setVisibility(View.VISIBLE);
+                    textViewTituloUno.setText(getResources().getString(R.string.horario_m));
+                    textViewTituloDos.setText(getResources().getString(R.string.horario_t));
+                    textViewHora1.setText(new MetodosCreados().HoraNormal(open_hour));
+                    textViewHora2.setText(new MetodosCreados().HoraNormal(close_hour));
+                    textViewHora3.setText(new MetodosCreados().HoraNormal(lunch_hour));
+                    textViewHora4.setText(new MetodosCreados().HoraNormal(lunch_after_hour));
+                }
+                map.getMapAsync(new OnMapReadyCallback()
+                {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap)
+                    {
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setZoomControlsEnabled(true);
+                        googleMap.getUiSettings().setMapToolbarEnabled(false);
+                        LatLng latLng = new LatLng(Float.parseFloat(latitud), Float.parseFloat(longitud));
+                        googleMap.addMarker(new MarkerOptions().position(latLng).title(nombre));
+
+                        Coordenadas.latitud = Double.parseDouble(latitud);
+                        Coordenadas.longitud = Double.parseDouble(longitud);
+
+                        CameraUpdate LocationStore = CameraUpdateFactory.newLatLngZoom(latLng, 5);
+                        googleMap.animateCamera(LocationStore);
+
+                    }
+                });
+                textViewHora1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        new MetodosCreados().LlamarHora(textViewHora1, getContext());
+                    }
+                });
+                textViewHora2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        new MetodosCreados().LlamarHora(textViewHora2, getContext());
+                    }
+                });
+                textViewHora3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        new MetodosCreados().LlamarHora(textViewHora3, getContext());
+                    }
+                });
+                textViewHora4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        new MetodosCreados().LlamarHora(textViewHora4, getContext());
+                    }
+                });
+                buttonModTienda.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        tipo = "Datos";
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", store_id);
+                            object.put("Nombre", editTextNombreTienda.getText().toString());
+                            object.put("Descripcion", editTextDesTienda.getText().toString());
+                            object.put("Calle", editTextCalle.getText().toString());
+                            object.put("Numero", editTextNum.getText().toString());
+                            object.put("open_hour", textViewHora1.getText().toString());
+                            object.put("close_hour", textViewHora2.getText().toString());
+                            object.put("lunch_hour", textViewHora3.getText().toString());
+                            object.put("lunch_after_hour", textViewHora4.getText().toString());
+                            object.put("latitud", Coordenadas.latitud);
+                            object.put("longitud", Coordenadas.longitud);
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarDatosTienda.php", object.toString());
+                    }
+                });
+
+
+                builderMod.setView(vMod);
+                final AlertDialog mapUpdate = builderMod.create();
+                mapUpdate.show();
             }
         });
         return view;
@@ -404,7 +545,26 @@ public class StoreFragmentSelected extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
-            Toast.makeText(getContext(), "Imagen modificada.", Toast.LENGTH_SHORT).show();
+            if (tipo == "Datos")
+            {
+                try
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        Toast.makeText(getContext(), "Los datos han sido modificados.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                Toast.makeText(getContext(), "Imagen modificada.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
