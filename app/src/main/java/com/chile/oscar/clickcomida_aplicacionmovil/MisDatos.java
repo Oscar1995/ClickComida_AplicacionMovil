@@ -64,16 +64,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MisDatos extends Fragment implements View.OnClickListener
 {
     private static final int LOCATION_REQUEST_CODE = 1;
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle, calleDos, numCalleDos, calleTres, numCalleTres;
-    String id, telefonoRestanteUno, telefonoRestanteDos, tipoReg;
+    String id, tipoReg;
     View view;
     LinearLayout linearLayoutTelefono1, linearLayoutTelefono2, linearLayoutDir1, linearLayoutDir2, linearLayoutDir3;
     ImageView imageViewMisDatos, imageViewUpdateTel1, imageViewUpdateTel2, imageViewUpdateDir1, imageViewUpdateDir2, imageViewUpdateDir3, imageViewDeleteTel1, imageViewDeleteTel2, imageViewDeteleDir1, imageViewDeleteDir2, imageViewDeleteDir3;
-    String[] direcciones, vTelefonos;
+    List<String> calleDir, numDir , vTelefonos;
     AlertDialog dialogAlertDatosUsuario, dialogAlertClave, dialogAlertTelefono1, dialogAlertTelefono2, dialogAlertAgregarTelefono, dialogAlertEliminarTelefono, dialogAlertEliminarTelefono2, dialogAlertUpdateDir1, dialogAlertUpdateDir2, dialogAlertUpdateDir3,
             dialogAlertDeleteDir1, dialogAlertDeleteDir2, dialogAlertDeleteDir3, dialogAlertAddDir1, dialogAlertAddDir2, dialogAlertAddDir3;
     EditText editTextClaveActual;
@@ -167,131 +169,158 @@ public class MisDatos extends Fragment implements View.OnClickListener
         switch (v.getId())
         {
             case R.id.btnAgregarNuevaDireccion:
-
-                AlertDialog.Builder builderAddDir1 = new AlertDialog.Builder(getContext());
-                View pNuevaDir1= getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
-                builderAddDir1.setView(pNuevaDir1);
-                dialogAlertAddDir1 = builderAddDir1.create();
-                dialogAlertAddDir1.show();
-
-                final EditText CalleAdd1 = (EditText)pNuevaDir1.findViewById(R.id.txtCalle_usuario_dir);
-                final EditText CalleNum1 = (EditText)pNuevaDir1.findViewById(R.id.txtNumero_usuario_dir);
-
-                Button addDirMap1 = (Button)pNuevaDir1.findViewById(R.id.btnAddDireccionCoor);
-                Button addDir1 = (Button)pNuevaDir1.findViewById(R.id.btnModificarDireccion);
-                Button canDir1 = (Button)pNuevaDir1.findViewById(R.id.btnCancelarDireccion);
-
-                mapReady = false;
-
-                addDir1.setOnClickListener(new View.OnClickListener()
+                if (calleDir.size() != 3)
                 {
-                    @Override
-                    public void onClick(View v)
+                    AlertDialog.Builder builderAddDir1 = new AlertDialog.Builder(getContext());
+                    View pNuevaDir1= getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
+                    builderAddDir1.setView(pNuevaDir1);
+                    dialogAlertAddDir1 = builderAddDir1.create();
+                    dialogAlertAddDir1.show();
+
+                    final EditText CalleAdd1 = (EditText)pNuevaDir1.findViewById(R.id.txtCalle_usuario_dir);
+                    final EditText CalleNum1 = (EditText)pNuevaDir1.findViewById(R.id.txtNumero_usuario_dir);
+
+                    Button addDirMap1 = (Button)pNuevaDir1.findViewById(R.id.btnAddDireccionCoor);
+                    Button addDir1 = (Button)pNuevaDir1.findViewById(R.id.btnModificarDireccion);
+                    final Button canDir1 = (Button)pNuevaDir1.findViewById(R.id.btnCancelarDireccion);
+
+                    mapReady = false;
+
+                    addDir1.setOnClickListener(new View.OnClickListener()
                     {
-                        if (!CalleAdd1.getText().toString().isEmpty() && !CalleNum1.getText().toString().isEmpty())
+                        @Override
+                        public void onClick(View v)
                         {
-                            JSONObject object = new JSONObject();
-                            try
+                            if (!CalleAdd1.getText().toString().isEmpty() && !CalleNum1.getText().toString().isEmpty())
                             {
-                                object.put("Id", id);
-                                object.put("Calle", CalleAdd1.getText().toString().trim());
-                                object.put("Numero", CalleNum1.getText().toString().trim());
-                                object.put("Latitud", Coordenadas.latitud);
-                                object.put("Longitud", Coordenadas.longitud);
-
-                                tipoReg = "Agregar Direccion 1";
-                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", object.toString());
-                            }
-                            catch (JSONException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                        else
-                        {
-                            Toast.makeText(getContext(), "Debes completar los campos requeridos", Toast.LENGTH_SHORT).show();
-                            if (CalleAdd1.getText().toString().isEmpty())
-                            {
-                                CalleAdd1.setError("Debes completar este campo.");
-                            }
-                            if (CalleNum1.getText().toString().isEmpty())
-                            {
-                                CalleNum1.setError("Debes completar este campo.");
-                            }
-                        }
-                    }
-                });
-                addDirMap1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
-                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                        View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
-
-                        final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-
-                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap);
-                        final AlertDialog mapUpdate = builderMapa.create();
-                        mapUpdate.show();
-
-
-                        map.getMapAsync(new OnMapReadyCallback() {
-                            @Override
-                            public void onMapReady(final GoogleMap googleMap)
-                            {
-                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    ActivityCompat#requestPermissions
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for ActivityCompat#requestPermissions for more details.
-                                    return;
-                                }
-                                googleMap.setMyLocationEnabled(true);
-                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                    @Override
-                                    public void onMapClick(LatLng latLng)
+                                if (mapReady)
+                                {
+                                    JSONObject object = new JSONObject();
+                                    Boolean dirExist = false;
+                                    try
                                     {
-                                        googleMap.clear();
-                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                        Coordenadas.latitud = latLng.latitude;
-                                        Coordenadas.longitud = latLng.longitude;
-                                        mapReady = true;
+                                        for (int i=0; i<calleDir.size(); i++)
+                                        {
+                                            if (calleDir.get(i).toString().equals(CalleAdd1.getText().toString()) && numDir.get(i).toString().equals(CalleNum1.getText().toString()))
+                                            {
+                                                dirExist = true;
+                                            }
+                                        }
+                                        if (dirExist == false)
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Calle", CalleAdd1.getText().toString().trim());
+                                            object.put("Numero", CalleNum1.getText().toString().trim());
+                                            object.put("Latitud", Coordenadas.latitud);
+                                            object.put("Longitud", Coordenadas.longitud);
+
+                                            tipoReg = "Agregar Direccion 1";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", object.toString());
+                                        }
+                                        else
+                                        {
+                                            Toast.makeText(getContext(), "La calle y el numero de la direccion ya lo tienes registrado.", Toast.LENGTH_SHORT).show();
+                                        }
+
                                     }
-                                });
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes elegir la posicion en el mapa.", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
-                        });
-                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v)
+                            else
                             {
-                                getFragmentManager().beginTransaction().remove(map).commit();
-                                mapUpdate.dismiss();
+                                Toast.makeText(getContext(), "Debes completar los campos requeridos", Toast.LENGTH_SHORT).show();
+                                if (CalleAdd1.getText().toString().isEmpty())
+                                {
+                                    CalleAdd1.setError("Debes completar este campo.");
+                                }
+                                if (CalleNum1.getText().toString().isEmpty())
+                                {
+                                    CalleNum1.setError("Debes completar este campo.");
+                                }
                             }
-                        });
-                    }
-                });
-                canDir1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertAddDir1.dismiss();
-                    }
-                });
+                        }
+                    });
+                    addDirMap1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                            final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                            View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                            final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                            Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                            builderMapa.setView(pMap);
+                            final AlertDialog mapUpdate = builderMapa.create();
+                            mapUpdate.show();
+
+
+                            map.getMapAsync(new OnMapReadyCallback() {
+                                @Override
+                                public void onMapReady(final GoogleMap googleMap)
+                                {
+                                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        // TODO: Consider calling
+                                        //    ActivityCompat#requestPermissions
+                                        // here to request the missing permissions, and then overriding
+                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                        //                                          int[] grantResults)
+                                        // to handle the case where the user grants the permission. See the documentation
+                                        // for ActivityCompat#requestPermissions for more details.
+                                        return;
+                                    }
+                                    googleMap.setMyLocationEnabled(true);
+                                    googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                        @Override
+                                        public void onMapClick(LatLng latLng)
+                                        {
+                                            googleMap.clear();
+                                            //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                            googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                            Coordenadas.latitud = latLng.latitude;
+                                            Coordenadas.longitud = latLng.longitude;
+                                            mapReady = true;
+                                        }
+                                    });
+                                }
+                            });
+                            botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    getFragmentManager().beginTransaction().remove(map).commit();
+                                    mapUpdate.dismiss();
+                                }
+                            });
+                        }
+                    });
+                    canDir1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            dialogAlertAddDir1.dismiss();
+                        }
+                    });
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Solo puede agregar hasta 3 direcciones, puedes modificar o eliminar una direccion que ya tienes registrada.", Toast.LENGTH_LONG).show();
+                }
+
                 break;
 
             case R.id.btnAgregarNuevoTelefono:
 
-                if (eTel1.getText().toString().isEmpty() || eTel2.getText().toString().isEmpty())
-                {
-                    Toast.makeText(getContext(), "Solo puedes agregar hasta dos telefonos, elimina o modifica uno.", Toast.LENGTH_LONG).show();
-                }
-                else
+                if (vTelefonos.size() != 2)
                 {
                     AlertDialog.Builder builderAddTelefono = new AlertDialog.Builder(getContext());
                     View pNuevaTelefono = getActivity().getLayoutInflater().inflate(R.layout.agregar_telefono_usuario, null);
@@ -313,10 +342,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 JSONObject object = new JSONObject();
                                 try
                                 {
-                                    object.put("Id", id);
-                                    object.put("Nuevo", editTextTelefonoNuevo.getText().toString());
-                                    tipoReg = "Agregar Telefono";
-                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", object.toString());
+                                    if (!vTelefonos.contains(editTextTelefonoNuevo.getText().toString()))
+                                    {
+                                        object.put("Id", id);
+                                        object.put("Nuevo", editTextTelefonoNuevo.getText().toString());
+                                        tipoReg = "Agregar Telefono";
+                                        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", object.toString());
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getContext(), "El telefono " + editTextTelefonoNuevo.getText().toString() + ", ya lo tienes registrado.", Toast.LENGTH_LONG).show();
+                                    }
+
                                 }
                                 catch (JSONException e)
                                 {
@@ -336,6 +373,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             dialogAlertAgregarTelefono.dismiss();
                         }
                     });
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Solo puedes agregar hasta dos telefonos, elimina o modifica uno.", Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -359,7 +400,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         {
                             object.put("Id", id);
                             object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
-                            tipoReg = "Eliminar Telefono";
+                            tipoReg = "Eliminar Telefono 1";
                             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
 
                         }
@@ -454,7 +495,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     object.put("Apellido", editTextApellido.getText().toString().trim());
                                     apUs = true;
                                 }
-                                if (us != null || apUs != null)
+                                if (us  || apUs )
                                 {
                                     tipoReg = "Modificar Nombre";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificar_datos_actuales_usuario.php", object.toString());
@@ -593,11 +634,19 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             JSONObject object = new JSONObject();
                             try
                             {
-                                object.put("Id", id);
-                                object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
-                                object.put("Nuevo", editTextTelefono.getText().toString());
-                                tipoReg = "Modificar Telefono";
-                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                                if (!vTelefonos.contains(editTextTelefono.getText().toString()))
+                                {
+                                    object.put("Id", id);
+                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
+                                    object.put("Nuevo", editTextTelefono.getText().toString());
+                                    tipoReg = "Modificar Telefono";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "El telefono " + editTextTelefono.getText().toString() + " ya lo tienes registrado", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                             catch (JSONException e)
                             {
@@ -638,11 +687,19 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             JSONObject object = new JSONObject();
                             try
                             {
-                                object.put("Id", id);
-                                object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
-                                object.put("Nuevo", editTextTelefono2.getText().toString());
-                                tipoReg = "Modificar Telefono 2";
-                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                                if (!vTelefonos.contains(editTextTelefono2.getText().toString()))
+                                {
+                                    object.put("Id", id);
+                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
+                                    object.put("Nuevo", editTextTelefono2.getText().toString());
+                                    tipoReg = "Modificar Telefono 2";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "El telefono " + editTextTelefono2.getText().toString() + " ya lo tienes registrado", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                             catch (JSONException e)
                             {
@@ -677,6 +734,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 Button buttonAbrirMapa1 = (Button)pDir1.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar1 = (Button)pDir1.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrar1 = (Button)pDir1.findViewById(R.id.btnCerrarDireccion_us);
+
+                mapReady = false;
 
 
                 buttonAbrirMapa1.setOnClickListener(new View.OnClickListener() {
@@ -740,11 +799,12 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         if (!editTextCalle1.getText().toString().isEmpty() && !editTextNumero1.getText().toString().isEmpty())
                         {
-                            JSONObject object = new JSONObject();
-                            try
+                            if (mapReady)
                             {
-                                if (mapReady)
+                                JSONObject object = new JSONObject();
+                                try
                                 {
+
                                     object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
                                     object.put("Calle", editTextCalle1.getText().toString().trim());
                                     object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
@@ -754,16 +814,18 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
                                     tipoReg = "Modificar direccion 1";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
+
                                 }
-                                else
+                                catch (JSONException e)
                                 {
-                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
                                 }
                             }
-                            catch (JSONException e)
+                            else
                             {
-                                e.printStackTrace();
+                                Toast.makeText(getContext(), "Debes elegir la posicion en el mapa.", Toast.LENGTH_SHORT).show();
                             }
+
                         }
                         else
                         {
@@ -799,6 +861,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 Button buttonAbrirMapa2 = (Button)pDir2.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar2 = (Button)pDir2.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrarUp2 = (Button)pDir2.findViewById(R.id.btnCerrarDireccion_us);
+
+                mapReady = false;
 
 
                 buttonAbrirMapa2.setOnClickListener(new View.OnClickListener() {
@@ -862,10 +926,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         if (!editTextCalle2.getText().toString().isEmpty() && !editTextNumero2.getText().toString().isEmpty())
                         {
-                            JSONObject object = new JSONObject();
-                            try
+                            if (mapReady)
                             {
-                                if (mapReady)
+                                JSONObject object = new JSONObject();
+                                try
                                 {
                                     object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
                                     object.put("Calle", editTextCalle2.getText().toString().trim());
@@ -877,15 +941,16 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     tipoReg = "Modificar direccion 2";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
                                 }
-                                else
+                                catch (JSONException e)
                                 {
-                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
                                 }
                             }
-                            catch (JSONException e)
+                            else
                             {
-                                e.printStackTrace();
+                                Toast.makeText(getContext(), "Debes elegir la posicion en el mapa.", Toast.LENGTH_SHORT).show();
                             }
+
                         }
                         else
                         {
@@ -921,6 +986,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 Button buttonAbrirMapa3 = (Button)pDir3.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar3 = (Button)pDir3.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrarUp3 = (Button)pDir3.findViewById(R.id.btnCerrarDireccion_us);
+
+                mapReady = false;
 
 
                 buttonAbrirMapa3.setOnClickListener(new View.OnClickListener() {
@@ -984,10 +1051,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         if (!editTextCalle3.getText().toString().isEmpty() && !editTextNumero3.getText().toString().isEmpty())
                         {
-                            JSONObject object = new JSONObject();
-                            try
+                            if (mapReady)
                             {
-                                if (mapReady)
+                                JSONObject object = new JSONObject();
+                                try
                                 {
                                     object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
                                     object.put("Calle", editTextCalle3.getText().toString().trim());
@@ -999,14 +1066,14 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     tipoReg = "Modificar direccion 3";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
                                 }
-                                else
+                                catch (JSONException e)
                                 {
-                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
                                 }
                             }
-                            catch (JSONException e)
+                            else
                             {
-                                e.printStackTrace();
+                                Toast.makeText(getContext(), "Debes elegir la posicion en el mapa.", Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
@@ -1226,78 +1293,92 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 {
                     if (jsonResult != null)
                     {
+                        int lonTel = 0;
                         ProgressDialog progress = new ProgressDialog(getContext());
                         progress.setMessage("Cargando datos...");
                         progress.show();
+
+                        linearLayoutDir1.setVisibility(View.GONE);
+                        linearLayoutDir2.setVisibility(View.GONE);
+                        linearLayoutDir3.setVisibility(View.GONE);
 
                         eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
                         eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
                         eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
                         eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
                         eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
-                        eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
-                        telefonoRestanteUno = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
-                        tel1 = true;
 
+                        if (jsonResult.getString("Telefono").equals("false"))
+                        {
+                            linearLayoutTelefono1.setVisibility(View.GONE);
+                        }
+                        else
+                        {
+                            eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
+                            lonTel++;
+                        }
                         if (jsonResult.getString("telefonoDos").equals("false"))
                         {
                             linearLayoutTelefono2.setVisibility(View.GONE);
-                            tel2 = false;
-                            vTelefonos = new String[1];
-                            vTelefonos[0] = telefonoRestanteUno;
                         }
                         else
                         {
                             linearLayoutTelefono2.setVisibility(View.VISIBLE);
                             eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
-                            tel2 = true;
-                            telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
+                            lonTel++;
 
-                            vTelefonos = new String[2];
-                            vTelefonos[0] = telefonoRestanteUno;
-                            vTelefonos[1] = telefonoRestanteDos;
+                        }
+
+                        if (lonTel == 2)
+                        {
+                            vTelefonos = new ArrayList<>();
+                            vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
+                            vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
+                        }
+                        else if (lonTel == 1)
+                        {
+                            vTelefonos = new ArrayList<>();
+                            vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
                         }
 
                         int longitud = jsonResult.length();
                         int lonDireccion = longitud - 7;
-                        boolean dDos = false, dTres = false;
-                        direcciones = new String[lonDireccion];
+
+                        calleDir = new ArrayList<>();
+                        numDir = new ArrayList<>();
 
                         for (int i=0; i<lonDireccion; i++)
                         {
                             if (i == 0)
                             {
+                                linearLayoutDir1.setVisibility(View.VISIBLE);
                                 JSONObject jsonDireccionUno = new JSONObject(jsonResult.getString("0"));
                                 calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionUno.getString("street"));
                                 numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionUno.getString("number"));
-                                direcciones[i] = "Calle: " + jsonDireccionUno.getString("street") + " - " + "Numero: " + jsonDireccionUno.getString("number");
+
+                                calleDir.add(new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                numDir.add(new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
                             }
                             if (i == 1)
                             {
+                                linearLayoutDir2.setVisibility(View.VISIBLE);
                                 JSONObject jsonDireccionDos = new JSONObject(jsonResult.getString("1"));
                                 calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionDos.getString("street"));
                                 numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionDos.getString("number"));
-                                direcciones[i] = "Calle: " + jsonDireccionDos.getString("street") + " - " + "Numero: " + jsonDireccionDos.getString("number");
-                                dDos = true;
+
+                                calleDir.add(new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
+                                numDir.add(new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
                             }
                             if (i == 2)
                             {
+                                linearLayoutDir3.setVisibility(View.VISIBLE);
                                 JSONObject jsonDireccionTres = new JSONObject(jsonResult.getString("2"));
                                 calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionTres.getString("street"));
                                 numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionTres.getString("number"));
-                                direcciones[i] = "Calle: " + jsonDireccionTres.getString("street") + " - " + "Numero: " + jsonDireccionTres.getString("number");
-                                dTres = true;
+
+                                calleDir.add(new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
+                                numDir.add(new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
                             }
-                        }
-                        if (dDos == false)
-                        {
-                            calleDos.setText("");
-                            numCalleDos.setText("");
-                        }
-                        if (dTres == false)
-                        {
-                            calleTres.setText("");
-                            numCalleTres.setText("");
                         }
                         progress.cancel();
 
@@ -1337,6 +1418,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Agregado");
                     if (res.equals("Si"))
                     {
+                        linearLayoutTelefono1.setVisibility(View.VISIBLE);
                         dialogAlertAgregarTelefono.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Telefono agregado", Toast.LENGTH_SHORT).show();
@@ -1362,7 +1444,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         Toast.makeText(getContext(), "Telefono actualizado", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else if (tipoReg.equals("Eliminar Telefono"))
+                else if (tipoReg.equals("Eliminar Telefono 1"))
                 {
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
