@@ -13,17 +13,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/titulo_modificar_direccion"
             android:background="@color/colorCeleste"
+            android:gravity="center"
+            android:text="@string/modificar_boton"
             android:textColor="@color/textoBlanco"
             android:textStyle="bold" />
-
-        <ListView
-            android:id="@+id/lvListaDirecciones"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:listSelector="@color/celesteClaro" />
 
         <LinearLayout
             android:id="@+id/llCalle_numero_textos"
@@ -31,16 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView25"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/titulo_ingresar_nueva_calle_numero"
-                android:background="@color/colorCeleste"
-                android:textColor="@color/textoBlanco"
-                android:textStyle="bold" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -87,41 +71,6 @@
             android:layout_weight="1"
             android:background="@drawable/colorbutton"
             android:text="@string/titulo_mapa" />
-
-        <LinearLayout
-            android:id="@+id/llCalle_numero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView20"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/titulo_has_seleccionado"
-                android:background="@color/colorCeleste"
-                android:textColor="@color/textoBlanco"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvInfoCalle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/calle_usuario"
-                android:textColor="@color/colorNegro" />
-
-            <TextView
-                android:id="@+id/tvInfoNumeroCalle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/calle_numero_usuario"
-                android:textColor="@color/colorNegro" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/llBotones"

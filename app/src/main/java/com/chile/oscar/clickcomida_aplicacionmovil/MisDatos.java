@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RemoteViews;
@@ -37,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
@@ -62,26 +65,29 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class MisDatos extends Fragment implements View.OnClickListener, OnMapReadyCallback
+public class MisDatos extends Fragment implements View.OnClickListener
 {
     private static final int LOCATION_REQUEST_CODE = 1;
     TextView eNombre, eApellido, eNickname, eCorreo, eTipo, eTel1, eTel2, calle, numCalle, calleDos, numCalleDos, calleTres, numCalleTres;
-    EditText txtVariable, txtClaveUser, txtActualClave;
-    FloatingActionButton fbUpdateUser;
-    String id, telefono, telefonoRestanteUno, telefonoRestanteDos;
-    AlertDialog dialogCrudUsuario;
-    View view, vUpdate;
-    String calleAntigua = "", calleNumAntigua = "", telefono_ant = "";
+    String id, telefonoRestanteUno, telefonoRestanteDos, tipoReg;
+    View view;
+    LinearLayout linearLayoutTelefono1, linearLayoutTelefono2, linearLayoutDir1, linearLayoutDir2, linearLayoutDir3;
+    ImageView imageViewMisDatos, imageViewUpdateTel1, imageViewUpdateTel2, imageViewUpdateDir1, imageViewUpdateDir2, imageViewUpdateDir3, imageViewDeleteTel1, imageViewDeleteTel2, imageViewDeteleDir1, imageViewDeleteDir2, imageViewDeleteDir3;
     String[] direcciones, vTelefonos;
-    AlertDialog dialogUp, dialogChangeTelefono, dialogChangeDelete, dialogChangeDireccionn, dialogAgregarDireccion, dialogChangeClave, dialogChangeDireccionUpdate, dialogChangeDireccionTelefono;
+    AlertDialog dialogAlertDatosUsuario, dialogAlertClave, dialogAlertTelefono1, dialogAlertTelefono2, dialogAlertAgregarTelefono, dialogAlertEliminarTelefono, dialogAlertEliminarTelefono2, dialogAlertUpdateDir1, dialogAlertUpdateDir2, dialogAlertUpdateDir3,
+            dialogAlertDeleteDir1, dialogAlertDeleteDir2, dialogAlertDeleteDir3, dialogAlertAddDir1, dialogAlertAddDir2, dialogAlertAddDir3;
+    EditText editTextClaveActual;
+    Button buttonAgregarTelefonoNuevo, buttonAgregarDireccionNueva;
+    Boolean mapReady;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         view = inflater.inflate(R.layout.activity_mis_datos, container, false);
+
         eNombre = (TextView) view.findViewById(R.id.txtNombre_misdatos);
         eApellido = (TextView) view.findViewById(R.id.txtApellido_misdatos);
         eNickname = (TextView) view.findViewById(R.id.txtNickname_misdatos);
         eCorreo = (TextView) view.findViewById(R.id.txtCorreo_misdatos);
-        fbUpdateUser = (FloatingActionButton) view.findViewById(R.id.fbModificar);
 
         eTipo = (TextView) view.findViewById(R.id.txtTipo_misdatos);
         eTel1 = (TextView) view.findViewById(R.id.txtTeleUno_misdatos);
@@ -93,986 +99,1066 @@ public class MisDatos extends Fragment implements View.OnClickListener, OnMapRea
         numCalleDos = (TextView) view.findViewById(R.id.txtNumeros_misdatos_d);
         calleTres = (TextView) view.findViewById(R.id.txtCallemisdatos_t);
         numCalleTres = (TextView) view.findViewById(R.id.txtNumeromisdatos_t);
-        ;
-        fbUpdateUser.setOnClickListener(this);
+
+        buttonAgregarTelefonoNuevo = (Button)view.findViewById(R.id.btnAgregarNuevoTelefono); //Listo
+        buttonAgregarDireccionNueva = (Button)view.findViewById(R.id.btnAgregarNuevaDireccion);
+
+        linearLayoutTelefono1 = (LinearLayout)view.findViewById(R.id.llTelefono1);
+        linearLayoutTelefono2 = (LinearLayout)view.findViewById(R.id.llTelefono2);
+        linearLayoutDir1 = (LinearLayout)view.findViewById(R.id.llDireccion1);
+        linearLayoutDir2 = (LinearLayout)view.findViewById(R.id.llDireccion2);
+        linearLayoutDir3 = (LinearLayout)view.findViewById(R.id.llDireccion3);
+
+        imageViewMisDatos = (ImageView)view.findViewById(R.id.ivActualizarDatos);
+        imageViewUpdateTel1 = (ImageView)view.findViewById(R.id.ivUpdateTel1); //Listo
+        imageViewUpdateTel2 = (ImageView)view.findViewById(R.id.ivUpdateTel2); //Listo
+        imageViewUpdateDir1 = (ImageView)view.findViewById(R.id.ivUpdateDir1); //Listo
+        imageViewUpdateDir2 = (ImageView)view.findViewById(R.id.ivUpdateDir2); //Listo
+        imageViewUpdateDir3 = (ImageView)view.findViewById(R.id.ivUpdateDir3); //Listo
+        imageViewDeleteTel1 = (ImageView)view.findViewById(R.id.ivDeleteTel1); //Listo
+        imageViewDeleteTel2 = (ImageView)view.findViewById(R.id.ivDeleteTel2); //Listo
+        imageViewDeteleDir1 = (ImageView)view.findViewById(R.id.ivDeleteDir1); //Listo
+        imageViewDeleteDir2 = (ImageView)view.findViewById(R.id.ivDeleteDir2); //Listo
+        imageViewDeleteDir3 = (ImageView)view.findViewById(R.id.ivDeleteDir3); //Listo
+
+
+        buttonAgregarTelefonoNuevo.setOnClickListener(this);
+        buttonAgregarDireccionNueva.setOnClickListener(this);
+        imageViewMisDatos.setOnClickListener(this);
+        imageViewUpdateTel1.setOnClickListener(this);
+        imageViewUpdateTel2.setOnClickListener(this);
+        imageViewUpdateDir1.setOnClickListener(this);
+        imageViewUpdateDir2.setOnClickListener(this);
+        imageViewUpdateDir3.setOnClickListener(this);
+        imageViewDeleteTel1.setOnClickListener(this);
+        imageViewDeleteTel2.setOnClickListener(this);
+        imageViewDeteleDir1.setOnClickListener(this);
+        imageViewDeleteDir2.setOnClickListener(this);
+        imageViewDeleteDir3.setOnClickListener(this);
 
         Bundle bundle = getArguments();
         id = bundle.getString("IdUser");
 
-        String json = "";
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("id", id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        json = jsonObject.toString();
-        new TraerDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", json);
+        cargar();
 
         return view;
     }
 
-    public void cargar() {
-        String json = "";
+    public void cargar()
+    {
         JSONObject jsonObject = new JSONObject();
-        try {
+        try
+        {
             jsonObject.put("id", id);
-        } catch (JSONException e) {
+        }
+        catch (JSONException e)
+        {
             e.printStackTrace();
         }
-        json = jsonObject.toString();
-        new TraerDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", json);
+        tipoReg = "Traer Datos";
+        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", jsonObject.toString());
     }
 
+    boolean tel1 = false, tel2 = false;
+
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fbModificar:
-                createdd();
+    public void onClick(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.btnAgregarNuevaDireccion:
+
+                AlertDialog.Builder builderAddDir1 = new AlertDialog.Builder(getContext());
+                View pNuevaDir1= getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
+                builderAddDir1.setView(pNuevaDir1);
+                dialogAlertAddDir1 = builderAddDir1.create();
+                dialogAlertAddDir1.show();
+
+                final EditText CalleAdd1 = (EditText)pNuevaDir1.findViewById(R.id.txtCalle_usuario_dir);
+                final EditText CalleNum1 = (EditText)pNuevaDir1.findViewById(R.id.txtNumero_usuario_dir);
+
+                Button addDirMap1 = (Button)pNuevaDir1.findViewById(R.id.btnAddDireccionCoor);
+                Button addDir1 = (Button)pNuevaDir1.findViewById(R.id.btnModificarDireccion);
+                Button canDir1 = (Button)pNuevaDir1.findViewById(R.id.btnCancelarDireccion);
+
+                mapReady = false;
+
+                addDir1.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (!CalleAdd1.getText().toString().isEmpty() && !CalleNum1.getText().toString().isEmpty())
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                object.put("Id", id);
+                                object.put("Calle", CalleAdd1.getText().toString().trim());
+                                object.put("Numero", CalleNum1.getText().toString().trim());
+                                object.put("Latitud", Coordenadas.latitud);
+                                object.put("Longitud", Coordenadas.longitud);
+
+                                tipoReg = "Agregar Direccion 1";
+                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", object.toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Debes completar los campos requeridos", Toast.LENGTH_SHORT).show();
+                            if (CalleAdd1.getText().toString().isEmpty())
+                            {
+                                CalleAdd1.setError("Debes completar este campo.");
+                            }
+                            if (CalleNum1.getText().toString().isEmpty())
+                            {
+                                CalleNum1.setError("Debes completar este campo.");
+                            }
+                        }
+                    }
+                });
+                addDirMap1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                        View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                        final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap);
+                        final AlertDialog mapUpdate = builderMapa.create();
+                        mapUpdate.show();
+
+
+                        map.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(final GoogleMap googleMap)
+                            {
+                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                    @Override
+                                    public void onMapClick(LatLng latLng)
+                                    {
+                                        googleMap.clear();
+                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                        Coordenadas.latitud = latLng.latitude;
+                                        Coordenadas.longitud = latLng.longitude;
+                                        mapReady = true;
+                                    }
+                                });
+                            }
+                        });
+                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                getFragmentManager().beginTransaction().remove(map).commit();
+                                mapUpdate.dismiss();
+                            }
+                        });
+                    }
+                });
+                canDir1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertAddDir1.dismiss();
+                    }
+                });
+                break;
+
+            case R.id.btnAgregarNuevoTelefono:
+
+                if (eTel1.getText().toString().isEmpty() || eTel2.getText().toString().isEmpty())
+                {
+                    Toast.makeText(getContext(), "Solo puedes agregar hasta dos telefonos, elimina o modifica uno.", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    AlertDialog.Builder builderAddTelefono = new AlertDialog.Builder(getContext());
+                    View pNuevaTelefono = getActivity().getLayoutInflater().inflate(R.layout.agregar_telefono_usuario, null);
+                    builderAddTelefono.setView(pNuevaTelefono);
+                    dialogAlertAgregarTelefono = builderAddTelefono.create();
+                    dialogAlertAgregarTelefono.show();
+
+                    final EditText editTextTelefonoNuevo = (EditText)pNuevaTelefono.findViewById(R.id.txtTelefono_us);
+                    Button buttonAgregar = (Button)pNuevaTelefono.findViewById(R.id.btnAgregarTelefono);
+                    Button buttonCerrarNuevo = (Button)pNuevaTelefono.findViewById(R.id.btnCancelarTelefono);
+
+                    buttonAgregar.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            if (editTextTelefonoNuevo.getText().toString().length() >= 6)
+                            {
+                                JSONObject object = new JSONObject();
+                                try
+                                {
+                                    object.put("Id", id);
+                                    object.put("Nuevo", editTextTelefonoNuevo.getText().toString());
+                                    tipoReg = "Agregar Telefono";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", object.toString());
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else
+                            {
+                                Toast.makeText(getContext(), "El telefono debe tener mayor o igual a 6 digitos", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    buttonCerrarNuevo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            dialogAlertAgregarTelefono.dismiss();
+                        }
+                    });
+                }
+
+                break;
+
+            case R.id.ivDeleteTel1:
+                AlertDialog.Builder builderDelete = new AlertDialog.Builder(getContext());
+                View pDelTel1 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                builderDelete.setView(pDelTel1);
+                dialogAlertEliminarTelefono = builderDelete.create();
+                dialogAlertEliminarTelefono.show();
+
+                Button buttonEliminarTelefono1 = (Button) pDelTel1.findViewById(R.id.btnEliminar_d_f);
+                Button buttonCerrarEliminarTel1 = (Button) pDelTel1.findViewById(R.id.btnCancelar_d_f);
+
+                buttonEliminarTelefono1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", id);
+                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
+                            tipoReg = "Eliminar Telefono";
+                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                buttonCerrarEliminarTel1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertEliminarTelefono.dismiss();
+                    }
+                });
+                break;
+            case R.id.ivDeleteTel2:
+                AlertDialog.Builder builderDelete2 = new AlertDialog.Builder(getContext());
+                View pDelTel2 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                builderDelete2.setView(pDelTel2);
+                dialogAlertEliminarTelefono2 = builderDelete2.create();
+                dialogAlertEliminarTelefono2.show();
+
+                Button buttonEliminarTelefono2 = (Button) pDelTel2.findViewById(R.id.btnEliminar_d_f);
+                Button buttonCerrarEliminarTel2 = (Button) pDelTel2.findViewById(R.id.btnCancelar_d_f);
+
+                buttonEliminarTelefono2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", id);
+                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
+                            tipoReg = "Eliminar Telefono 2";
+                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                buttonCerrarEliminarTel2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertEliminarTelefono2.dismiss();
+                    }
+                });
+                break;
+
+            case R.id.ivActualizarDatos:
+                AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                View p = getActivity().getLayoutInflater().inflate(R.layout.misdatos_general, null);
+                builderChange.setView(p);
+                dialogAlertDatosUsuario = builderChange.create();
+                dialogAlertDatosUsuario.show();
+
+                final EditText editTextNombre = (EditText)p.findViewById(R.id.etNombreUsuario);
+                final EditText editTextApellido = (EditText)p.findViewById(R.id.etApellidoUsuario);
+                Button buttonModificar = (Button)p.findViewById(R.id.btnModificarDatosActual);
+                Button buttonCambiarClave = (Button)p.findViewById(R.id.btnCambiarClaveUser);
+                Button buttonCancelar= (Button)p.findViewById(R.id.btnCancelarDatos);
+
+                editTextNombre.setText(new MetodosCreados().quitarDosPuntos(eNombre.getText().toString()));
+                editTextApellido.setText(new MetodosCreados().quitarDosPuntos(eApellido.getText().toString()));
+
+                buttonModificar.setOnClickListener(new View.OnClickListener() //Listo
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Boolean us = false;
+                        Boolean apUs = false;
+                        if (!editTextNombre.getText().toString().isEmpty() && !editTextApellido.getText().toString().isEmpty())
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                object.put("Id", id);
+                                if (new MetodosCreados().ComprobarCampos(editTextNombre.getText().toString(), eNombre.getText().toString()) != null)
+                                {
+                                    object.put("Nombre", editTextNombre.getText().toString().trim());
+                                    us = true;
+                                }
+                                if (new MetodosCreados().ComprobarCampos(editTextApellido.getText().toString(), eApellido.getText().toString()) != null)
+                                {
+                                    object.put("Apellido", editTextApellido.getText().toString().trim());
+                                    apUs = true;
+                                }
+                                if (us != null || apUs != null)
+                                {
+                                    tipoReg = "Modificar Nombre";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificar_datos_actuales_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "No hay nada que Modificar", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Debes tener un nombre y/o apellido", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                buttonCambiarClave.setOnClickListener(new View.OnClickListener() //Listo
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+                        View pClave = getActivity().getLayoutInflater().inflate(R.layout.modificar_clave_usuario, null);
+                        builderChange.setView(pClave);
+                        dialogAlertClave = builderChange.create();
+                        dialogAlertClave.show();
+
+                        editTextClaveActual = (EditText)pClave.findViewById(R.id.txtClaveActual_us);
+                        final EditText editTextClaveNueva = (EditText)pClave.findViewById(R.id.txtClaveNueva_us);
+                        final EditText editTextClaveNuevaRep = (EditText)pClave.findViewById(R.id.txtClaveNuevaRep_us);
+                        Button buttonModificarClave = (Button)pClave.findViewById(R.id.btnCambiarClave);
+                        Button buttonCancelarClave = (Button)pClave.findViewById(R.id.btnCancelarClave);
+
+                        buttonModificarClave.setOnClickListener(new View.OnClickListener() //Listo
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (!editTextClaveActual.getText().toString().isEmpty() && !editTextClaveNueva.getText().toString().isEmpty() && !editTextClaveNuevaRep.getText().toString().isEmpty())
+                                {
+                                    JSONObject object = new JSONObject();
+                                    try
+                                    {
+                                        boolean c1 = false, c2 = false, c3 = false;
+                                        if (editTextClaveNueva.getText().toString().equals(editTextClaveNuevaRep.getText().toString()))
+                                        {
+                                            if (editTextClaveActual.getText().toString().length() >= 5)c1 = true; else c1 = false;
+                                            if (editTextClaveNueva.getText().toString().length() >= 5)c2 = true; else c2 = false;
+                                            if (editTextClaveNuevaRep.getText().toString().length() >= 5)c3 = true; else c3 = false;
+
+                                            if (c1 && c2 && c3)
+                                            {
+                                                tipoReg = "Clave";
+                                                object.put("Id", id);
+                                                object.put("ClaveActual", editTextClaveActual.getText().toString());
+                                                object.put("ClaveNueva", editTextClaveNueva.getText().toString());
+                                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", object.toString());
+                                            }
+                                            else
+                                            {
+                                                if (c1 == false)
+                                                {
+                                                    editTextClaveActual.setError("La clave debe ser mayor o igual a 5");
+                                                }
+                                                if (c2 == false)
+                                                {
+                                                    editTextClaveNueva.setError("La clave debe ser mayor o igual a 5");
+                                                }
+                                                if (c3 == false)
+                                                {
+                                                    editTextClaveNuevaRep.setError("La clave debe ser mayor o igual a 5");
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            editTextClaveNueva.setError("La clave no combina.");
+                                            editTextClaveNuevaRep.setError("La clave no combina.");
+                                            Toast.makeText(getContext(), "La clave no combinan", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes rellenar todos los campos.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        buttonCancelarClave.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                dialogAlertClave.dismiss();
+                            }
+                        });
+                    }
+                });
+                buttonCancelar.setOnClickListener(new View.OnClickListener() //Listo
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertDatosUsuario.dismiss();
+                    }
+                });
+
+                break;
+
+            case R.id.ivUpdateTel1: //Actualizar Telefono 1
+                AlertDialog.Builder builderUpdateTel1 = new AlertDialog.Builder(getContext());
+                View pTelefono = getActivity().getLayoutInflater().inflate(R.layout.modificar_telefono, null);
+                builderUpdateTel1.setView(pTelefono);
+                dialogAlertTelefono1 = builderUpdateTel1.create();
+                dialogAlertTelefono1.show();
+
+                final EditText editTextTelefono = (EditText)pTelefono.findViewById(R.id.etNuevoTelefonp_us);
+                Button buttonModTel = (Button)pTelefono.findViewById(R.id.btnModificarTelefono_us);
+                Button buttonCerrar = (Button)pTelefono.findViewById(R.id.btnCerrarTelefono_us);
+
+                buttonModTel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (editTextTelefono.getText().toString().length()>=6)
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                object.put("Id", id);
+                                object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
+                                object.put("Nuevo", editTextTelefono.getText().toString());
+                                tipoReg = "Modificar Telefono";
+                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            editTextTelefono.setError("El telefono deber ser mayor o igual a 6 digitos");
+                            Toast.makeText(getContext(), "El telefono deber ser mayor o igual a 6 digitos", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                buttonCerrar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlertTelefono1.dismiss();
+                    }
+                });
+                break;
+            case R.id.ivUpdateTel2: //Actualizar Telefono 1
+                AlertDialog.Builder builderUpdateTel2 = new AlertDialog.Builder(getContext());
+                View pTelefono2 = getActivity().getLayoutInflater().inflate(R.layout.modificar_telefono, null);
+                builderUpdateTel2.setView(pTelefono2);
+                dialogAlertTelefono2 = builderUpdateTel2.create();
+                dialogAlertTelefono2.show();
+
+                final EditText editTextTelefono2 = (EditText)pTelefono2.findViewById(R.id.etNuevoTelefonp_us);
+                Button buttonModTel2 = (Button)pTelefono2.findViewById(R.id.btnModificarTelefono_us);
+                Button buttonCerrar2 = (Button)pTelefono2.findViewById(R.id.btnCerrarTelefono_us);
+
+                buttonModTel2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (editTextTelefono2.getText().toString().length()>=6)
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                object.put("Id", id);
+                                object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
+                                object.put("Nuevo", editTextTelefono2.getText().toString());
+                                tipoReg = "Modificar Telefono 2";
+                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            editTextTelefono2.setError("El telefono deber ser mayor o igual a 6 digitos");
+                            Toast.makeText(getContext(), "El telefono deber ser mayor o igual a 6 digitos", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                buttonCerrar2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlertTelefono2.dismiss();
+                    }
+                });
+                break;
+
+            case R.id.ivUpdateDir1:
+                AlertDialog.Builder builderUpdateDir1 = new AlertDialog.Builder(getContext());
+                View pDir1 = getActivity().getLayoutInflater().inflate(R.layout.modificar_direccion_usuario, null);
+                builderUpdateDir1.setView(pDir1);
+                dialogAlertUpdateDir1 = builderUpdateDir1.create();
+                dialogAlertUpdateDir1.show();
+
+                final EditText editTextCalle1 = (EditText)pDir1.findViewById(R.id.eNuevaCalle);
+                final EditText editTextNumero1 = (EditText)pDir1.findViewById(R.id.eNuevoNumeroCalle);
+
+                Button buttonAbrirMapa1 = (Button)pDir1.findViewById(R.id.btnAbrirMapa);
+                Button buttonModificar1 = (Button)pDir1.findViewById(R.id.btnModificarDireccion_us);
+                Button buttonCerrar1 = (Button)pDir1.findViewById(R.id.btnCerrarDireccion_us);
+
+
+                buttonAbrirMapa1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                        View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                        final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap);
+                        final AlertDialog mapUpdate = builderMapa.create();
+                        mapUpdate.show();
+
+
+                        map.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(final GoogleMap googleMap)
+                            {
+                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                    @Override
+                                    public void onMapClick(LatLng latLng)
+                                    {
+                                        googleMap.clear();
+                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                        Coordenadas.latitud = latLng.latitude;
+                                        Coordenadas.longitud = latLng.longitude;
+                                        mapReady = true;
+                                    }
+                                });
+                            }
+                        });
+                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                getFragmentManager().beginTransaction().remove(map).commit();
+                                mapUpdate.dismiss();
+                            }
+                        });
+                    }
+                });
+                buttonModificar1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (!editTextCalle1.getText().toString().isEmpty() && !editTextNumero1.getText().toString().isEmpty())
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                if (mapReady)
+                                {
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                    object.put("Calle", editTextCalle1.getText().toString().trim());
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                    object.put("Numero", editTextNumero1.getText().toString().trim());
+                                    object.put("Latitud", Coordenadas.latitud);
+                                    object.put("Longitud", Coordenadas.longitud);
+
+                                    tipoReg = "Modificar direccion 1";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Debes completar los campos requeridos.", Toast.LENGTH_SHORT).show();
+                            if (editTextCalle1.getText().toString().isEmpty())
+                            {
+                                editTextCalle1.setError("Debes completar este campo.");
+                            }
+                            if (editTextNumero1.getText().toString().isEmpty())
+                            {
+                                editTextNumero1.setError("Debes completar este campo.");
+                            }
+                        }
+                    }
+                });
+                buttonCerrar1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlertUpdateDir1.dismiss();
+                    }
+                });
+                break;
+            case R.id.ivUpdateDir2:
+                AlertDialog.Builder builderUpdateDir2 = new AlertDialog.Builder(getContext());
+                View pDir2 = getActivity().getLayoutInflater().inflate(R.layout.modificar_direccion_usuario, null);
+                builderUpdateDir2.setView(pDir2);
+                dialogAlertUpdateDir2 = builderUpdateDir2.create();
+                dialogAlertUpdateDir2.show();
+
+                final EditText editTextCalle2 = (EditText)pDir2.findViewById(R.id.eNuevaCalle);
+                final EditText editTextNumero2 = (EditText)pDir2.findViewById(R.id.eNuevoNumeroCalle);
+
+                Button buttonAbrirMapa2 = (Button)pDir2.findViewById(R.id.btnAbrirMapa);
+                Button buttonModificar2 = (Button)pDir2.findViewById(R.id.btnModificarDireccion_us);
+                Button buttonCerrarUp2 = (Button)pDir2.findViewById(R.id.btnCerrarDireccion_us);
+
+
+                buttonAbrirMapa2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                        View pMap2 = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                        final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                        Button botonTomarCoor = (Button) pMap2.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap2);
+                        final AlertDialog mapUpdate = builderMapa.create();
+                        mapUpdate.show();
+
+
+                        map2.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(final GoogleMap googleMap)
+                            {
+                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                    @Override
+                                    public void onMapClick(LatLng latLng)
+                                    {
+                                        googleMap.clear();
+                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                        Coordenadas.latitud = latLng.latitude;
+                                        Coordenadas.longitud = latLng.longitude;
+                                        mapReady = true;
+                                    }
+                                });
+                            }
+                        });
+                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                getFragmentManager().beginTransaction().remove(map2).commit();
+                                mapUpdate.dismiss();
+                            }
+                        });
+                    }
+                });
+                buttonModificar2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (!editTextCalle2.getText().toString().isEmpty() && !editTextNumero2.getText().toString().isEmpty())
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                if (mapReady)
+                                {
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
+                                    object.put("Calle", editTextCalle2.getText().toString().trim());
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
+                                    object.put("Numero", editTextNumero2.getText().toString().trim());
+                                    object.put("Latitud", Coordenadas.latitud);
+                                    object.put("Longitud", Coordenadas.longitud);
+
+                                    tipoReg = "Modificar direccion 2";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Debes completar los campos requeridos.", Toast.LENGTH_SHORT).show();
+                            if (editTextCalle2.getText().toString().isEmpty())
+                            {
+                                editTextCalle2.setError("Debes completar este campo.");
+                            }
+                            if (editTextNumero2.getText().toString().isEmpty())
+                            {
+                                editTextNumero2.setError("Debes completar este campo.");
+                            }
+                        }
+                    }
+                });
+                buttonCerrarUp2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlertUpdateDir2.dismiss();
+                    }
+                });
+                break;
+            case R.id.ivUpdateDir3:
+                AlertDialog.Builder builderUpdateDir3 = new AlertDialog.Builder(getContext());
+                View pDir3 = getActivity().getLayoutInflater().inflate(R.layout.modificar_direccion_usuario, null);
+                builderUpdateDir3.setView(pDir3);
+                dialogAlertUpdateDir3 = builderUpdateDir3.create();
+                dialogAlertUpdateDir3.show();
+
+                final EditText editTextCalle3 = (EditText)pDir3.findViewById(R.id.eNuevaCalle);
+                final EditText editTextNumero3 = (EditText)pDir3.findViewById(R.id.eNuevoNumeroCalle);
+
+                Button buttonAbrirMapa3 = (Button)pDir3.findViewById(R.id.btnAbrirMapa);
+                Button buttonModificar3 = (Button)pDir3.findViewById(R.id.btnModificarDireccion_us);
+                Button buttonCerrarUp3 = (Button)pDir3.findViewById(R.id.btnCerrarDireccion_us);
+
+
+                buttonAbrirMapa3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                        View pMap2 = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+
+                        final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                        Button botonTomarCoor = (Button) pMap2.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap2);
+                        final AlertDialog mapUpdate = builderMapa.create();
+                        mapUpdate.show();
+
+
+                        map2.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(final GoogleMap googleMap)
+                            {
+                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                    @Override
+                                    public void onMapClick(LatLng latLng)
+                                    {
+                                        googleMap.clear();
+                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                                        Coordenadas.latitud = latLng.latitude;
+                                        Coordenadas.longitud = latLng.longitude;
+                                        mapReady = true;
+                                    }
+                                });
+                            }
+                        });
+                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                getFragmentManager().beginTransaction().remove(map2).commit();
+                                mapUpdate.dismiss();
+                            }
+                        });
+                    }
+                });
+                buttonModificar3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if (!editTextCalle3.getText().toString().isEmpty() && !editTextNumero3.getText().toString().isEmpty())
+                        {
+                            JSONObject object = new JSONObject();
+                            try
+                            {
+                                if (mapReady)
+                                {
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
+                                    object.put("Calle", editTextCalle3.getText().toString().trim());
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
+                                    object.put("Numero", editTextNumero3.getText().toString().trim());
+                                    object.put("Latitud", Coordenadas.latitud);
+                                    object.put("Longitud", Coordenadas.longitud);
+
+                                    tipoReg = "Modificar direccion 3";
+                                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", object.toString());
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "Debes indicar tu posicion en el mapa", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), "Debes completar los campos requeridos.", Toast.LENGTH_SHORT).show();
+                            if (editTextCalle3.getText().toString().isEmpty())
+                            {
+                                editTextCalle3.setError("Debes completar este campo.");
+                            }
+                            if (editTextNumero3.getText().toString().isEmpty())
+                            {
+                                editTextNumero3.setError("Debes completar este campo.");
+                            }
+                        }
+                    }
+                });
+                buttonCerrarUp3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlertUpdateDir3.dismiss();
+                    }
+                });
+                break;
+
+            case R.id.ivDeleteDir1:
+                AlertDialog.Builder builderDeleteDir1 = new AlertDialog.Builder(getContext());
+                View pDirDelete1 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                builderDeleteDir1.setView(pDirDelete1);
+                dialogAlertDeleteDir1 = builderDeleteDir1.create();
+                dialogAlertDeleteDir1.show();
+
+                Button buttonEliminarDir1 = (Button) pDirDelete1.findViewById(R.id.btnEliminar_d_f);
+                Button buttonCerrarDir1 = (Button) pDirDelete1.findViewById(R.id.btnCancelar_d_f);
+
+                buttonEliminarDir1.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", id);
+                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                            tipoReg = "Eliminar Direccion 1";
+                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                buttonCerrarDir1.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertDeleteDir1.dismiss();
+                    }
+                });
+
+                break;
+            case R.id.ivDeleteDir2:
+                AlertDialog.Builder builderDeleteDir2 = new AlertDialog.Builder(getContext());
+                View pDirDelete2 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                builderDeleteDir2.setView(pDirDelete2);
+                dialogAlertDeleteDir2 = builderDeleteDir2.create();
+                dialogAlertDeleteDir2.show();
+
+                Button buttonEliminarDir2 = (Button) pDirDelete2.findViewById(R.id.btnEliminar_d_f);
+                Button buttonCerrarDir2 = (Button) pDirDelete2.findViewById(R.id.btnCancelar_d_f);
+
+                buttonEliminarDir2.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", id);
+                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
+                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
+                            tipoReg = "Eliminar Direccion 2";
+                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                buttonCerrarDir2.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertDeleteDir2.dismiss();
+                    }
+                });
+
+                break;
+
+            case R.id.ivDeleteDir3:
+                AlertDialog.Builder builderDeleteDir3 = new AlertDialog.Builder(getContext());
+                View pDirDelete3 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
+                builderDeleteDir3.setView(pDirDelete3);
+                dialogAlertDeleteDir3 = builderDeleteDir3.create();
+                dialogAlertDeleteDir3.show();
+
+                Button buttonEliminarDir3 = (Button) pDirDelete3.findViewById(R.id.btnEliminar_d_f);
+                Button buttonCerrarDir3 = (Button) pDirDelete3.findViewById(R.id.btnCancelar_d_f);
+
+                buttonEliminarDir3.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        JSONObject object = new JSONObject();
+                        try
+                        {
+                            object.put("Id", id);
+                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
+                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
+                            tipoReg = "Eliminar Direccion 3";
+                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                buttonCerrarDir3.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        dialogAlertDeleteDir3.dismiss();
+                    }
+                });
                 break;
         }
     }
 
-    int positionCrudSelected;
-    int positionElement;
-    int positionUpdateSelected;
-    int positionUpdateSelectedTel;
 
-    boolean swDelete = false, swUpdate = false;
-    int positionDelete = 0;
-
-    boolean tel1 = false, tel2 = false;
-
-    public void createdd() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View v = getActivity().getLayoutInflater().inflate(R.layout.crud_datos_usuario, null);
-        builder.setView(v);
-        dialogCrudUsuario = builder.create();
-        dialogCrudUsuario.show();
-
-        final Button botonAceptar = (Button) v.findViewById(R.id.btnAceptar);
-        Button botonCancelar = (Button) v.findViewById(R.id.btnCancelar);
-        final Button botonCancelarE = (Button) v.findViewById(R.id.btnCancelarE);
-
-        final Spinner sElements = (Spinner) v.findViewById(R.id.ddElements);
-        botonAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (positionCrudSelected == 0) //Agregar
-                {
-                    if (positionElement == 0) {
-                        //Telefono
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_telefono_usuario, null);
-                        builderChange.setView(p);
-                        dialogChangeTelefono = builderChange.create();
-                        dialogChangeTelefono.show();
-
-                        final EditText textoTel = (EditText) p.findViewById(R.id.txtTelefono_us);
-                        Button btnAddTel = (Button) p.findViewById(R.id.btnAgregarTelefono);
-                        Button btnCanTel = (Button) p.findViewById(R.id.btnCancelarTelefono);
-                        btnAddTel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (textoTel.getText().toString().isEmpty()) {
-                                    textoTel.setError("Debes agregar un numero de telefono.");
-                                } else {
-                                    int longitud = textoTel.length();
-                                    if (longitud >= 6) {
-                                        if (tel1 == true && tel2 == true) {
-                                            Toast.makeText(getContext(), "Solo esta permitido agregar dos numeros de telefono.", Toast.LENGTH_SHORT).show();
-                                        } else if (tel1 == true && tel2 == false) {
-                                            tipo_add = "Telefono";
-                                            String tel = textoTel.getText().toString();
-                                            telefono = tel;
-
-                                            String json = "";
-                                            JSONObject jsonObject = new JSONObject();
-                                            try {
-                                                jsonObject.put("id", id);
-                                                jsonObject.put("telefono", tel);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                            json = jsonObject.toString();
-                                            new agregarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", json);
-                                        }
-                                    } else {
-                                        textoTel.setError("El numero de telefono debe ser mayor o igual a seis numeros");
-                                    }
-                                }
-                            }
-                        });
-                        btnCanTel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogChangeTelefono.cancel();
-                            }
-                        });
-                    } else if (positionElement == 1) //
-                    {
-                        //Direccion
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.agregar_direccion_usuario, null);
-                        builderChange.setView(p);
-                        dialogAgregarDireccion = builderChange.create();
-                        dialogAgregarDireccion.show();
-                        final EditText txtCalle = (EditText) p.findViewById(R.id.txtCalle_usuario_dir);
-                        final EditText txtNumeroCalle = (EditText) p.findViewById(R.id.txtNumero_usuario_dir);
-                        Button btnDir = (Button) p.findViewById(R.id.btnCancelarDireccion);
-                        Button botonModificarDi = (Button) p.findViewById(R.id.btnModificarDireccion);
-                        Button botonAgregarCoordenadas = (Button)p.findViewById(R.id.btnAddDireccionCoor);
-                        botonModificarDi.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v) {
-                                int lonDir = direcciones.length;
-                                if (lonDir == 3) {
-                                    Toast.makeText(getContext(), "Ya tienes tres direcciones, puedes eliminar una direccion o modificar una.", Toast.LENGTH_SHORT).show();
-                                }
-                                else
-                                {
-                                    if(txtCalle.getText().toString().isEmpty() || txtNumeroCalle.getText().toString().isEmpty())
-                                    {
-                                        if (txtCalle.getText().toString().isEmpty())
-                                        {
-                                            txtCalle.setError("Completa este campo.");
-                                        }
-                                        if (txtNumeroCalle.getText().toString().isEmpty())
-                                        {
-                                            txtNumeroCalle.setError("Completa este campo.");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        String json = "";
-                                        JSONObject jsonObject = new JSONObject();
-                                        try
-                                        {
-                                            jsonObject.put("id", id);
-                                            jsonObject.put("callenueva", txtCalle.getText().toString());
-                                            jsonObject.put("numeronuevo", txtNumeroCalle.getText().toString());
-                                            jsonObject.put("lat_us", Coordenadas.latitud);
-                                            jsonObject.put("lon_us", Coordenadas.longitud);
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                        json = jsonObject.toString();
-                                        new agregarDireccion().execute(getResources().getString(R.string.direccion_web) + "Controlador/agregar_direccion_usuario.php", json);
-                                    }
-                                }
-                            }
-                        });
-                        botonAgregarCoordenadas.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                                View pMap = null;
-                                try
-                                {
-                                    pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
-                                }
-                                catch (InflateException ie)
-                                {
-                                    String err = ie.getMessage();
-                                    String x = "";
-                                }
-
-                                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-                                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                                builderMapa.setView(pMap);
-                                final AlertDialog mapUpdate = builderMapa.create();
-                                mapUpdate.show();
-
-
-                                map.getMapAsync(new OnMapReadyCallback() {
-                                    @Override
-                                    public void onMapReady(final GoogleMap googleMap) {
-                                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                            // TODO: Consider calling
-                                            //    ActivityCompat#requestPermissions
-                                            // here to request the missing permissions, and then overriding
-                                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                            //                                          int[] grantResults)
-                                            // to handle the case where the user grants the permission. See the documentation
-                                            // for ActivityCompat#requestPermissions for more details.
-                                            return;
-                                        }
-                                        googleMap.setMyLocationEnabled(true);
-                                        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                            @Override
-                                            public void onMapClick(LatLng latLng)
-                                            {
-                                                googleMap.clear();
-                                                //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                                googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                                Coordenadas.latitud = latLng.latitude;
-                                                Coordenadas.longitud = latLng.longitude;
-                                            }
-                                        });
-                                    }
-                                });
-                                botonTomarCoor.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v)
-                                    {
-                                        getFragmentManager().beginTransaction().remove(map).commit();
-                                        mapUpdate.dismiss();
-                                    }
-                                });
-                            }
-                        });
-                        btnDir.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogAgregarDireccion.cancel();
-                            }
-                        });
-                    }
-                }
-                if (positionCrudSelected == 1) //TODO: Modificar
-                {
-                    if (positionElement == 0) {
-                        //Nombre
-                        dialogoSingular(dialogCrudUsuario, "Nombre");
-                    } else if (positionElement == 1) {
-                        //Apellido
-                        dialogoSingular(dialogCrudUsuario, "Apellido");
-                    } else if (positionElement == 2) {
-                        //Nickname
-                        dialogoSingular(dialogCrudUsuario, "Nickname");
-                    } else if (positionElement == 3) {
-                        //Correo
-                        dialogoSingular(dialogCrudUsuario, "Correo");
-                    } else if (positionElement == 4) {
-                        //Clave
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_clave_usuario, null);
-                        builderChange.setView(p);
-                        dialogChangeClave = builderChange.create();
-                        dialogChangeClave.show();
-
-                        txtActualClave = (EditText) p.findViewById(R.id.txtClaveActual_us);
-                        final EditText txtNuevaClave = (EditText) p.findViewById(R.id.txtClaveNueva_us);
-                        final EditText txtNuevaClaveRep = (EditText) p.findViewById(R.id.txtClaveNuevaRep_us);
-
-                        Button botonCambiarClave = (Button) p.findViewById(R.id.btnCambiarClave);
-                        Button botonCerrarDialogo = (Button) p.findViewById(R.id.btnCancelarClave);
-
-                        botonCambiarClave.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (txtActualClave.getText().toString().isEmpty() || txtNuevaClave.getText().toString().isEmpty() || txtNuevaClaveRep.getText().toString().isEmpty()) {
-                                    if (txtActualClave.getText().toString().isEmpty()) {
-                                        txtActualClave.setError("Completa este campo");
-                                    }
-                                    if (txtNuevaClave.getText().toString().isEmpty()) {
-                                        txtNuevaClave.setError("Completa este campo");
-                                    }
-                                    if (txtNuevaClaveRep.getText().toString().isEmpty()) {
-                                        txtNuevaClaveRep.setError("Completa este campo");
-                                    }
-                                } else {
-                                    if (txtNuevaClave.getText().toString().equals(txtNuevaClaveRep.getText().toString()))
-                                    {
-                                        tipo_registro = "Clave";
-                                        JSONObject object = new JSONObject();
-                                        try
-                                        {
-                                            object.put("id", id);
-                                            object.put("clave_nueva_us", txtNuevaClave.getText().toString());
-                                            object.put("clave_us", txtActualClave.getText().toString());
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                        modificarUsuario updateUs = new modificarUsuario();
-                                        updateUs.execute(getResources().getString(R.string.direccion_web)+ "Controlador/actualizar_datos_usuario.php", object.toString());
-                                    }
-                                    else
-                                        {
-                                        txtNuevaClaveRep.setError("La clave no coincide con la de arriba.");
-                                    }
-                                }
-                            }
-                        });
-                        botonCerrarDialogo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogChangeClave.cancel();
-                            }
-                        });
-                    } else {
-                        if (positionElement == 5) {
-                            //Direccion
-                            AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                            View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_direccion_usuario, null);
-                            builderChange.setView(p);
-                            dialogChangeDireccionUpdate = builderChange.create();
-                            dialogChangeDireccionUpdate.show();
-
-                            swUpdate = false;
-                            final LinearLayout linearUno = (LinearLayout) p.findViewById(R.id.llCalle_numero);
-                            final LinearLayout linearDos = (LinearLayout) p.findViewById(R.id.llCalle_numero_textos);
-                            final LinearLayout linearTres = (LinearLayout) p.findViewById(R.id.llBotones);
-                            final TextView txtInfoCalle = (TextView) p.findViewById(R.id.tvInfoCalle);
-                            final TextView txtInfoNumeroCalle = (TextView) p.findViewById(R.id.tvInfoNumeroCalle);
-                            final EditText textNuevaCalle = (EditText) p.findViewById(R.id.eNuevaCalle);
-                            final EditText textNuevaCalleNumero = (EditText) p.findViewById(R.id.eNuevoNumeroCalle);
-
-                            final Button botonCoordenadasUpdate = (Button) p.findViewById(R.id.btnAbrirMapa);
-                            Button botonMod = (Button) p.findViewById(R.id.btnModificarDireccion_us);
-                            Button botonCerrar = (Button) p.findViewById(R.id.btnCerrarDireccion_us);
-                            final ListView lvDirecciones = (ListView) p.findViewById(R.id.lvListaDirecciones);
-
-                            linearUno.setVisibility(View.GONE);
-                            linearDos.setVisibility(View.GONE);
-                            linearTres.setVisibility(View.GONE);
-                            botonCoordenadasUpdate.setVisibility(View.GONE);
-
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
-                            lvDirecciones.setAdapter(adapter);
-
-                            lvDirecciones.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    positionUpdateSelected = position;
-                                    swUpdate = true;
-
-                                    linearUno.setVisibility(View.VISIBLE);
-                                    String dirUs = lvDirecciones.getItemAtPosition(position).toString();
-
-                                    String[] arr_numero = dirUs.split("Numero:");
-                                    String numeroCalle = arr_numero[1].trim();
-
-                                    String[] arr_calleLeft = dirUs.split("-");
-                                    String calleLeft = arr_calleLeft[0].trim();
-                                    String[] arr_calle = calleLeft.split("Calle:");
-                                    String nomCalle = arr_calle[1].trim();
-
-                                    calleAntigua = nomCalle;
-                                    calleNumAntigua = numeroCalle;
-
-                                    txtInfoCalle.setText(getResources().getString(R.string.calle_usuario) + " " + nomCalle);
-                                    txtInfoNumeroCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + numeroCalle);
-
-                                    linearDos.setVisibility(View.VISIBLE);
-                                    linearTres.setVisibility(View.VISIBLE);
-                                    botonCoordenadasUpdate.setVisibility(View.VISIBLE);
-                                }
-                            });
-
-                            botonMod.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (swUpdate) {
-                                        if (textNuevaCalle.getText().toString().isEmpty() || textNuevaCalleNumero.getText().toString().isEmpty()) {
-                                            if (textNuevaCalle.getText().toString().isEmpty()) {
-                                                textNuevaCalle.setError("Debes completar este campo.");
-                                            }
-                                            if (textNuevaCalleNumero.getText().toString().isEmpty()) {
-                                                textNuevaCalleNumero.setError("Debes completar este campo.");
-                                            }
-                                        } else {
-                                            tipo_registro = "Direccion";
-                                            String json = "";
-                                            JSONObject jsonObject = new JSONObject();
-                                            try {
-                                                jsonObject.put("cant", calleAntigua);
-                                                jsonObject.put("nant", calleNumAntigua);
-                                                jsonObject.put("cnueva", textNuevaCalle.getText().toString());
-                                                jsonObject.put("nnueva", textNuevaCalleNumero.getText().toString());
-                                                jsonObject.put("latitud", Coordenadas.latitud);
-                                                jsonObject.put("longitud", Coordenadas.longitud);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                            json = jsonObject.toString();
-                                            new updateDireccion_or_telefono().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_direccion_usuario.php", json);
-                                        }
-                                    } else {
-                                        Toast.makeText(getContext(), "Selecciona una direccion para modificarlo.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            botonCerrar.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialogChangeDireccionUpdate.cancel();
-                                }
-                            });
-                            botonCoordenadasUpdate.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                    final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                                    View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
-
-                                    final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-
-                                    Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                                    builderMapa.setView(pMap);
-                                    final AlertDialog mapUpdate = builderMapa.create();
-                                    mapUpdate.show();
-
-
-                                    map.getMapAsync(new OnMapReadyCallback() {
-                                        @Override
-                                        public void onMapReady(final GoogleMap googleMap) {
-                                            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                                // TODO: Consider calling
-                                                //    ActivityCompat#requestPermissions
-                                                // here to request the missing permissions, and then overriding
-                                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                                //                                          int[] grantResults)
-                                                // to handle the case where the user grants the permission. See the documentation
-                                                // for ActivityCompat#requestPermissions for more details.
-                                                return;
-                                            }
-                                            googleMap.setMyLocationEnabled(true);
-                                            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                                @Override
-                                                public void onMapClick(LatLng latLng)
-                                                {
-                                                    googleMap.clear();
-                                                    //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                                    Coordenadas.latitud = latLng.latitude;
-                                                    Coordenadas.longitud = latLng.longitude;
-                                                }
-                                            });
-                                        }
-                                    });
-                                    botonTomarCoor.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v)
-                                        {
-                                            getFragmentManager().beginTransaction().remove(map).commit();
-                                            mapUpdate.dismiss();
-                                        }
-                                    });
-                                }
-                            });
-
-
-                        } else if (positionElement == 6) {
-                            //Telefono
-                            AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                            View p = getActivity().getLayoutInflater().inflate(R.layout.modificar_telefono, null);
-                            builderChange.setView(p);
-                            dialogChangeDireccionTelefono = builderChange.create();
-                            dialogChangeDireccionTelefono.show();
-
-                            final ListView listaTelefono = (ListView) p.findViewById(R.id.lv_lista_telefono);
-                            final TextView textoNum = (TextView) p.findViewById(R.id.tvInfoTelefono);
-                            final EditText txtnuevoTel = (EditText) p.findViewById(R.id.etNuevoTelefonp_us);
-                            final LinearLayout linearElementos = (LinearLayout) p.findViewById(R.id.llTextoandButton);
-                            Button btnModTel = (Button) p.findViewById(R.id.btnModificarTelefono_us);
-                            Button btnCerrarTel = (Button) p.findViewById(R.id.btnCerrarTelefono_us);
-
-                            linearElementos.setVisibility(View.GONE);
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, vTelefonos);
-                            listaTelefono.setAdapter(adapter);
-
-                            listaTelefono.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    positionUpdateSelectedTel = position;
-                                    linearElementos.setVisibility(View.VISIBLE);
-                                    String telUs = listaTelefono.getItemAtPosition(position).toString();
-
-                                    String[] arr_numero = telUs.split(":");
-                                    String telefono_antiguo = arr_numero[1].trim();
-                                    textoNum.setText(telefono_antiguo);
-                                    telefono_ant = telefono_antiguo;
-
-                                }
-                            });
-
-                            btnModTel.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (txtnuevoTel.getText().toString().isEmpty()) {
-                                        txtnuevoTel.setError("Debes ingresar un telefono.");
-                                    } else {
-                                        if (txtnuevoTel.getText().toString().length() >= 6) {
-                                            tipo_registro = "Telefono";
-                                            String json = "";
-                                            JSONObject jsonObject = new JSONObject();
-                                            try {
-                                                jsonObject.put("id", id);
-                                                jsonObject.put("antiguo", telefono_ant);
-                                                jsonObject.put("nuevo", txtnuevoTel.getText().toString());
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                            json = jsonObject.toString();
-                                            new updateDireccion_or_telefono().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", json);
-                                        } else {
-                                            txtnuevoTel.setError("El numero de telefono debe ser mayor igual a 6.");
-                                        }
-
-                                    }
-                                }
-                            });
-                            btnCerrarTel.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialogChangeDireccionTelefono.cancel();
-                                }
-                            });
-                        }
-                    }
-                }
-                if (positionCrudSelected == 2) //Eliminar
-                {
-                    if (positionElement == 0)
-                    {
-                        //Telefono
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                        TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
-                        tvInfo.setText(getResources().getString(R.string.descripcion_telefono_o_direccion));
-                        builderChange.setView(p);
-                        dialogChangeDelete = builderChange.create();
-                        swDelete = false;
-                        dialogChangeDelete.show();
-
-                        Button botonEliminar_t_d = (Button)p.findViewById(R.id.btnEliminar_d_f);
-                        Button botonCerrar = (Button)p.findViewById(R.id.btnCancelar_d_f);
-                        final ListView listaTelefono = (ListView)p.findViewById(R.id.lv_d_f);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, vTelefonos);
-                        listaTelefono.setAdapter(adapter);
-
-                        listaTelefono.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                        {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                            {
-                                positionDelete = position;
-                                swDelete = true;
-                            }
-                        });
-                        botonEliminar_t_d.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                if (swDelete)
-                                {
-                                    int listaTotal = listaTelefono.getAdapter().getCount();
-                                    if (listaTotal == 1)
-                                    {
-                                        Toast.makeText(getContext(), "Debes tener al menos 2 numeros de telefonos para eliminar uno, si este numero ya no lo usas podrias modificarlo.", Toast.LENGTH_LONG).show();
-                                    }
-                                    else
-                                    {
-                                        String telName = listaTelefono.getItemAtPosition(positionDelete).toString();
-                                        String[] arregloTel = telName.split(":");
-                                        String onlyNumber = arregloTel[1].trim();
-                                        tipo_delete = "Telefono";
-
-                                        String json = "";
-                                        JSONObject jsonObject = new JSONObject();
-                                        try
-                                        {
-                                            jsonObject.put("id", id);
-                                            jsonObject.put("telefono", onlyNumber);
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                        json = jsonObject.toString();
-                                        new eliminarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", json);
-                                    }
-                                }
-                                else
-                                {
-                                    Toast.makeText(getContext(), "Selecciona un telefono e elimina", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        botonCerrar.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                dialogChangeDelete.cancel();
-                            }
-                        });
-
-                    }
-                    else if (positionElement == 1)
-                    {
-                        //Direccion
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                        TextView tvInfo = (TextView)p.findViewById(R.id.tvInfo_d_f);
-                        tvInfo.setText(getResources().getString(R.string.descripcion_direccion));
-                        builderChange.setView(p);
-                        dialogChangeDireccionn = builderChange.create();
-                        dialogChangeDireccionn.show();
-                        Button botonDeleteDireccion = (Button)p.findViewById(R.id.btnEliminar_d_f);
-                        Button botonCerrarDireccion = (Button)p.findViewById(R.id.btnCancelar_d_f);
-                        swDelete = false;
-
-                        final ListView listView = (ListView)p.findViewById(R.id.lv_d_f);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, direcciones);
-                        listView.setAdapter(adapter);
-
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                            {
-                                positionDelete = position;
-                                swDelete = true;
-                            }
-                        });
-
-                        botonDeleteDireccion.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                if (swDelete)
-                                {
-                                    int listaTotal = listView.getAdapter().getCount();
-                                    if (listaTotal == 1)
-                                    {
-                                        Toast.makeText(getContext(), "Debes tener al menos 2 direcciones para eliminar uno, si esta direccion ya no lo usas podrias modificarlo.", Toast.LENGTH_LONG).show();
-                                    }
-                                    else
-                                    {
-                                        tipo_delete = "Direccion";
-                                        String datos = direcciones[positionDelete];
-
-                                        String[]arr_numero = datos.split("Numero:");
-                                        String numero = arr_numero[1].trim();
-
-                                        String[]arr_calleLeft = datos.split("-");
-                                        String calleLeft = arr_calleLeft[0].trim();
-                                        String[]arr_calle = calleLeft.split("Calle:");
-                                        String calle = arr_calle[1].trim();
-
-                                        String json = "";
-                                        JSONObject jsonObject = new JSONObject();
-                                        try
-                                        {
-                                            jsonObject.put("id", id);
-                                            jsonObject.put("calle", calle);
-                                            jsonObject.put("numero", numero);
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                        json = jsonObject.toString();
-                                        new eliminarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", json);
-                                    }
-                                }
-                                else
-                                {
-                                    Toast.makeText(getContext(), "Selecciona una direccion e elimina", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                        botonCerrarDireccion.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialogChangeDireccionn.cancel();
-                            }
-                        });
-                    }
-                }
-            }
-        });
-        String[] AddDelete = {"Agregar", "Modificar", "Eliminar"};
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, AddDelete);
-        Spinner spinner = (Spinner) v.findViewById(R.id.ddCrud);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int positionCrud, long id)
-            {
-                positionCrudSelected = positionCrud;
-                if (positionCrud == 1)
-                {
-                    String[] dElements = {"Nombre", "Apellido", "Nickname", "Correo electronico", "Clave", "Direccion", "Telefono"};
-                    ArrayAdapter adapElement = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, dElements);
-                    sElements.setAdapter(adapElement);
-                    sElements.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-                    {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int positionM, long id)
-                        {
-                            positionElement = positionM;
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-                }
-                else if (positionCrudSelected == 0 || positionCrudSelected == 2)
-                {
-                    String[] dElements = {"Un telefono", "Una dirección"};
-                    ArrayAdapter adapElement = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, dElements);
-                    sElements.setAdapter(adapElement);
-                    sElements.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int positionE, long id)
-                        {
-                            positionElement = positionE;
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent)
-                        {
-
-                        }
-                    });
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        botonCancelar.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialogCrudUsuario.cancel();
-            }
-        });
-    }
-    public void manipularTexto(View p, String toHintP)
-    {
-        EditText etUno = (EditText)p.findViewById(R.id.etVariable);
-        etUno.setHint(toHintP);
-    }
-    public void dialogoSingular(final AlertDialog dialog, String tipo)
-    {
-        AlertDialog.Builder builderUpdate = new AlertDialog.Builder(getContext());
-        vUpdate = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_usuario_singular, null);
-        builderUpdate.setView(vUpdate);
-        dialogUp = builderUpdate.create();
-
-        if (tipo.equals("Nombre"))
-        {
-            manipularTexto(vUpdate, getResources().getString(R.string.tu_nombre_nuevo));
-            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
-            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
-            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
-            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
-
-            btnModUs.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
-                    {
-                        if (txtVariable.getText().toString().isEmpty())
-                        {
-                            txtVariable.setError("Debes completar este campo");
-                        }
-                        if (txtClaveUser.getText().toString().isEmpty())
-                        {
-                            txtClaveUser.setError("Debes completar este campo");
-                        }
-                    }
-                    else
-                    {
-                        tipo_registro = "Nombre";
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
-                        {
-                            jsonObject.put("id", id);
-                            jsonObject.put("nombre_us", txtVariable.getText().toString());
-                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = jsonObject.toString();
-                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
-                    }
-                }
-            });
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogUp.cancel();
-                }
-            });
-        }
-        else if (tipo.equals("Apellido"))
-        {
-            manipularTexto(vUpdate, getResources().getString(R.string.tu_apellido_nuevo));
-            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
-            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
-            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
-            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
-            btnModUs.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v)
-                {
-                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
-                    {
-                        if (txtVariable.getText().toString().isEmpty())
-                        {
-                            txtVariable.setError("Debes completar este campo");
-                        }
-                        if (txtClaveUser.getText().toString().isEmpty())
-                        {
-                            txtClaveUser.setError("Debes completar este campo");
-                        }
-                    }
-                    else
-                    {
-                        tipo_registro = "Apellido";
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
-                        {
-                            jsonObject.put("id", id);
-                            jsonObject.put("apellido_us", txtVariable.getText().toString());
-                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = jsonObject.toString();
-                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
-                    }
-                }
-            });
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogUp.cancel();
-                }
-            });
-
-        }
-        else if (tipo.equals("Nickname"))
-        {
-            manipularTexto(vUpdate, getResources().getString(R.string.tu_nickname_nuevo));
-            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
-            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
-            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
-            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
-            btnModUs.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v)
-                {
-                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
-                    {
-                        if (txtVariable.getText().toString().isEmpty())
-                        {
-                            txtVariable.setError("Debes completar este campo");
-                        }
-                        if (txtClaveUser.getText().toString().isEmpty())
-                        {
-                            txtClaveUser.setError("Debes completar este campo");
-                        }
-                    }
-                    else
-                    {
-                        tipo_registro = "Nickname";
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
-                        {
-                            jsonObject.put("nickname", txtVariable.getText().toString());
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = jsonObject.toString();
-                        //Aqui llamar a consultar
-                        new consultarNickname().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultar_nickname.php", json);
-                    }
-                }
-            });
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogUp.cancel();
-                }
-            });
-        }
-        else if (tipo.equals("Correo"))
-        {
-            manipularTexto(vUpdate, getResources().getString(R.string.tu_correo_nuevo));
-            Button btnModUs = (Button)vUpdate.findViewById(R.id.btnModificarUsuario);
-            Button btnCancel = (Button)vUpdate.findViewById(R.id.btnCancelarE);
-            txtVariable = (EditText)vUpdate.findViewById(R.id.etVariable);
-            txtClaveUser = (EditText)vUpdate.findViewById(R.id.etClaveVariable);
-            btnModUs.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v)
-                {
-                    if (txtVariable.getText().toString().isEmpty() || txtClaveUser.getText().toString().isEmpty())
-                    {
-                        if (txtVariable.getText().toString().isEmpty())
-                        {
-                            txtVariable.setError("Debes completar este campo");
-                        }
-                        if (txtClaveUser.getText().toString().isEmpty())
-                        {
-                            txtClaveUser.setError("Debes completar este campo");
-                        }
-                    }
-                    else
-                    {
-                        tipo_registro = "Correo";
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
-                        {
-                            jsonObject.put("id", id);
-                            jsonObject.put("correo_us", txtVariable.getText().toString());
-                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = jsonObject.toString();
-                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
-                    }
-                }
-            });
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogUp.cancel();
-                }
-            });
-        }
-        dialogUp.show();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
-    }
-
-    public class TraerDatos extends AsyncTask<String, Void, String> //Enviar id
+    public class EjecutarConsulta extends AsyncTask<String, Void, String> //Enviar id
     {
         @Override
         public String doInBackground(String... params)
@@ -1136,699 +1222,250 @@ public class MisDatos extends Fragment implements View.OnClickListener, OnMapRea
             try
             {
                 JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
+                if (tipoReg.equals("Traer Datos"))
                 {
-                    ProgressDialog progress = new ProgressDialog(getContext());
-                    progress.setMessage("Cargando datos...");
-                    progress.show();
-
-                    eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
-                    eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
-                    eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
-                    eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
-                    eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
-                    eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
-                    telefonoRestanteUno = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
-                    tel1 = true;
-
-                    if (jsonResult.getString("telefonoDos").equals("false"))
+                    if (jsonResult != null)
                     {
-                        eTel2.setText("");
-                        tel2 = false;
-                        vTelefonos = new String[1];
-                        vTelefonos[0] = telefonoRestanteUno;
-                    }
-                    else
-                    {
-                        eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
-                        tel2 = true;
-                        telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
+                        ProgressDialog progress = new ProgressDialog(getContext());
+                        progress.setMessage("Cargando datos...");
+                        progress.show();
 
-                        vTelefonos = new String[2];
-                        vTelefonos[0] = telefonoRestanteUno;
-                        vTelefonos[1] = telefonoRestanteDos;
-                    }
+                        eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
+                        eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
+                        eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
+                        eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
+                        eTipo.setText(getResources().getString(R.string.tipo_usuario) + " " + jsonResult.getString("Rol"));
+                        eTel1.setText(getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono"));
+                        telefonoRestanteUno = getResources().getString(R.string.numtel_uno) + " " + jsonResult.getString("Telefono");
+                        tel1 = true;
 
-                    int longitud = jsonResult.length();
-                    int lonDireccion = longitud - 7;
-                    boolean dUno = false, dDos = false, dTres = false;
-                    direcciones = new String[lonDireccion];
-
-                    for (int i=0; i<lonDireccion; i++)
-                    {
-                        if (i == 0)
+                        if (jsonResult.getString("telefonoDos").equals("false"))
                         {
-                            JSONObject jsonDireccionUno = new JSONObject(jsonResult.getString("0"));
-                            calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionUno.getString("street"));
-                            numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionUno.getString("number"));
-                            direcciones[i] = "Calle: " + jsonDireccionUno.getString("street") + " - " + "Numero: " + jsonDireccionUno.getString("number");
-                            dUno = true;
-                        }
-                        if (i == 1)
-                        {
-                            JSONObject jsonDireccionDos = new JSONObject(jsonResult.getString("1"));
-                            calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionDos.getString("street"));
-                            numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionDos.getString("number"));
-                            direcciones[i] = "Calle: " + jsonDireccionDos.getString("street") + " - " + "Numero: " + jsonDireccionDos.getString("number");
-                            dDos = true;
-                        }
-                        if (i == 2)
-                        {
-                            JSONObject jsonDireccionTres = new JSONObject(jsonResult.getString("2"));
-                            calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionTres.getString("street"));
-                            numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionTres.getString("number"));
-                            direcciones[i] = "Calle: " + jsonDireccionTres.getString("street") + " - " + "Numero: " + jsonDireccionTres.getString("number");
-                            dTres = true;
-                        }
-                    }
-                    if (dDos == false)
-                    {
-                        calleDos.setText("");
-                        numCalleDos.setText("");
-                    }
-                    if (dTres == false)
-                    {
-                        calleTres.setText("");
-                        numCalleTres.setText("");
-                    }
-                    progress.cancel();
-
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    String tipo_registro;
-    String tipo_delete;
-    String tipo_add;
-    public class consultarNickname extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
-                    {
-                        conn.disconnect();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-                    if (jsonResult.getString("Resultado").equals("0"))
-                    {
-                        String json = "";
-                        JSONObject jsonObject = new JSONObject();
-                        try
-                        {
-
-                            jsonObject.put("id", id);
-                            jsonObject.put("nickname_us", txtVariable.getText().toString());
-                            jsonObject.put("clave_us", txtClaveUser.getText().toString());
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        json = jsonObject.toString();
-                        new modificarUsuario().execute( getResources().getString(R.string.direccion_web) + "Controlador/actualizar_datos_usuario.php", json);
-                    }
-                    else
-                    {
-                        txtVariable.setError("Este nickname ya esta en uso.");
-                        Toast.makeText(getContext(), "El nickname ya esta en uso.", Toast.LENGTH_LONG).show();
-                    }
-
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    public class modificarUsuario extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
-                    {
-                        conn.disconnect();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-                    if (jsonResult.getString("Clave").equals("Incorrecto"))
-                    {
-                        if (tipo_registro.equals("Clave"))
-                        {
-                            txtActualClave.setError("La clave es incorrecta.");
+                            linearLayoutTelefono2.setVisibility(View.GONE);
+                            tel2 = false;
+                            vTelefonos = new String[1];
+                            vTelefonos[0] = telefonoRestanteUno;
                         }
                         else
                         {
-                            txtClaveUser.setError("La clave es incorrecta.");
-                        }
-                    }
-                    else if (jsonResult.getString("Clave").equals("Correcto"))
-                    {
-                        if (tipo_registro.equals("Nombre"))
-                        {
-                            eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + txtVariable.getText().toString());
-                            Toast.makeText(getContext(), "Se ha modificado tu nombre por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
-                            dialogCrudUsuario.cancel();
-                            dialogUp.cancel();
-                        }
-                        else if (tipo_registro.equals("Apellido"))
-                        {
-                            eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + txtVariable.getText().toString());
-                            Toast.makeText(getContext(), "Se ha modificado tu apellido por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
-                            dialogCrudUsuario.cancel();
-                            dialogUp.cancel();
-                        }
-                        else if (tipo_registro.equals("Nickname"))
-                        {
-                            eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + txtVariable.getText().toString());
-                            Toast.makeText(getContext(), "Se ha modificado tu nickname por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
-                            dialogCrudUsuario.cancel();
-                            dialogUp.cancel();
-                        }
-                        else if (tipo_registro.equals("Clave"))
-                        {
-                            dialogChangeClave.cancel();
-                            dialogCrudUsuario.cancel();
-                            Toast.makeText(getContext(), "Tu clave se ha modificado correctamente.", Toast.LENGTH_SHORT).show();
-                        }
-                        else if (tipo_registro.equals("Correo"))
-                        {
-                            eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + txtVariable.getText().toString());
-                            Toast.makeText(getContext(), "Se ha modificado tu correo por: " + txtVariable.getText().toString(), Toast.LENGTH_SHORT).show();
-                            dialogCrudUsuario.cancel();
-                            dialogUp.cancel();
-                        }
-                    }
-                    else if (jsonResult.getString("Clave").equals("Nickname_existe"))
-                    {
-                        txtVariable.setError("Este nickname ya esta en uso.");
-                    }
-                    else if (jsonResult.getString("Clave").equals("Correo_existe"))
-                    {
-                        txtVariable.setError("Este correo ya esta en uso.");
-                    }
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
+                            linearLayoutTelefono2.setVisibility(View.VISIBLE);
+                            eTel2.setText(getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos"));
+                            tel2 = true;
+                            telefonoRestanteDos = getResources().getString(R.string.numtel_dos) + " " + jsonResult.getString("telefonoDos");
 
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    public class updateDireccion_or_telefono extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
+                            vTelefonos = new String[2];
+                            vTelefonos[0] = telefonoRestanteUno;
+                            vTelefonos[1] = telefonoRestanteDos;
                         }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
-                    {
-                        conn.disconnect();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-                    if (tipo_registro.equals("Direccion"))
-                    {
-                        if (jsonResult.getString("Actualizado").equals("Si"))
-                        {
-                            dialogCrudUsuario.cancel();
-                            dialogChangeDireccionUpdate.cancel();
-                            Toast.makeText(getContext(), "Direccion actualizada.", Toast.LENGTH_LONG).show();
+                        int longitud = jsonResult.length();
+                        int lonDireccion = longitud - 7;
+                        boolean dDos = false, dTres = false;
+                        direcciones = new String[lonDireccion];
 
-                            cargar();
-                        }
-                    }
-                    else if (tipo_registro.equals("Telefono"))
-                    {
-                        if (jsonResult.getString("Actualizado").equals("Si"))
+                        for (int i=0; i<lonDireccion; i++)
                         {
-                            dialogCrudUsuario.cancel();
-                            dialogChangeDireccionTelefono.cancel();
-                            Toast.makeText(getContext(), "Telefono modificado.", Toast.LENGTH_LONG).show();
-                            cargar();
+                            if (i == 0)
+                            {
+                                JSONObject jsonDireccionUno = new JSONObject(jsonResult.getString("0"));
+                                calle.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionUno.getString("street"));
+                                numCalle.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionUno.getString("number"));
+                                direcciones[i] = "Calle: " + jsonDireccionUno.getString("street") + " - " + "Numero: " + jsonDireccionUno.getString("number");
+                            }
+                            if (i == 1)
+                            {
+                                JSONObject jsonDireccionDos = new JSONObject(jsonResult.getString("1"));
+                                calleDos.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionDos.getString("street"));
+                                numCalleDos.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionDos.getString("number"));
+                                direcciones[i] = "Calle: " + jsonDireccionDos.getString("street") + " - " + "Numero: " + jsonDireccionDos.getString("number");
+                                dDos = true;
+                            }
+                            if (i == 2)
+                            {
+                                JSONObject jsonDireccionTres = new JSONObject(jsonResult.getString("2"));
+                                calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionTres.getString("street"));
+                                numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionTres.getString("number"));
+                                direcciones[i] = "Calle: " + jsonDireccionTres.getString("street") + " - " + "Numero: " + jsonDireccionTres.getString("number");
+                                dTres = true;
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
+                        if (dDos == false)
+                        {
+                            calleDos.setText("");
+                            numCalleDos.setText("");
+                        }
+                        if (dTres == false)
+                        {
+                            calleTres.setText("");
+                            numCalleTres.setText("");
+                        }
+                        progress.cancel();
 
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    public class eliminarDatos extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
-                    {
-                        conn.disconnect();
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        ex.printStackTrace();
+                        Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
+                else if (tipoReg.equals("Modificar Nombre"))
                 {
-                    if (tipo_delete.equals("Telefono"))
+                    String res = jsonResult.getString("Actualizado");
+                    if (res.equals("Si"))
                     {
-                        if (jsonResult.getString("Eliminado").equals("Si"))
-                        {
-                            dialogChangeDelete.cancel();
-                            dialogCrudUsuario.cancel();
-                            cargar();
-                            Toast.makeText(getContext(), "Telefono eliminado.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    else if (tipo_delete.equals("Direccion"))
-                    {
-                        if(jsonResult.getString("Eliminado").equals("Si"))
-                        {
-                            dialogCrudUsuario.cancel();
-                            dialogChangeDireccionn.cancel();
-                            cargar();
-                            Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    public class agregarDatos extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
-                    {
-                        conn.disconnect();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
-                {
-                    if (jsonResult.getString("Agregado").equals("Si"))
-                    {
-                        dialogChangeTelefono.cancel();
-                        dialogCrudUsuario.cancel();
-                        Toast.makeText(getContext(), "Telefono agregado.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Datos modificados", Toast.LENGTH_SHORT).show();
                         cargar();
+                        dialogAlertDatosUsuario.dismiss();
                     }
                 }
-                else
+                else if (tipoReg.equals("Clave"))
                 {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    public class agregarDireccion extends AsyncTask<String, Void, String>
-    {
-        @Override
-        public String doInBackground(String... params)
-        {
-            HttpURLConnection conn = null;
-            try
-            {
-                StringBuffer response = null;
-                URL url = new URL(params[0]);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
-                int responseCode = conn.getResponseCode();
-                System.out.println("responseCode" + responseCode);
-                switch (responseCode)
-                {
-                    case 200:
-                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        String inputLine;
-                        response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null)
-                        {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        return response.toString();
-                }
-            }
-            catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                if (conn != null)
-                {
-                    try
+                    String res = jsonResult.getString("Resultado");
+                    if (res.equals("Correcto"))
                     {
-                        conn.disconnect();
+                        Toast.makeText(getContext(), "Clave actualizada", Toast.LENGTH_SHORT).show();
+                        dialogAlertClave.dismiss();
+                        dialogAlertDatosUsuario.dismiss();
                     }
-                    catch (Exception ex)
+                    else if (res.equals("Incorrecto"))
                     {
-                        ex.printStackTrace();
+                        editTextClaveActual.setError("La clave es incorrecta");
+                        Toast.makeText(getContext(), "La clave actual es incorrecta", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s)
-        {
-            try
-            {
-                JSONObject jsonResult = new JSONObject(s);
-                if (jsonResult != null)
+                else if (tipoReg.equals("Agregar Telefono"))
                 {
-                    if (jsonResult.getString("Direccion").equals("Si"))
+                    String res = jsonResult.getString("Agregado");
+                    if (res.equals("Si"))
                     {
-                        dialogAgregarDireccion.cancel();
-                        dialogCrudUsuario.cancel();
+                        dialogAlertAgregarTelefono.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Telefono agregado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar Telefono"))
+                {
+                    String res = jsonResult.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertTelefono1.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Telefono actualizado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar Telefono 2"))
+                {
+                    String res = jsonResult.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertTelefono2.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Telefono actualizado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar Telefono"))
+                {
+                    String res = jsonResult.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertEliminarTelefono.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Telefono eliminado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar Telefono 2"))
+                {
+                    String res = jsonResult.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertEliminarTelefono2.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Telefono eliminado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar direccion 1"))
+                {
+                    String res = jsonResult.getString("Actualizado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertUpdateDir1.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion actualizada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar direccion 1"))
+                {
+                    String res = jsonResult.getString("Actualizado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertUpdateDir1.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion actualizada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar direccion 2"))
+                {
+                    String res = jsonResult.getString("Actualizado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertUpdateDir2.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion actualizada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Modificar direccion 3"))
+                {
+                    String res = jsonResult.getString("Actualizado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertUpdateDir3.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion actualizada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar Direccion 1"))
+                {
+                    String res = jsonResult.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertDeleteDir1.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar Direccion 2"))
+                {
+                    String res = jsonResult.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertDeleteDir2.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar Direccion 3"))
+                {
+                    String res = jsonResult.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertDeleteDir3.dismiss();
+                        cargar();
+                        Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Agregar Direccion 1"))
+                {
+                    String res = jsonResult.getString("Direccion");
+                    if (res.equals("Si"))
+                    {
+                        dialogAlertAddDir1.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Direccion agregada", Toast.LENGTH_SHORT).show();
                     }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Algo paso.", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else
-                {
-                    Toast.makeText(getContext(), "No trajo datos :(", Toast.LENGTH_SHORT).show();
-                }
-
             }
             catch (JSONException e)
             {

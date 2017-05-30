@@ -1,246 +1,375 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.MisDatos">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/textView8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:textColor="@color/textoBlanco"
+        android:background="@color/colorCeleste"
+        android:textStyle="bold"
+        android:text="@string/mis_datos" />
 
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/mis_datos"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="391dp"
-        android:layout_marginTop="30dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txtNombre_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="@string/usuario_nombre"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtApellido_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="@string/usuario_apellido"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtNickname_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="@string/usuario_nick"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtCorreo_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="@string/correo_usuario"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtTipo_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="@string/tipo_usuario"
-            android:textColor="@color/colorNegro" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/textView87"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView18"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/numero_de_telefono_de_usuario"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+        android:gravity="center"
+        android:text="@string/titulo_datos_usuario"
+        android:textColor="@color/colorNegro"
+        android:textStyle="bold" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="155dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txtTeleUno_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/numtel_uno"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtTeleDos_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/numtel_dos"
-            android:textColor="@color/colorNegro" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="195dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView22"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/direccion_usuario"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lnDireccion_uno"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="223dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView29"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/direccion_1"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txtCalle_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_usuario"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtNumeroCalle_misdatos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_numero_usuario"
-            android:textColor="@color/colorNegro" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lnDireccion_dos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="283dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView33"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/direccion_2"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txtCalle_misdatos_d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_usuario"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtNumeros_misdatos_d"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_numero_usuario"
-            android:textColor="@color/colorNegro" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lnDireccion_tres"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="343dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView34"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/direccion_3"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txtCallemisdatos_t"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_usuario"
-            android:textColor="@color/colorNegro" />
-
-        <TextView
-            android:id="@+id/txtNumeromisdatos_t"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/calle_numero_usuario"
-            android:textColor="@color/colorNegro" />
-    </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fbModificar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="19dp"
-        android:layout_marginEnd="18dp"
-        android:clickable="true"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/ic_menu_manage" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtNombre_misdatos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/usuario_nombre" />
+
+            <TextView
+                android:id="@+id/txtApellido_misdatos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/usuario_apellido" />
+
+            <TextView
+                android:id="@+id/txtNickname_misdatos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/usuario_nickname" />
+
+            <TextView
+                android:id="@+id/txtCorreo_misdatos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/correo_usuario" />
+
+            <TextView
+                android:id="@+id/txtTipo_misdatos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/tipo_usuario" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivActualizarDatos"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:srcCompat="@drawable/update" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView88"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:text="@string/titulo_telefonos"
+                android:textColor="@color/colorNegro"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnAgregarNuevoTelefono"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/colorbutton"
+                android:text="@string/agregar_producto" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTelefono1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtTeleUno_misdatos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/titulo_telefono" />
+
+            <ImageView
+                android:id="@+id/ivUpdateTel1"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/update" />
+
+            <ImageView
+                android:id="@+id/ivDeleteTel1"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/delete" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTelefono2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtTeleDos_misdatos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/titulo_telefono" />
+
+            <ImageView
+                android:id="@+id/ivUpdateTel2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/update" />
+
+            <ImageView
+                android:id="@+id/ivDeleteTel2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/delete" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView88"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:text="@string/titulo_direcciones"
+                android:textColor="@color/colorNegro"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnAgregarNuevaDireccion"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/colorbutton"
+                android:text="@string/agregar_producto" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDireccion1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView89"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:text="@string/direccion_1"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtCalle_misdatos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_usuario" />
+
+                <TextView
+                    android:id="@+id/txtNumeroCalle_misdatos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_numero_usuario" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivUpdateDir1"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/update" />
+
+            <ImageView
+                android:id="@+id/ivDeleteDir1"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/delete" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDireccion2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView89"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:text="@string/direccion_2"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtCalle_misdatos_d"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_usuario" />
+
+                <TextView
+                    android:id="@+id/txtNumeros_misdatos_d"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_numero_usuario" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivUpdateDir2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/update" />
+
+            <ImageView
+                android:id="@+id/ivDeleteDir2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/delete" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDireccion3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView89"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:text="@string/direccion_3"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtCallemisdatos_t"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_usuario" />
+
+                <TextView
+                    android:id="@+id/txtNumeromisdatos_t"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/calle_numero_usuario" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivUpdateDir3"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/update" />
+
+            <ImageView
+                android:id="@+id/ivDeleteDir3"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/delete" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

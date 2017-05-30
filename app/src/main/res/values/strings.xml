@@ -193,4 +193,18 @@
     <string name="horario_t">Tarde</string>
     <string name="titulo_mover_marcador">Puedes mover el marcador</string>
     <string name="titulo_correo_nickname">Correo Electronico o Nickname</string>
+    <string name="titulo_nombre">Nombre</string>
+    <string name="titulo_apellido">Apellido</string>
+    <string name="titulo_tel1">Telefono 1</string>
+    <string name="titulo_tel2">Telefono 2</string>
+    <string name="titulo_dir1">Dirección 1</string>
+    <string name="titulo_dir2">Dirección 2</string>
+    <string name="titulo_dir3">Dirección 3</string>
+    <string name="titulo_nombre_apellido">Nombre y apellido</string>
+    <string name="titulo_telefonos">Telefonos</string>
+    <string name="titulo_direcciones">Direcciones</string>
+    <string name="titulo_cambiar_clave">Cambiar clave</string>
+    <string name="titulo_datos_usuario">Datos del usuario</string>
+    <string name="titulo_telefono">Telefono:</string>
+    <string name="titulo_pregunta_telefono">¿Seguro que desea eliminar este telefono?</string>
 </resources>

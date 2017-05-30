@@ -8,22 +8,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView24"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/titulo_modificar_telefono"
-            android:background="@color/colorCeleste"
-            android:textColor="@color/textoBlanco"
-            android:textStyle="bold" />
-
-        <ListView
-            android:id="@+id/lv_lista_telefono"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:listSelector="@color/celesteClaro" />
-
         <LinearLayout
             android:id="@+id/llTextoandButton"
             android:layout_width="match_parent"
@@ -39,14 +23,6 @@
                 android:background="@color/colorCeleste"
                 android:textColor="@color/textoBlanco"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvInfoTelefono"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="TextView"
-                android:textColor="@color/colorNegro" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -75,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginRight="2dp"
                     android:layout_weight="1"
                     android:background="@drawable/colorbuttonamarillo"
                     android:text="@string/modificar_boton" />
@@ -85,6 +62,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
                     android:layout_marginRight="20dp"
                     android:layout_weight="1"
                     android:background="@drawable/colorbuttonred"
