@@ -70,6 +70,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
     int[] idStore;
     String[] street, number, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, user_id;
+    String tipoConsulta;
     ArrayList<String> nameStore, desStore;
     ArrayList<Double> latitude, longitude;
     View view;
@@ -77,24 +78,32 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try {
+        try
+        {
             view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
             mapFragment.getMapAsync(this);
-        } catch (InflateException ex) {
+        }
+        catch (InflateException ex)
+        {
 
         }
 
 
         if (new Validadores().isNetDisponible(getContext())) {
             JSONObject object = new JSONObject();
-            try {
+            try
+            {
                 object.put("nada", null);
-            } catch (JSONException e) {
+            }
+            catch (JSONException e)
+            {
                 e.printStackTrace();
             }
             new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
-        } else {
+        }
+        else
+        {
             Toast.makeText(getContext(), "Debes estar conectado a una red para ver las tiendas.", Toast.LENGTH_SHORT).show();
         }
 
@@ -116,6 +125,26 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
         args.putString("lunch_open_hour", params[9]);
         args.putString("lunch_after_hour", params[10]);
         args.putString("tienda_id", params[11]);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static StoreOtherUser otherStore(String... params) {
+        StoreOtherUser fragment = new StoreOtherUser();
+        Bundle args = new Bundle();
+        args.putString("imagen_tienda", params[0]);
+        args.putString("nombre_tienda", params[1]);
+        args.putString("des_tienda", params[2]);
+        args.putString("calle_tienda", params[3]);
+        args.putString("numero_tienda", params[4]);
+        args.putString("start_day", params[5]);
+        args.putString("end_day", params[6]);
+        args.putString("open_hour", params[7]);
+        args.putString("close_hour", params[8]);
+        args.putString("lunch_open_hour", params[9]);
+        args.putString("lunch_after_hour", params[10]);
+        args.putString("tienda_id", params[11]);
+        args.putString("user_id", params[12]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -165,18 +194,26 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
                     {
                         e.printStackTrace();
                     }
-
+                    tipoConsulta = "Mi Tienda";
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, new StoreOtherUser());
-                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    trans.addToBackStack(null);
-                    trans.commit();
+                    pos = nameStore.indexOf(marker.getTitle());
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("name_store", nameStore.get(pos));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    tipoConsulta = "Otra Tienda";
+                    new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
+
                 }
                 //int pos = nameStore.indexOf(marker.getTitle());
                 //Toast.makeText(getContext(), "Posicion de la tienda en el arreglo: " +pos, Toast.LENGTH_SHORT).show();
@@ -475,14 +512,27 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
             try
             {
                 JSONObject object = new JSONObject(s);
-                if (object != null)
+
+                if (tipoConsulta.equals("Mi Tienda"))
+                {
+                    if (object != null)
+                    {
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
+                    }
+                }
+                else if (tipoConsulta.equals("Otra Tienda"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                    trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos]), Coordenadas.id));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
                 }
+
             }
             catch (JSONException e)
             {

@@ -1329,15 +1329,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
                         }
 
+                        vTelefonos = new ArrayList<>();
                         if (lonTel == 2)
                         {
-                            vTelefonos = new ArrayList<>();
+
                             vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
                             vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
                         }
                         else if (lonTel == 1)
                         {
-                            vTelefonos = new ArrayList<>();
                             vTelefonos.add(new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
                         }
 

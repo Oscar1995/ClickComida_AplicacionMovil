@@ -44,7 +44,7 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/imageView10"
+                            android:id="@+id/ivTiendaOther"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_weight="1"
@@ -60,7 +60,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView52"
+                            android:id="@+id/tvNombreOther"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
@@ -68,7 +68,7 @@
                             android:textColor="@color/colorNegro" />
 
                         <TextView
-                            android:id="@+id/textView51"
+                            android:id="@+id/tvDireccionOther"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
@@ -76,7 +76,7 @@
                             android:textColor="@color/colorNegro" />
 
                         <TextView
-                            android:id="@+id/textView49"
+                            android:id="@+id/tvKilometrosOther"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
@@ -84,7 +84,7 @@
                             android:textColor="@color/colorNegro" />
 
                         <TextView
-                            android:id="@+id/textView53"
+                            android:id="@+id/tvHorarioOther"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
@@ -161,7 +161,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textView60"
+                        android:id="@+id/tvInfoCal"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -171,8 +171,7 @@
                         android:textStyle="bold" />
 
                     <RatingBar
-                        android:id="@+id/rbUsuariosStar"
-                        style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
+                        android:id="@+id/ratingBarU"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1" />
@@ -223,7 +222,7 @@
                         android:orientation="horizontal">
 
                         <EditText
-                            android:id="@+id/editText"
+                            android:id="@+id/etComentarioOther"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
@@ -232,7 +231,7 @@
                             android:inputType="textPersonName" />
 
                         <Button
-                            android:id="@+id/button3"
+                            android:id="@+id/btnComentar"
                             style="@style/Widget.AppCompat.Button.Colored"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

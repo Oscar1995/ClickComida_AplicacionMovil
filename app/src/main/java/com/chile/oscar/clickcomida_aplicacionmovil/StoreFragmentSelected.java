@@ -100,9 +100,11 @@ public class StoreFragmentSelected extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             imagenTienda = Codificacion.decodeBase64(getArguments().getString("imagen_tienda"));
             nombre = getArguments().getString("nombre_tienda");
             des = getArguments().getString("des_tienda");
