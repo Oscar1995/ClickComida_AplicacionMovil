@@ -56,7 +56,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    RatingBar ratingBarUsuario;
+    RatingBar ratingBarUsuario, ratingTienda;
     TextView textViewCal;
 
     private OnFragmentInteractionListener mListener;
@@ -145,6 +145,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         }
 
         cargarCalificacion();
+        ratingTienda = (RatingBar)view.findViewById(R.id.rbTienda);
         ratingBarUsuario = (RatingBar)view.findViewById(R.id.ratingBarU);
         ratingBarUsuario.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener()
         {
@@ -329,23 +330,30 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                     String res = object.getString("Resultado");
                     if (res.equals("Si"))
                     {
+                        String cuenta = object.getString("Cuenta");
+                        String suma = object.getString("Suma");
+                        ratingTienda.setRating( (Float.parseFloat(suma) / Float.parseFloat(cuenta)) );
                         Toast.makeText(getContext(), "Has calificado esta tienda", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Cargar valor"))
                 {
-                    String res = object.getString("Valor");
-                    if (!res.equals("null"))
+                    String valor = object.getString("Valor");
+                    if (!valor.equals("null"))
                     {
+                        String promedio = object.getString("Promedio");
                         userCal = true;
                         sw = true;
-                        ratingBarUsuario.setRating(Float.parseFloat(res));
+
+                        ratingTienda.setRating(Float.parseFloat(promedio));
+                        ratingBarUsuario.setRating(Float.parseFloat(valor));
                         textViewCal.setText("Has calificado esta tienda");
                     }
                     else
                     {
                         sw = false;
                         userCal = false;
+                        ratingTienda.setRating(0);
                         textViewCal.setText("Califica esta tienda");
                     }
                 }
@@ -354,6 +362,11 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                     String res = object.getString("Actualizado");
                     if (res.equals("Si"))
                     {
+                        String cuenta = object.getString("Cuenta");
+                        String suma = object.getString("Suma");
+
+                        ratingTienda.setRating( (Float.parseFloat(suma) / Float.parseFloat(cuenta)) );
+
                         Toast.makeText(getContext(), "Has modificado la calificacion", Toast.LENGTH_SHORT).show();
                         textViewCal.setText("Has calificado esta tienda");
                     }
