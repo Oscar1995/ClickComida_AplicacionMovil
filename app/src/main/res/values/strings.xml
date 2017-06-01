@@ -207,4 +207,9 @@
     <string name="titulo_datos_usuario">Datos del usuario</string>
     <string name="titulo_telefono">Telefono:</string>
     <string name="titulo_pregunta_telefono">¿Seguro que desea eliminar este telefono?</string>
+    <string name="titulo_favoritos">Favoritos</string>
+    <string name="titulo_tienda">Tiendas</string>
+    <string name="titulo_producto">Productos</string>
+    <string name="titulo_des_tienda_prod">Aqui tienes las tiendas y productos que has marcado como favorito</string>
+    <string name="titulo_prod_store">Elige tienda o producto para ver lo que has guadado en ellas.</string>
 </resources>

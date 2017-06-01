@@ -4,8 +4,12 @@ import android.Manifest;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.icu.util.Calendar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -125,5 +129,20 @@ public class MetodosCreados
             }
         }
         return null;
+    }
+    public RoundedBitmapDrawable RedondearBitmap (Bitmap bitmapOriginal, Resources resources)
+    {
+        if (bitmapOriginal.getWidth() > bitmapOriginal.getHeight())
+        {
+            bitmapOriginal = Bitmap.createBitmap(bitmapOriginal, 0, 0, bitmapOriginal.getHeight(), bitmapOriginal.getHeight());
+        }
+        else if (bitmapOriginal.getWidth() < bitmapOriginal.getHeight())
+        {
+            bitmapOriginal = Bitmap.createBitmap(bitmapOriginal, 0, 0, bitmapOriginal.getWidth(), bitmapOriginal.getWidth());
+        }
+
+        RoundedBitmapDrawable roundedDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapOriginal);
+        roundedDrawable.setCornerRadius(bitmapOriginal.getWidth());
+        return roundedDrawable;
     }
 }

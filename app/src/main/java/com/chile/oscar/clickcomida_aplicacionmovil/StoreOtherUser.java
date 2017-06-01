@@ -53,6 +53,9 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     Bitmap imagenTienda;
     Boolean userCal = false, sw = false;
 
+    Boolean favorite = false;
+    ImageView imageViewFavoritos;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -121,6 +124,8 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         TextView textViewKilometros =(TextView)view.findViewById(R.id.tvKilometrosOther);
         TextView textViewHorario = (TextView)view.findViewById(R.id.tvHorarioOther);
         final EditText editTextComentario  = (EditText)view.findViewById(R.id.etComentarioOther);
+        imageViewFavoritos = (ImageView)view.findViewById(R.id.ivFavoritos);
+
         Button buttonComentar = (Button)view.findViewById(R.id.btnComentar);
 
         textViewCal = (TextView)view.findViewById(R.id.tvInfoCal);
@@ -210,6 +215,35 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                 }
             }
         });
+        imageViewFavoritos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                JSONObject object = new JSONObject();
+                try
+                {
+                    if (favorite == false)
+                    {
+                        object.put("user_id", user_id);
+                        object.put("store_id", store_id);
+                        tipoReg = "Agregar favoritos";
+                        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarFavoritos.php", object.toString());
+                    }
+                    else
+                    {
+                        object.put("user_id", user_id);
+                        object.put("store_id", store_id);
+                        tipoReg = "Eliminar favoritos";
+                        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminarFavorito.php", object.toString());
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         return view;
     }
@@ -266,6 +300,20 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             object.put("store_id", store_id);
             tipoReg = "Cargar valor";
             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCalificacion.php", object.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public void cargarFavorito()
+    {
+        JSONObject object = new JSONObject();
+        try
+        {
+            object.put("user_id", user_id);
+            tipoReg = "Cargar favorito";
+            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito.php", object.toString());
         }
         catch (JSONException e)
         {
@@ -356,6 +404,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         ratingTienda.setRating(0);
                         textViewCal.setText("Califica esta tienda");
                     }
+                    cargarFavorito();
                 }
                 else if (tipoReg.equals("Modificar calificacion"))
                 {
@@ -369,6 +418,40 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
                         Toast.makeText(getContext(), "Has modificado la calificacion", Toast.LENGTH_SHORT).show();
                         textViewCal.setText("Has calificado esta tienda");
+                    }
+                }
+                else if (tipoReg.equals("Agregar favoritos"))
+                {
+                    String res = object.getString("Insertado");
+                    if (res.equals("Si"))
+                    {
+                        favorite = true;
+                        imageViewFavoritos.setImageResource(R.drawable.heart_active);
+                        Toast.makeText(getContext(), "Has agregado la tienda " + nombre +" a tus favoritos.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar favoritos"))
+                {
+                    String res = object.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        favorite = false;
+                        imageViewFavoritos.setImageResource(R.drawable.heart_desactive);
+                        Toast.makeText(getContext(), "La tienda " + nombre +" ya no pertenece a tus favoritos.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Cargar favorito"))
+                {
+                    String res = object.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        imageViewFavoritos.setImageResource(R.drawable.heart_active);
+                        favorite = true;
+                    }
+                    else if (res.equals("No"))
+                    {
+                        imageViewFavoritos.setImageResource(R.drawable.heart_desactive);
+                        favorite = false;
                     }
                 }
             }

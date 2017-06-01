@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,7 +158,8 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                 TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
-                imageView.setImageBitmap(images[position]);
+
+                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(images[position], getResources()));
                 textViewNombre.setText(name[position]);
                 textViewDesStore.setText(des[position]);
             }
