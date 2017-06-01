@@ -312,6 +312,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         try
         {
             object.put("user_id", user_id);
+            object.put("store_id", store_id);
             tipoReg = "Cargar favorito";
             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito.php", object.toString());
         }

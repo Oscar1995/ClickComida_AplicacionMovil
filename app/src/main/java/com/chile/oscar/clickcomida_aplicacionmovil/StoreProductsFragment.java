@@ -10,11 +10,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +56,7 @@ public class StoreProductsFragment extends Fragment
     List<String> stores_id;
     List<String> nomTiendas;
     List<Bitmap> imagenTiendas;
+    ListView listViewProducts_Stores;
 
     private OnFragmentInteractionListener mListener;
 
@@ -96,7 +100,7 @@ public class StoreProductsFragment extends Fragment
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_store_products, container, false);
         TextView textViewTitulo = (TextView)view.findViewById(R.id.txtTituloFavoritos);
-        ListView listViewProducts_Stores = (ListView)view.findViewById(R.id.lvStores_Products);
+        listViewProducts_Stores = (ListView)view.findViewById(R.id.lvStores_Products);
         if (mTipo.equals("Tiendas"))textViewTitulo.setText(mTipo + " Favoritas");else if (mTipo.equals("Productos"))textViewTitulo.setText(mTipo + " Favoritos");
 
         JSONObject object = new JSONObject();
@@ -152,6 +156,48 @@ public class StoreProductsFragment extends Fragment
     {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    class AdapterFavorite extends BaseAdapter
+    {
+
+        @Override
+        public int getCount() {
+            return imagenTiendas.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            try
+            {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout, null);
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
+                TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
+                TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
+
+
+                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenTiendas.get(position), getResources()));
+                textViewNombre.setText(nomTiendas.get(position));
+                textViewDesStore.setText(stores_id.get(position));
+            }
+            catch (Exception ex)
+            {
+                Toast.makeText(getContext(), "Intentalo otra vez", Toast.LENGTH_SHORT).show();
+            }
+
+
+            return convertView;
+        }
     }
 
     public class Cargar extends AsyncTask<String, Void, String>
@@ -217,33 +263,48 @@ public class StoreProductsFragment extends Fragment
         {
             try
             {
-                JSONArray jsonArray = new JSONArray(s);
-                int tomarCuenta = jsonArray.length() / 2;
-                JSONObject jsonObject = null;
-
-                stores_id = new ArrayList<>();
-                nomTiendas = new ArrayList<>();
-                imagenTiendas = new ArrayList<>();
-
-                int cLocal = 0;
-                for (int i = 0; i < jsonArray.length(); i++)
+                if (s.equals("[]"))
                 {
-                    String x = jsonArray.getString(i);
-                    if (i >= tomarCuenta)
+                    if (mTipo.equals("Tiendas"))
                     {
-                        JSONObject object = new JSONObject(x);
-
-                        imagenTiendas.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
-                        cLocal++;
+                        Toast.makeText(getContext(), "Aun no tienes tiendas agregadas a favoritos", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
-
-                        JSONArray jsonArray1 = new JSONArray(x);
-                        jsonObject = jsonArray1.getJSONObject(0);
-                        stores_id.add(jsonObject.getString("id"));
-                        nomTiendas.add(jsonObject.getString("name"));
+                        Toast.makeText(getContext(), "Aun no tienes productos agregados a favoritos", Toast.LENGTH_SHORT).show();
                     }
+                }
+                else
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    int tomarCuenta = jsonArray.length() / 2;
+                    JSONObject jsonObject = null;
+
+                    stores_id = new ArrayList<>();
+                    nomTiendas = new ArrayList<>();
+                    imagenTiendas = new ArrayList<>();
+
+                    int cLocal = 0;
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        String x = jsonArray.getString(i);
+                        if (i >= tomarCuenta)
+                        {
+                            JSONObject object = new JSONObject(x);
+
+                            imagenTiendas.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
+                            cLocal++;
+                        }
+                        else
+                        {
+
+                            JSONArray jsonArray1 = new JSONArray(x);
+                            jsonObject = jsonArray1.getJSONObject(0);
+                            stores_id.add(jsonObject.getString("id"));
+                            nomTiendas.add(jsonObject.getString("name"));
+                        }
+                    }
+                    listViewProducts_Stores.setAdapter(new AdapterFavorite());
                 }
             }
             catch (JSONException e)
