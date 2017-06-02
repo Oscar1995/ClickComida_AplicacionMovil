@@ -16,4 +16,6 @@
     <color name="textoBlanco">#ffffff</color>
     <color name="colorPurpura">#9e035d</color>
     <color name="colorPurpuraClaro">#d2067d</color>
+    <color name="colorNaranja">#ff751a</color>
+
 </resources>

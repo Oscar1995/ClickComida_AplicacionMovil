@@ -223,6 +223,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 break;
 
             case R.id.btnClaveOlvidada:
+                startActivity(new Intent(Login.this, Passwword_forgot.class));
                 break;
 
         }

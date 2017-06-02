@@ -1,6 +1,10 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.Activity;
+
+import java.lang.Object;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -59,7 +64,7 @@ import java.util.List;
 
 public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
-    private static final int LOCATION_REQUEST_CODE = 123;
+    private final int REQUEST_ACCESS_FINE = 0;
 
     private GoogleMap mMap;
     Marker prevMarker;
@@ -73,37 +78,41 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     String tipoConsulta;
     ArrayList<String> nameStore, desStore;
     ArrayList<Double> latitude, longitude;
+
+    GoogleMap googlemapsGlobal;
     View view;
     int pos;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try
-        {
+        try {
             view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+
+            }
             mapFragment.getMapAsync(this);
-        }
-        catch (InflateException ex)
-        {
+        } catch (InflateException ex) {
 
         }
-
 
         if (new Validadores().isNetDisponible(getContext())) {
             JSONObject object = new JSONObject();
-            try
-            {
+            try {
                 object.put("nada", null);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             new cargarTiendasCoordenadas().execute(getResources().getString(R.string.direccion_web) + "/Controlador/consultarCoor.php", object.toString());
-        }
-        else
-        {
+        } else {
             Toast.makeText(getContext(), "Debes estar conectado a una red para ver las tiendas.", Toast.LENGTH_SHORT).show();
         }
 
@@ -150,65 +159,54 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        mMap = googleMap;
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))
-            {
+    public void onMapReady(GoogleMap googleMap) {
+        googlemapsGlobal = googleMap;
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
+            {
 
             }
             else
             {
-
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE);
             }
         }
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        googlemapsGlobal.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
 
-
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
-        {
+        mMap = googleMap;
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
-            public void onInfoWindowClick(Marker marker)
-            {
-                if (marker.isFlat())
-                {
+            public void onInfoWindowClick(Marker marker) {
+                if (marker.isFlat()) {
                     pos = nameStore.indexOf(marker.getTitle());
                     JSONObject object = new JSONObject();
-                    try
-                    {
+                    try {
                         object.put("name_store", nameStore.get(pos));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     tipoConsulta = "Mi Tienda";
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
+                } else {
                     pos = nameStore.indexOf(marker.getTitle());
                     JSONObject object = new JSONObject();
-                    try
-                    {
+                    try {
                         object.put("name_store", nameStore.get(pos));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     tipoConsulta = "Otra Tienda";
@@ -219,18 +217,15 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
                 //Toast.makeText(getContext(), "Posicion de la tienda en el arreglo: " +pos, Toast.LENGTH_SHORT).show();
             }
         });
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-        {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker)
-            {
+            public boolean onMarkerClick(Marker marker) {
                 //Double dis = new Coordenadas().CalcularDistancias(mLocation.getLatitude(), mLocation.getLongitude(), marker.getPosition().latitude, marker.getPosition().longitude);
                 //Toast.makeText(getContext(), "Distancia:" +dis , Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
-        try
-        {
+        try {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             mLocation = getMyLocation();
             LatLng miPosicion = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -238,9 +233,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
 
             //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
             //mMap.animateCamera(miUbicacion);
-        }
-        catch (Exception x)
-        {
+        } catch (Exception x) {
             String m = x.getMessage();
         }
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
@@ -249,30 +242,36 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
-        switch (requestCode)
-        {
-            case 123:
-            {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ACCESS_FINE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    googlemapsGlobal.getUiSettings().setZoomControlsEnabled(true);
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    googlemapsGlobal.setMyLocationEnabled(true);
+                    //Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
+
                 }
                 else
                 {
                     Toast.makeText(getContext(), "Negado", Toast.LENGTH_SHORT).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-                return;
             }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
-        // other 'case' lines to check for other
-        // permissions this app might request
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

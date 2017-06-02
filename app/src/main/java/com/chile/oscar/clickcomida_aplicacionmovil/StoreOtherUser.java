@@ -1,5 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.Rating;
@@ -10,9 +11,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,6 +36,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -53,6 +59,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     Bitmap imagenTienda;
     Boolean userCal = false, sw = false;
 
+    List<String> storesNicknames;
+    List<String> storesComments;
+    List<String> storesDatecomments;
+    ListView listaComentarios;
+    EditText editTextComentario;
+
     Boolean favorite = false;
     ImageView imageViewFavoritos;
 
@@ -61,6 +73,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     private String mParam2;
     RatingBar ratingBarUsuario, ratingTienda;
     TextView textViewCal;
+    ProgressDialog progress;
 
     private OnFragmentInteractionListener mListener;
 
@@ -116,14 +129,21 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando calificacion...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
+
+
         View view = inflater.inflate(R.layout.fragment_store_other_user, container, false);
 
+        listaComentarios = (ListView)view.findViewById(R.id.lvComentarios);
         ImageView imageViewOther = (ImageView)view.findViewById(R.id.ivTiendaOther);
         TextView textViewNombre =(TextView)view.findViewById(R.id.tvNombreOther);
-        TextView textViewDireccion =(TextView)view.findViewById(R.id.tvDireccionOther);
+        final TextView textViewDireccion =(TextView)view.findViewById(R.id.tvDireccionOther);
         TextView textViewKilometros =(TextView)view.findViewById(R.id.tvKilometrosOther);
         TextView textViewHorario = (TextView)view.findViewById(R.id.tvHorarioOther);
-        final EditText editTextComentario  = (EditText)view.findViewById(R.id.etComentarioOther);
+        editTextComentario  = (EditText)view.findViewById(R.id.etComentarioOther);
         imageViewFavoritos = (ImageView)view.findViewById(R.id.ivFavoritos);
 
         Button buttonComentar = (Button)view.findViewById(R.id.btnComentar);
@@ -170,6 +190,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                             jsonObject.put("store_id", store_id);
                             tipoReg = "Insertar calificacion";
                             userCal = true;
+
+                            progress = new ProgressDialog(getContext());
+                            progress.setMessage("Calificando tienda...");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+
                             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/calificarTienda.php", jsonObject.toString());
                         }
                         catch (JSONException e)
@@ -189,6 +215,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                             jsonObject.put("store_id", store_id);
                             tipoReg = "Modificar calificacion";
                             userCal = true;
+
+                            progress = new ProgressDialog(getContext());
+                            progress.setMessage("Actualizando tu calificación...");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+
                             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarCalificacion.php", jsonObject.toString());
                         }
                         catch (JSONException e)
@@ -207,7 +239,25 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             {
                 if (!editTextComentario.getText().toString().isEmpty())
                 {
-                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador");
+                    JSONObject object = new JSONObject();
+                    try
+                    {
+                        object.put("Valor", editTextComentario.getText().toString().trim());
+                        object.put("user_id", user_id);
+                        object.put("store_id", store_id);
+                        tipoReg = "Insertar comentario";
+
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Espere...");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarComentarioTienda.php", object.toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
                 else
                 {
@@ -227,6 +277,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         object.put("user_id", user_id);
                         object.put("store_id", store_id);
                         tipoReg = "Agregar favoritos";
+
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Agregando a favoritos: " + nombre);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
                         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarFavoritos.php", object.toString());
                     }
                     else
@@ -234,6 +290,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         object.put("user_id", user_id);
                         object.put("store_id", store_id);
                         tipoReg = "Eliminar favoritos";
+
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Eliminando de tus favoritos a la tienda " + nombre);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
                         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminarFavorito.php", object.toString());
                     }
 
@@ -306,6 +368,20 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             e.printStackTrace();
         }
     }
+    public void cargarComentarios()
+    {
+        JSONObject object = new JSONObject();
+        try
+        {
+            object.put("store_id", store_id);
+            tipoReg = "Cargar comentarios";
+            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/listaComentarios.php", object.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
     public void cargarFavorito()
     {
         JSONObject object = new JSONObject();
@@ -319,6 +395,40 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         catch (JSONException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    class AdapterComentarios extends BaseAdapter
+    {
+
+        @Override
+        public int getCount() {
+            return storesDatecomments.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_lista_comentarios, null);
+            TextView textViewNickname = (TextView)convertView.findViewById(R.id.tvNickname);
+            TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFechaCreacion);
+            TextView textViewComentario = (TextView)convertView.findViewById(R.id.tvComentario);
+
+            textViewNickname.setText(storesNicknames.get(position));
+            textViewFecha.setText(storesDatecomments.get(position));
+            textViewComentario.setText(storesComments.get(position));
+
+            return convertView;
         }
     }
     public class EjecutarConsulta extends AsyncTask<String, Void, String> {
@@ -372,21 +482,22 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         {
             try
             {
-                JSONObject object = new JSONObject(s);
-
                 if (tipoReg.equals("Insertar calificacion"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Resultado");
                     if (res.equals("Si"))
                     {
                         String cuenta = object.getString("Cuenta");
                         String suma = object.getString("Suma");
                         ratingTienda.setRating( (Float.parseFloat(suma) / Float.parseFloat(cuenta)) );
+                        progress.dismiss();
                         Toast.makeText(getContext(), "Has calificado esta tienda", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Cargar valor"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String valor = object.getString("Valor");
                     if (!valor.equals("null"))
                     {
@@ -405,10 +516,12 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         ratingTienda.setRating(0);
                         textViewCal.setText("Califica esta tienda");
                     }
+                    progress.setMessage("Cargando...");
                     cargarFavorito();
                 }
                 else if (tipoReg.equals("Modificar calificacion"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -417,32 +530,38 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
                         ratingTienda.setRating( (Float.parseFloat(suma) / Float.parseFloat(cuenta)) );
 
+                        progress.dismiss();
                         Toast.makeText(getContext(), "Has modificado la calificacion", Toast.LENGTH_SHORT).show();
                         textViewCal.setText("Has calificado esta tienda");
                     }
                 }
                 else if (tipoReg.equals("Agregar favoritos"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Insertado");
                     if (res.equals("Si"))
                     {
                         favorite = true;
                         imageViewFavoritos.setImageResource(R.drawable.heart_active);
+                        progress.dismiss();
                         Toast.makeText(getContext(), "Has agregado la tienda " + nombre +" a tus favoritos.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Eliminar favoritos"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Eliminado");
                     if (res.equals("Si"))
                     {
                         favorite = false;
                         imageViewFavoritos.setImageResource(R.drawable.heart_desactive);
+                        progress.dismiss();
                         Toast.makeText(getContext(), "La tienda " + nombre +" ya no pertenece a tus favoritos.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Cargar favorito"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Resultado");
                     if (res.equals("Si"))
                     {
@@ -454,6 +573,39 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         imageViewFavoritos.setImageResource(R.drawable.heart_desactive);
                         favorite = false;
                     }
+                    progress.setMessage("Cargando comentarios de la tienda...");
+                    cargarComentarios();
+                }
+                else if (tipoReg.equals("Insertar comentario"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Insertado");
+                    if (res.equals("Si"))
+                    {
+                        progress.dismiss();
+                        editTextComentario.setText("");
+                        cargarComentarios();
+                        Toast.makeText(getContext(), "Has comentado esta tienda.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Cargar comentarios"))
+                {
+                    storesNicknames = new ArrayList<>();
+                    storesComments = new ArrayList<>();
+                    storesDatecomments = new ArrayList<>();
+
+                    JSONArray jsonArray = new JSONArray(s);
+                    JSONObject jsonObject = null;
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        jsonObject = jsonArray.getJSONObject(i);
+                        storesNicknames.add(jsonObject.getString("nickname"));
+                        storesComments.add(jsonObject.getString("commentary"));
+                        storesDatecomments.add(jsonObject.getString("date"));
+                    }
+
+                    listaComentarios.setAdapter(new AdapterComentarios());
+                    progress.dismiss();
                 }
             }
             catch (JSONException e)
