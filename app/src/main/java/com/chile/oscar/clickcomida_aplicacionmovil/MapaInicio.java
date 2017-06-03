@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Mapa;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.maps.CameraUpdate;
@@ -73,15 +74,15 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
     LocationManager locationManager;
     LatLng miPosicion;
 
-    int[] idStore;
-    String[] street, number, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, user_id;
     String tipoConsulta;
-    ArrayList<String> nameStore, desStore;
-    ArrayList<Double> latitude, longitude;
+
+
+    List<Mapa> getDataMaps;
+    List<String> nombreTienda;
 
     GoogleMap googlemapsGlobal;
     View view;
-    int pos;
+    int pos = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -188,25 +189,35 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
-            public void onInfoWindowClick(Marker marker) {
-                if (marker.isFlat()) {
-                    pos = nameStore.indexOf(marker.getTitle());
+            public void onInfoWindowClick(Marker marker)
+            {
+                if (marker.isFlat())
+                {
+                    pos = nombreTienda.indexOf(marker.getTitle());
+
                     JSONObject object = new JSONObject();
-                    try {
-                        object.put("name_store", nameStore.get(pos));
-                    } catch (JSONException e) {
+                    try
+                    {
+                        object.put("name_store", getDataMaps.get(pos).getNombre());
+                    }
+                    catch (JSONException e)
+                    {
                         e.printStackTrace();
                     }
                     tipoConsulta = "Mi Tienda";
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
-                } else {
-                    pos = nameStore.indexOf(marker.getTitle());
+                }
+                else
+                {
+                    pos = nombreTienda.indexOf(marker.getTitle());
                     JSONObject object = new JSONObject();
-                    try {
-                        object.put("name_store", nameStore.get(pos));
-                    } catch (JSONException e) {
+                    try
+                    {
+                        object.put("name_store", getDataMaps.get(pos).getNombre());
+                    } catch (JSONException e)
+                    {
                         e.printStackTrace();
                     }
                     tipoConsulta = "Otra Tienda";
@@ -388,54 +399,42 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
                 {
                     JSONArray jsonArray = new JSONArray(s);
                     JSONObject jsonObject = null;
-
-                    idStore = new int[jsonArray.length()];
-                    street = new String[jsonArray.length()];
-                    number = new String[jsonArray.length()];
-                    open_hour = new String[jsonArray.length()];
-                    close_hour = new String[jsonArray.length()];
-                    lunch_hour = new String[jsonArray.length()];
-                    lunch_after_hour = new String[jsonArray.length()];
-                    start_day = new String[jsonArray.length()];
-                    end_day = new String[jsonArray.length()];
-                    //latitude = new Double[jsonArray.length()];
-                    //longitude = new Double[jsonArray.length()];
-
-                    nameStore = new ArrayList<String>();
-                    desStore = new ArrayList<String>();
-                    latitude = new ArrayList<Double>();
-                    longitude = new ArrayList<Double>();
-
-                    user_id = new String[jsonArray.length()];
+                    getDataMaps = new ArrayList<>();
+                    nombreTienda = new ArrayList<>();
 
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
+                        Mapa mapaClass = new Mapa();
                         jsonObject = jsonArray.getJSONObject(i);
-                        idStore[i] = Integer.parseInt(jsonObject.getString("id"));
-                        nameStore.add(jsonObject.getString("name"));
-                        desStore.add(jsonObject.getString("description"));
-                        street[i] = jsonObject.getString("street");
-                        number[i] = jsonObject.getString("number");
-                        open_hour[i] = jsonObject.getString("open_hour");
-                        close_hour[i] = jsonObject.getString("close_hour");
-                        lunch_hour[i] = jsonObject.getString("lunch_hour");
-                        lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
-                        start_day[i] = jsonObject.getString("start_day");
-                        end_day[i] = jsonObject.getString("end_day");
-                        latitude.add(Double.parseDouble(jsonObject.getString("latitude")));
-                        longitude.add(Double.parseDouble(jsonObject.getString("longitude")));
-                        user_id[i] = jsonObject.getString("user_id");
+
+                        mapaClass.setId(Integer.parseInt(jsonObject.getString("id")));
+                        mapaClass.setNombre(jsonObject.getString("name"));
+                        mapaClass.setDescripcion(jsonObject.getString("description"));
+                        mapaClass.setCalle(jsonObject.getString("street"));
+                        mapaClass.setNumero(jsonObject.getString("number"));
+                        mapaClass.setOpen_Hour(jsonObject.getString("open_hour"));
+                        mapaClass.setClose_Hour(jsonObject.getString("close_hour"));
+                        mapaClass.setLunch_Hour(jsonObject.getString("lunch_hour"));
+                        mapaClass.setLunch_After_Hour(jsonObject.getString("lunch_after_hour"));
+                        mapaClass.setStar_Day(jsonObject.getString("start_day"));
+                        mapaClass.setEnd_Day(jsonObject.getString("end_day"));
+                        mapaClass.setLatitude(Double.parseDouble(jsonObject.getString("latitude")));
+                        mapaClass.setLongitude(Double.parseDouble(jsonObject.getString("longitude")));
+                        mapaClass.setUser_id(Integer.parseInt(jsonObject.getString("user_id")));
+                        nombreTienda.add(mapaClass.getNombre());
+                        getDataMaps.add(mapaClass);
+
                     }
-                    for (int i=0; i<nameStore.size(); i++)
+                    for (int i=0; i<getDataMaps.size(); i++)
                     {
-                        LatLng coordenadas = new LatLng(latitude.get(i), longitude.get(i));
-                        if (user_id[i].equals(Coordenadas.id))
+                        LatLng coordenadas = new LatLng(getDataMaps.get(i).getLatitude(), getDataMaps.get(i).getLongitude());
+                        if (getDataMaps.get(i).getUser_id() == Integer.parseInt(Coordenadas.id))
                         {
-                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).flat(true).snippet("Pincha este cuadro para mas información")).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(getDataMaps.get(i).getNombre()).flat(true).snippet("Pincha este cuadro para mas información")).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         }
                         else
                         {
-                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nameStore.get(i)).snippet("Pincha este cuadro para mas información"));
+                            mMap.addMarker(new MarkerOptions().position(coordenadas).title(getDataMaps.get(i).getNombre()).snippet("Pincha este cuadro para mas información"));
                         }
 
                     }
@@ -517,7 +516,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
                     if (object != null)
                     {
                         FragmentTransaction trans = getFragmentManager().beginTransaction();
-                        trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos])));
+                        trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId())));
                         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                         trans.addToBackStack(null);
                         trans.commit();
@@ -526,7 +525,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
                 else if (tipoConsulta.equals("Otra Tienda"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), nameStore.get(pos), desStore.get(pos), street[pos], number[pos], start_day[pos], end_day[pos], open_hour[pos], close_hour[pos], lunch_hour[pos], lunch_after_hour[pos], String.valueOf(idStore[pos]), Coordenadas.id));
+                    trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId()), Coordenadas.id));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();

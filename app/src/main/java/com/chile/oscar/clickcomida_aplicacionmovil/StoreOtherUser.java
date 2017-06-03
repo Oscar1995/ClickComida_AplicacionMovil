@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,16 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         fragment.setArguments(args);
         return fragment;
     }
+    public static ProductsOtherUser newProd(String store_id, String nombreTienda, Bitmap imagenTienda)
+    {
+        ProductsOtherUser fragment = new ProductsOtherUser();
+        Bundle args = new Bundle();
+        args.putString("store_id", store_id);
+        args.putString("nombre_tienda", nombreTienda);
+        args.putString("imagenTienda", Codificacion.encodeToBase64(imagenTienda, Bitmap.CompressFormat.PNG, 100));
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -147,6 +158,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         imageViewFavoritos = (ImageView)view.findViewById(R.id.ivFavoritos);
 
         Button buttonComentar = (Button)view.findViewById(R.id.btnComentar);
+        Button buttonProducto = (Button)view.findViewById(R.id.btnProductOther);
 
         textViewCal = (TextView)view.findViewById(R.id.tvInfoCal);
 
@@ -263,6 +275,18 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                 {
                     Toast.makeText(getContext(), "El comentario no debe estar en blanco", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        buttonProducto.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, newProd(store_id, nombre, imagenTienda));
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
             }
         });
         imageViewFavoritos.setOnClickListener(new View.OnClickListener() {

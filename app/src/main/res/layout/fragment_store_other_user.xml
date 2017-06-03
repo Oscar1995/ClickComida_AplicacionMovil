@@ -6,7 +6,7 @@
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.StoreOtherUser">
 
     <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -207,7 +207,9 @@
                     <ListView
                         android:id="@+id/lvComentarios"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="250dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -243,7 +245,7 @@
                     android:orientation="vertical">
 
                     <Button
-                        android:id="@+id/button5"
+                        android:id="@+id/btnProductOther"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -256,6 +258,6 @@
             </LinearLayout>
 
         </RelativeLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>

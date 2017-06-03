@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
