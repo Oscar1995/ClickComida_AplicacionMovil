@@ -29,7 +29,7 @@
             <ImageView
                 android:id="@+id/ivProductoOther"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 app:srcCompat="@drawable/products" />
 
             <LinearLayout
@@ -74,8 +74,7 @@
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:rating="5" />
+                        android:numStars="5" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -94,7 +93,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:numStars="5"
-                android:rating="5"
                 android:stepSize="1.0" />
 
             <LinearLayout
@@ -132,6 +130,72 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView55"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="20dp"
+                android:text="@string/titulo_comentarios"
+                android:textAlignment="center"
+                android:textColor="@color/colorNegro"
+                android:textSize="11sp" />
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:paddingRight="30dp"
+                app:srcCompat="@drawable/comentarios" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/lvComentariosProd"
+                android:layout_width="match_parent"
+                android:layout_height="123dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="2dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etComentarioOtherProd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/btnComentarProducto"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/colorbuttonred"
+                android:text="@string/titulo_comentar" />
         </LinearLayout>
 
         <LinearLayout

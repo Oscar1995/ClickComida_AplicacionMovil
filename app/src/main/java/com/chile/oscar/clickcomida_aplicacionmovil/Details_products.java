@@ -1,5 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,13 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Comentarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
@@ -34,6 +39,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -54,11 +60,17 @@ public class Details_products extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    Boolean prodFav = false;
+    Boolean prodFav = false, prodCal = false, sw = true;
     RatingBar ratingBarGlobal, ratingBarUser;
     Bitmap imagenProducto;
     ImageView imageViewFavProd;
     String store_id, product_id, nombreProd, desProd, precioProd, tipoReg;
+    Float calLocal;
+    ListView listViewComentariosProd;
+    EditText editTextComentario;
+    List<Comentarios> comentariosProd;
+
+    ProgressDialog progress;
 
     private OnFragmentInteractionListener mListener;
 
@@ -112,7 +124,12 @@ public class Details_products extends Fragment {
         TextView textViewNombre = (TextView)v.findViewById(R.id.tvNombreProdOther);
         TextView textViewDescripcion = (TextView)v.findViewById(R.id.tvDesProductoOther);
         TextView textViewPrecio = (TextView)v.findViewById(R.id.tvPrecioProductoOther);
+        editTextComentario = (EditText)v.findViewById(R.id.etComentarioOtherProd);
+
+        listViewComentariosProd  = (ListView)v.findViewById(R.id.lvComentariosProd);
+
         Button buttonCarro = (Button)v.findViewById(R.id.btnAgregarProdCarro);
+        Button buttonAgregarComentario = (Button)v.findViewById(R.id.btnComentarProducto);
 
         imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenProducto, getResources()));
         textViewNombre.setText(nombreProd);
@@ -121,6 +138,39 @@ public class Details_products extends Fragment {
 
         cargarFavorito();
 
+        buttonAgregarComentario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                try
+                {
+                    if (!editTextComentario.getText().toString().isEmpty())
+                    {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Agregando comentario...");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        JSONObject object = new JSONObject();
+                        object.put("Comentario", editTextComentario.getText().toString());
+                        object.put("user_id", Coordenadas.id);
+                        object.put("product_id", product_id);
+
+                        tipoReg = "Agregar comentario";
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarComentarioProducto.php", object.toString());
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Debes escribir para comentar", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
         imageViewFavProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -133,11 +183,21 @@ public class Details_products extends Fragment {
 
                     if (prodFav)
                     {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Eliminado " + nombreProd + " de tus favoritos");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
                         tipoReg = "Eliminar favoritos";
                         new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminarFavoritoProducto.php", object.toString());
                     }
                     else
                     {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Agregando  " + nombreProd + " a tus favoritos");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
                         tipoReg = "Insertar favoritos";
                         new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarFavoritosProducto.php", object.toString());
                     }
@@ -147,6 +207,56 @@ public class Details_products extends Fragment {
                 {
                     e.printStackTrace();
                 }
+            }
+        });
+        ratingBarUser.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser)
+            {
+                JSONObject object = new JSONObject();
+                try
+                {
+                    if (sw == false)
+                    {
+                        if (prodCal == false) //Insertar
+                        {
+                            progress = new ProgressDialog(getContext());
+                            progress.setMessage("Calificando " + nombreProd + "...");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+
+                            object.put("Valor", rating);
+                            object.put("user_id", Coordenadas.id);
+                            object.put("product_id", product_id);
+
+                            tipoReg = "Insertar calificacion";
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarCalificacion_producto.php", object.toString());
+                        }
+                        else //Actualizar
+                        {
+                            progress = new ProgressDialog(getContext());
+                            progress.setMessage("Modificando calificacion...");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+
+                            object.put("Valor", rating);
+                            object.put("user_id", Coordenadas.id);
+                            object.put("product_id", product_id);
+
+                            calLocal = rating;
+
+                            tipoReg = "Modificar calificacion";
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarCalificacionProducto.php", object.toString());
+                        }
+                    }
+                    sw = false;
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -194,15 +304,93 @@ public class Details_products extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    private class AdapterCommentProducts extends BaseAdapter
+    {
+
+        @Override
+        public int getCount() {
+            return comentariosProd.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_lista_comentarios, null);
+            TextView textViewNickname = (TextView)convertView.findViewById(R.id.tvNickname);
+            TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFechaCreacion);
+            TextView textViewComentario = (TextView)convertView.findViewById(R.id.tvComentario);
+
+            textViewNickname.setText(comentariosProd.get(position).getuNickname());
+            textViewFecha.setText(comentariosProd.get(position).getFechaCreacion());
+            textViewComentario.setText(comentariosProd.get(position).getuComentario());
+
+            return convertView;
+        }
+    }
+
     public void cargarFavorito ()
     {
         try
         {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
             JSONObject object = new JSONObject();
             object.put("user_id", Coordenadas.id);
             object.put("product_id", product_id);
             tipoReg = "Cargar favorito";
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavoritoProducto.php", object.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public void cargarCalificacion()
+    {
+        try
+        {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando calificación...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
+            JSONObject object = new JSONObject();
+            object.put("user_id", Coordenadas.id);
+            object.put("product_id", product_id);
+            tipoReg = "Cargar calificacion";
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCalificacionProducto.php", object.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public void cargarComentarios ()
+    {
+        try
+        {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando comentarios...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
+            JSONObject object = new JSONObject();
+            object.put("product_id", product_id);
+            tipoReg = "Cargar comentarios";
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/listaComentariosProducto.php", object.toString());
         }
         catch (JSONException e)
         {
@@ -273,29 +461,33 @@ public class Details_products extends Fragment {
         {
             try
             {
-                JSONObject object = new JSONObject(s);
                 if (tipoReg.equals("Insertar favoritos"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Insertado");
                     if (res.equals("Si"))
                     {
                         prodFav = true;
                         imageViewFavProd.setImageResource(R.drawable.heart_active);
+                        progress.dismiss();
                         Toast.makeText(getContext(), "Este producto ha sido agregado a tus favoritos", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Eliminar favoritos"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Eliminado");
                     if (res.equals("Si"))
                     {
                         prodFav = false;
                         imageViewFavProd.setImageResource(R.drawable.heart_desactive);
+                        progress.dismiss();
                         Toast.makeText(getContext(), "El producto ya no pertenece a tus favoritos", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (tipoReg.equals("Cargar favorito"))
                 {
+                    JSONObject object = new JSONObject(s);
                     String res = object.getString("Resultado");
                     if (res.equals("Si"))
                     {
@@ -307,8 +499,95 @@ public class Details_products extends Fragment {
                         prodFav = false;
                         imageViewFavProd.setImageResource(R.drawable.heart_desactive);
                     }
+                    progress.dismiss();
+                    cargarCalificacion();
+                }
+                else if (tipoReg.equals("Insertar calificacion"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        float suma = Float.parseFloat(object.getString("Suma"));
+                        int cuenta = Integer.parseInt(object.getString("Cuenta"));
+                        float promedio = suma /cuenta;
+                        ratingBarGlobal.setRating(promedio);
+                        progress.dismiss();
+                        prodCal = true;
+                        Toast.makeText(getContext(), "Has calificado este producto", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Cargar calificacion"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Valor");
+                    if (!res.equals("null"))
+                    {
+
+                        prodCal = true;
+                        sw = true;
+                        ratingBarUser.setRating(Float.parseFloat(object.getString("Valor")));
+                        ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+                    }
+                    else
+                    {
+                        sw = false;
+                        prodCal = false;
+                    }
+                    cargarComentarios();
+                    progress.dismiss();
+                }
+                else if (tipoReg.equals("Modificar calificacion"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Actualizado");
+                    if (res.equals("Si"))
+                    {
+                        float suma = Float.parseFloat(object.getString("Suma"));
+                        int cuenta = Integer.parseInt(object.getString("Cuenta"));
+                        float promedio = suma /cuenta;
+
+                        ratingBarUser.setRating(calLocal);
+                        ratingBarGlobal.setRating(promedio);
+
+                        prodCal = true;
+                        Toast.makeText(getContext(), "Has actualizado tu calificacion al producto " + nombreProd, Toast.LENGTH_SHORT).show();
+                    }
+                    progress.dismiss();
+                }
+                else if (tipoReg.equals("Agregar comentario"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Insertado");
+                    if (res.equals("Si"))
+                    {
+                        Toast.makeText(getContext(), "Comentario agregado", Toast.LENGTH_SHORT).show();
+                        editTextComentario.setText("");
+                        cargarComentarios();
+                    }
+                }
+                else if (tipoReg.equals("Cargar comentarios"))
+                {
+                    if (!s.equals("[]"))
+                    {
+                        JSONArray jsonArray = new JSONArray(s);
+                        comentariosProd = new ArrayList<>();
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject object = jsonArray.getJSONObject(i);
+
+                            Comentarios comentarios = new Comentarios();
+                            comentarios.setuNickname(object.getString("nickname"));
+                            comentarios.setFechaCreacion(object.getString("date"));
+                            comentarios.setuComentario(object.getString("commentary"));
+
+                            comentariosProd.add(comentarios);
+                        }
+                        listViewComentariosProd.setAdapter(new AdapterCommentProducts());
+                    }
                 }
             }
+
             catch (JSONException e)
             {
                 e.printStackTrace();
