@@ -1,5 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -52,11 +53,12 @@ public class StoreProductsFragment extends Fragment
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mTipo, user_id;
-    List<String> stores_id;
-    List<String> nomTiendas;
-    List<Bitmap> imagenTiendas;
+    private String mTipo, user_id, tipoLoad;
+    List<String> ids;
+    List<String> noms;
+    List<Bitmap> imagens;
     ListView listViewProducts_Stores;
+    ProgressDialog progress;
 
     private OnFragmentInteractionListener mListener;
 
@@ -98,6 +100,9 @@ public class StoreProductsFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
+
+        progress = new ProgressDialog(getContext());
+
         View view =  inflater.inflate(R.layout.fragment_store_products, container, false);
         TextView textViewTitulo = (TextView)view.findViewById(R.id.txtTituloFavoritos);
         listViewProducts_Stores = (ListView)view.findViewById(R.id.lvStores_Products);
@@ -107,7 +112,20 @@ public class StoreProductsFragment extends Fragment
         try
         {
             object.put("user_id", user_id);
-            new Cargar().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito_tienda_usuario.php", object.toString());
+            if (mTipo.equals("Tiendas"))
+            {
+                progress.setMessage("Cargando tiendas favoritas...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+                new Cargar().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito_tienda_usuario.php", object.toString());
+            }
+            else if (mTipo.equals("Productos"))
+            {
+                progress.setMessage("Cargando productos favoritos...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+                new Cargar().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito_producto_usuario.php", object.toString());
+            }
         }
         catch (JSONException e)
         {
@@ -162,7 +180,7 @@ public class StoreProductsFragment extends Fragment
 
         @Override
         public int getCount() {
-            return imagenTiendas.size();
+            return imagens.size();
         }
 
         @Override
@@ -186,9 +204,9 @@ public class StoreProductsFragment extends Fragment
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
 
-                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenTiendas.get(position), getResources()));
-                textViewNombre.setText(nomTiendas.get(position));
-                textViewDesStore.setText(stores_id.get(position));
+                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(imagens.get(position), getResources()));
+                textViewNombre.setText(noms.get(position));
+                textViewDesStore.setText(ids.get(position));
             }
             catch (Exception ex)
             {
@@ -268,10 +286,12 @@ public class StoreProductsFragment extends Fragment
                     if (mTipo.equals("Tiendas"))
                     {
                         Toast.makeText(getContext(), "Aun no tienes tiendas agregadas a favoritos", Toast.LENGTH_SHORT).show();
+                        progress.dismiss();
                     }
                     else
                     {
                         Toast.makeText(getContext(), "Aun no tienes productos agregados a favoritos", Toast.LENGTH_SHORT).show();
+                        progress.dismiss();
                     }
                 }
                 else
@@ -280,9 +300,9 @@ public class StoreProductsFragment extends Fragment
                     int tomarCuenta = jsonArray.length() / 2;
                     JSONObject jsonObject = null;
 
-                    stores_id = new ArrayList<>();
-                    nomTiendas = new ArrayList<>();
-                    imagenTiendas = new ArrayList<>();
+                    ids = new ArrayList<>();
+                    noms= new ArrayList<>();
+                    imagens = new ArrayList<>();
 
                     int cLocal = 0;
                     for (int i = 0; i < jsonArray.length(); i++)
@@ -292,7 +312,7 @@ public class StoreProductsFragment extends Fragment
                         {
                             JSONObject object = new JSONObject(x);
 
-                            imagenTiendas.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
+                            imagens.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
                             cLocal++;
                         }
                         else
@@ -300,10 +320,11 @@ public class StoreProductsFragment extends Fragment
 
                             JSONArray jsonArray1 = new JSONArray(x);
                             jsonObject = jsonArray1.getJSONObject(0);
-                            stores_id.add(jsonObject.getString("id"));
-                            nomTiendas.add(jsonObject.getString("name"));
+                            ids.add(jsonObject.getString("id"));
+                            noms.add(jsonObject.getString("name"));
                         }
                     }
+                    progress.dismiss();
                     listViewProducts_Stores.setAdapter(new AdapterFavorite());
                 }
             }

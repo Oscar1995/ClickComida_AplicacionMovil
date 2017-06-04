@@ -57,11 +57,12 @@ public class ProductsOtherUser extends Fragment
     Spinner spinnerFiltro;
     GridView gridViewProductos;
 
+    List<String> idProd;
     List<String> nombreProd, desProd, precioProd;
     List<Bitmap> imagesProd;
     int posProd;
 
-    ProgressDialog progressDialog;
+    ProgressDialog progress;
 
 
     private OnFragmentInteractionListener mListener;
@@ -72,11 +73,16 @@ public class ProductsOtherUser extends Fragment
     }
 
     // TODO: Rename and change types and number of parameters
-    public static Details_products newInstance(String prodDes)
+    public static Details_products newInstance(Bitmap imagenProd, String store_id, String product_id, String nomProd,  String prodDes, String precioProd)
     {
         Details_products fragment = new Details_products();
         Bundle args = new Bundle();
+        args.putString("imagen_prod", Codificacion.encodeToBase64(imagenProd, Bitmap.CompressFormat.PNG, 100));
+        args.putString("store_id", store_id);
+        args.putString("product_id", product_id);
+        args.putString("nombre_prod", nomProd);
         args.putString("des_prod", prodDes);
+        args.putString("precio_prod", precioProd);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,6 +102,11 @@ public class ProductsOtherUser extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando productos...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
 
         View v = inflater.inflate(R.layout.fragment_products_other_user, container, false);
         autoCompleteTextViewProducto = (AutoCompleteTextView)v.findViewById(R.id.actvProductos);
@@ -129,7 +140,7 @@ public class ProductsOtherUser extends Fragment
             public void onClick(View v)
             {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(desProd.get(posProd)));
+                trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
@@ -295,6 +306,7 @@ public class ProductsOtherUser extends Fragment
 
                 int cLocal = 0;
 
+                idProd = new ArrayList<>();
                 nombreProd = new ArrayList<>();
                 desProd = new ArrayList<>();
                 precioProd = new ArrayList<>();
@@ -310,6 +322,7 @@ public class ProductsOtherUser extends Fragment
                     }
                     else
                     {
+                        idProd.add(jsonObject.getString("id"));
                         nombreProd.add(jsonObject.getString("name"));
                         desProd.add(jsonObject.getString("description"));
                         precioProd.add(jsonObject.getString("price"));
@@ -317,7 +330,7 @@ public class ProductsOtherUser extends Fragment
                 }
                 ArrayAdapter arrayAdapterTexto = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nombreProd);
                 autoCompleteTextViewProducto.setAdapter(arrayAdapterTexto);
-
+                progress.dismiss();
                 gridViewProductos.setAdapter(new ProductoAdapter());
             }
             catch (JSONException e)

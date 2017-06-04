@@ -220,4 +220,8 @@
     <string name="titulo_ver_detalles">Ver detalles</string>
     <string name="titulo_agregar_fav_prod">Agregar a mis productos favoritos</string>
     <string name="titulo_califica_producto">Califica este producto</string>
+    <string name="titulo_cal_users_prod">Calificación global</string>
+    <string name="titulo_nombre_prod">Nombre del producto:</string>
+    <string name="Descripcion">Descripción:</string>
+    <string name="Precio">Precio:</string>
 </resources>

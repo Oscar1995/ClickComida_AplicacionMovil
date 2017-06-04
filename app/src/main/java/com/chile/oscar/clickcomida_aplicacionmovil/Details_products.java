@@ -1,12 +1,39 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -26,6 +53,12 @@ public class Details_products extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    Boolean prodFav = false;
+    RatingBar ratingBarGlobal, ratingBarUser;
+    Bitmap imagenProducto;
+    ImageView imageViewFavProd;
+    String store_id, product_id, nombreProd, desProd, precioProd, tipoReg;
 
     private OnFragmentInteractionListener mListener;
 
@@ -52,11 +85,17 @@ public class Details_products extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getArguments() != null)
+        {
+            imagenProducto = Codificacion.decodeBase64(getArguments().getString("imagen_prod"));
+            store_id = getArguments().getString("store_id");
+            product_id = getArguments().getString("product_id");
+            nombreProd = getArguments().getString("nombre_prod");
+            desProd = getArguments().getString("des_prod");
+            precioProd = getArguments().getString("precio_prod");
         }
     }
 
@@ -64,7 +103,55 @@ public class Details_products extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details_products, container, false);
+        View v = inflater.inflate(R.layout.fragment_details_products, container, false);
+
+        ImageView imageViewProd = (ImageView)v.findViewById(R.id.ivProductoOther);
+        imageViewFavProd  = (ImageView)v.findViewById(R.id.ivFavoritoProd);
+        ratingBarGlobal = (RatingBar)v.findViewById(R.id.rbProdGlobal);
+        ratingBarUser = (RatingBar)v.findViewById(R.id.rbProdUsuario);
+        TextView textViewNombre = (TextView)v.findViewById(R.id.tvNombreProdOther);
+        TextView textViewDescripcion = (TextView)v.findViewById(R.id.tvDesProductoOther);
+        TextView textViewPrecio = (TextView)v.findViewById(R.id.tvPrecioProductoOther);
+        Button buttonCarro = (Button)v.findViewById(R.id.btnAgregarProdCarro);
+
+        imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenProducto, getResources()));
+        textViewNombre.setText(nombreProd);
+        textViewDescripcion.setText(desProd);
+        textViewPrecio.setText("$" + precioProd);
+
+        cargarFavorito();
+
+        imageViewFavProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                JSONObject object = new JSONObject();
+                try
+                {
+                    object.put("user_id", Coordenadas.id);
+                    object.put("product_id", product_id);
+
+                    if (prodFav)
+                    {
+                        tipoReg = "Eliminar favoritos";
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminarFavoritoProducto.php", object.toString());
+                    }
+                    else
+                    {
+                        tipoReg = "Insertar favoritos";
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarFavoritosProducto.php", object.toString());
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -75,7 +162,8 @@ public class Details_products extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Context context)
+    {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
@@ -104,5 +192,128 @@ public class Details_products extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void cargarFavorito ()
+    {
+        try
+        {
+            JSONObject object = new JSONObject();
+            object.put("user_id", Coordenadas.id);
+            object.put("product_id", product_id);
+            tipoReg = "Cargar favorito";
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavoritoProducto.php", object.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public class EjecutarSentencia extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject object = new JSONObject(s);
+                if (tipoReg.equals("Insertar favoritos"))
+                {
+                    String res = object.getString("Insertado");
+                    if (res.equals("Si"))
+                    {
+                        prodFav = true;
+                        imageViewFavProd.setImageResource(R.drawable.heart_active);
+                        Toast.makeText(getContext(), "Este producto ha sido agregado a tus favoritos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Eliminar favoritos"))
+                {
+                    String res = object.getString("Eliminado");
+                    if (res.equals("Si"))
+                    {
+                        prodFav = false;
+                        imageViewFavProd.setImageResource(R.drawable.heart_desactive);
+                        Toast.makeText(getContext(), "El producto ya no pertenece a tus favoritos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoReg.equals("Cargar favorito"))
+                {
+                    String res = object.getString("Resultado");
+                    if (res.equals("Si"))
+                    {
+                        prodFav = true;
+                        imageViewFavProd.setImageResource(R.drawable.heart_active);
+                    }
+                    else
+                    {
+                        prodFav = false;
+                        imageViewFavProd.setImageResource(R.drawable.heart_desactive);
+                    }
+                }
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
     }
 }
