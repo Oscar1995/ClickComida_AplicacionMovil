@@ -57,6 +57,7 @@ public class StoreProductsFragment extends Fragment
     List<String> ids;
     List<String> noms;
     List<Bitmap> imagens;
+    List<String> fechas;
     ListView listViewProducts_Stores;
     ProgressDialog progress;
 
@@ -206,7 +207,7 @@ public class StoreProductsFragment extends Fragment
 
                 imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(imagens.get(position), getResources()));
                 textViewNombre.setText(noms.get(position));
-                textViewDesStore.setText(ids.get(position));
+                textViewDesStore.setText("Agregado el: " + fechas.get(position));
             }
             catch (Exception ex)
             {
@@ -297,14 +298,17 @@ public class StoreProductsFragment extends Fragment
                 else
                 {
                     JSONArray jsonArray = new JSONArray(s);
-                    int tomarCuenta = jsonArray.length() / 2;
+                    int tomarCuenta = jsonArray.length() / 3; //1: Informacion, 2:fotos, 3:fechas de creacion
                     JSONObject jsonObject = null;
 
                     ids = new ArrayList<>();
                     noms= new ArrayList<>();
                     imagens = new ArrayList<>();
+                    fechas = new ArrayList<>();
 
                     int cLocal = 0;
+                    int fLocal = 0;
+
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
                         String x = jsonArray.getString(i);
@@ -312,8 +316,16 @@ public class StoreProductsFragment extends Fragment
                         {
                             JSONObject object = new JSONObject(x);
 
-                            imagens.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
-                            cLocal++;
+                            if (cLocal <= (tomarCuenta-1))
+                            {
+                                imagens.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
+                                cLocal++;
+                            }
+                            else
+                            {
+                                fechas.add(object.getString("fecha_"+fLocal));
+                                fLocal++;
+                            }
                         }
                         else
                         {

@@ -534,8 +534,9 @@ public class Details_products extends Fragment {
                         sw = false;
                         prodCal = false;
                     }
-                    cargarComentarios();
                     progress.dismiss();
+                    cargarComentarios();
+
                 }
                 else if (tipoReg.equals("Modificar calificacion"))
                 {
@@ -583,6 +584,7 @@ public class Details_products extends Fragment {
 
                             comentariosProd.add(comentarios);
                         }
+                        progress.dismiss();
                         listViewComentariosProd.setAdapter(new AdapterCommentProducts());
                     }
                 }
