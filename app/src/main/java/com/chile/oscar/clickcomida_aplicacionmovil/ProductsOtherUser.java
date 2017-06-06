@@ -103,11 +103,6 @@ public class ProductsOtherUser extends Fragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        progress = new ProgressDialog(getContext());
-        progress.setMessage("Cargando productos...");
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();
-
         View v = inflater.inflate(R.layout.fragment_products_other_user, container, false);
         autoCompleteTextViewProducto = (AutoCompleteTextView)v.findViewById(R.id.actvProductos);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
@@ -118,13 +113,13 @@ public class ProductsOtherUser extends Fragment
         Button buttonAgregarCarro = (Button)v.findViewById(R.id.btnAgregarCarro);
         Button buttonDetalles = (Button)v.findViewById(R.id.btnDetalles);
 
-        String[] tOption = {"Menor precio", "Mayor precio"};
+        String[] tOption = {"Nombre", "Menor precio", "Mayor precio"};
         ArrayAdapter arrayAdapterFiltro = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, tOption);
         spinnerFiltro.setAdapter(arrayAdapterFiltro);
 
         imageViewTienda.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenTienda, getResources()));
         textViewTituloTienda.setText(getResources().getString(R.string.titulo_productos_tienda) + " " + nombreTienda);
-        cargarProductos();
+
 
         gridViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -144,6 +139,36 @@ public class ProductsOtherUser extends Fragment
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
+            }
+        });
+        spinnerFiltro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                progress = new ProgressDialog(getContext());
+
+                if (position == 0)
+                {
+                    cargarProductos("Nombre");
+                    progress.setMessage("Cargando productos...");
+                }
+                else if (position == 1)
+                {
+                    cargarProductos("Menor");
+                    progress.setMessage("Cargando productos por el menor precio...");
+                }
+                else if (position == 2)
+                {
+                    cargarProductos("Mayor");
+                    progress.setMessage("Cargando productos por el mayor precio...");
+                }
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -223,12 +248,13 @@ public class ProductsOtherUser extends Fragment
             return convertView;
         }
     }
-    public void cargarProductos ()
+    public void cargarProductos (String tipo)
     {
         JSONObject object = new JSONObject();
         try
         {
             object.put("store_id", store_id);
+            object.put("tipo", tipo);
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductos_other.php", object.toString());
         }
         catch (JSONException e)

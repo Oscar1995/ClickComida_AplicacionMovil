@@ -74,7 +74,8 @@ public class Details_products extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Details_products() {
+    public Details_products()
+    {
         // Required empty public constructor
     }
 
@@ -584,9 +585,9 @@ public class Details_products extends Fragment {
 
                             comentariosProd.add(comentarios);
                         }
-                        progress.dismiss();
                         listViewComentariosProd.setAdapter(new AdapterCommentProducts());
                     }
+                    progress.dismiss();
                 }
             }
 

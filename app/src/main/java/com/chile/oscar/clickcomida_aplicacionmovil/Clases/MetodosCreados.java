@@ -22,6 +22,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Oscar on 18-05-2017.
  */
@@ -144,5 +148,22 @@ public class MetodosCreados
         RoundedBitmapDrawable roundedDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapOriginal);
         roundedDrawable.setCornerRadius(bitmapOriginal.getWidth());
         return roundedDrawable;
+    }
+    public String formatearFecha (String fecha)
+    {
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        Date date = null;
+        try
+        {
+            date = dateParser.parse(fecha);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        dateParser.applyPattern("EEEE, dd 'de' MMMM 'de' yyyy");
+        String dateformat = dateParser.format(date);
+        return dateformat;
     }
 }
