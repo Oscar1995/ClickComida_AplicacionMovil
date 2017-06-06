@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 import org.json.JSONArray;
@@ -198,7 +199,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         try
                         {
                             jsonObject.put("Valor", rating);
-                            jsonObject.put("user_id", user_id);
+                            jsonObject.put("user_id", Coordenadas.id);
                             jsonObject.put("store_id", store_id);
                             tipoReg = "Insertar calificacion";
                             userCal = true;
@@ -223,7 +224,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         try
                         {
                             jsonObject.put("Valor", rating);
-                            jsonObject.put("user_id", user_id);
+                            jsonObject.put("user_id", Coordenadas.id);
                             jsonObject.put("store_id", store_id);
                             tipoReg = "Modificar calificacion";
                             userCal = true;
@@ -255,7 +256,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                     try
                     {
                         object.put("Valor", editTextComentario.getText().toString().trim());
-                        object.put("user_id", user_id);
+                        object.put("user_id", Coordenadas.id);
                         object.put("store_id", store_id);
                         tipoReg = "Insertar comentario";
 
@@ -298,7 +299,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                 {
                     if (favorite == false)
                     {
-                        object.put("user_id", user_id);
+                        object.put("user_id", Coordenadas.id);
                         object.put("store_id", store_id);
                         tipoReg = "Agregar favoritos";
 
@@ -311,7 +312,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                     }
                     else
                     {
-                        object.put("user_id", user_id);
+                        object.put("user_id", Coordenadas.id);
                         object.put("store_id", store_id);
                         tipoReg = "Eliminar favoritos";
 
@@ -382,7 +383,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         JSONObject object = new JSONObject();
         try
         {
-            object.put("user_id", user_id);
+            object.put("user_id", Coordenadas.id);
             object.put("store_id", store_id);
             tipoReg = "Cargar valor";
             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCalificacion.php", object.toString());
@@ -411,7 +412,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         JSONObject object = new JSONObject();
         try
         {
-            object.put("user_id", user_id);
+            object.put("user_id", Coordenadas.id);
             object.put("store_id", store_id);
             tipoReg = "Cargar favorito";
             new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarFavorito.php", object.toString());
