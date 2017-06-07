@@ -2,12 +2,15 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +19,16 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +45,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,14 +58,18 @@ import java.util.ArrayList;
  */
 public class MostrarProductosMios extends Fragment
 {
-    String store_id, store_name;
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
+    String store_id, store_name, tipoReg, imagenCod;
+
     ArrayList<Bitmap> imagesProducts = new ArrayList<>();
     ArrayList<Integer> idProducts = new ArrayList<>();
     ArrayList<String> nameProducts = new ArrayList<>();
     ArrayList<String> desProducts = new ArrayList<>();
-    int[] priceProducts;
-    int[] arrCont = new int[2];
-    int posProd;
+    ArrayList<String> priceProducts = new ArrayList<>();
+    ImageButton buttonPhotoProduct;
+    AlertDialog dialogMod;
+
+    int posProd, positionGlobal;
     GridView gvProductos;
     ProgressDialog progress;
     AutoCompleteTextView autoCompleteTextViewProd;
@@ -122,16 +134,19 @@ public class MostrarProductosMios extends Fragment
             convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_product, null);
             ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivProductoImage);
             TextView textViewNom = (TextView)convertView.findViewById(R.id.txtNombreProd);
+            TextView textViewPrecio = (TextView)convertView.findViewById(R.id.txtPrecioProd);
+
             if (unProd)
             {
-
-                imageViewProd.setImageBitmap(imagesProducts.get(posProd));
+                imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagesProducts.get(posProd), getResources()));
                 textViewNom.setText(nameProducts.get(posProd));
+                textViewPrecio.setText("$" + priceProducts.get(posProd));
             }
             else
             {
-                imageViewProd.setImageBitmap(imagesProducts.get(position));
+                imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagesProducts.get(position), getResources()));
                 textViewNom.setText(nameProducts.get(position));
+                textViewPrecio.setText("$" + priceProducts.get(position));
             }
 
             //ImageView imageView = new ImageView(getContext());
@@ -157,7 +172,7 @@ public class MostrarProductosMios extends Fragment
         TextView textView = (TextView)view.findViewById(R.id.txtTitulo_me);
         textView.setText(getResources().getString(R.string.titulo_mis_productos) + " " + store_name);
 
-        JSONObject object = new JSONObject();
+        final JSONObject object = new JSONObject();
         try
         {
             object.put("store_id", store_id);
@@ -167,20 +182,21 @@ public class MostrarProductosMios extends Fragment
             e.printStackTrace();
         }
         gvProductos= (GridView) view.findViewById(R.id.gvProductos);
-        gvProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        gvProductos.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
+                positionGlobal = position;
                 if (unProd)
                 {
                     String nombre = nameProducts.get(posProd);
-                    Toast.makeText(getContext(), "Nombre: " + nombre, Toast.LENGTH_SHORT).show();
                     pulsado = true;
                 }
                 else
                 {
                     String nombre = nameProducts.get(position);
-                    Toast.makeText(getContext(), "Nombre: " + nombre, Toast.LENGTH_SHORT).show();
                     pulsado = true;
                 }
 
@@ -216,7 +232,8 @@ public class MostrarProductosMios extends Fragment
                 }
             }
         });
-        new getProducts().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargarProductos.php", object.toString());
+        tipoReg = "Cargar productos";
+        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargarProductos.php", object.toString());
         Button buttonAdd = (Button)view.findViewById(R.id.btnAgregarProductos_me);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -236,7 +253,64 @@ public class MostrarProductosMios extends Fragment
             {
                 if (pulsado)
                 {
+                    AlertDialog.Builder builderModificar = new AlertDialog.Builder(getContext());
+                    View pUpdate = getActivity().getLayoutInflater().inflate(R.layout.modificar_productos_ventana, null);
+                    builderModificar.setView(pUpdate);
+                    dialogMod = builderModificar.create();
+                    dialogMod.show();
 
+                    final EditText textNombreProd = (EditText) pUpdate.findViewById(R.id.etNombreProdMod);
+                    final EditText textDesProd = (EditText) pUpdate.findViewById(R.id.etDesProdMod);
+                    final EditText textPreProd = (EditText) pUpdate.findViewById(R.id.etPrecioProdMod);
+
+                    Button botonModProd = (Button)pUpdate.findViewById(R.id.btnModProd);
+                    buttonPhotoProduct = (ImageButton)pUpdate.findViewById(R.id.ibModProducts);
+                    Button botonModCerrar = (Button)pUpdate.findViewById(R.id.btnModCerrar);
+
+                    buttonPhotoProduct.setImageBitmap(imagesProducts.get(positionGlobal));
+                    textNombreProd.setText(nameProducts.get(positionGlobal));
+                    textDesProd.setText(desProducts.get(positionGlobal));
+                    textPreProd.setText(priceProducts.get(positionGlobal));
+
+
+                    botonModProd.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            try
+                            {
+                                tipoReg = "Modificar producto";
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("id", idProducts.get(positionGlobal));
+                                jsonObject.put("name", textNombreProd.getText().toString().trim());
+                                jsonObject.put("description", textDesProd.getText().toString().trim());
+                                jsonObject.put("price", textPreProd.getText().toString().trim());
+                                jsonObject.put("imagen", imagenCod);
+                                jsonObject.put("store_id", store_id);
+                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarProductos_mios.php", jsonObject.toString());
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                    buttonPhotoProduct.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            dispatchTakePictureIntent();
+                        }
+                    });
+                    botonModCerrar.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v) {
+                            dialogMod.cancel();
+                        }
+                    });
                 }
                 else
                 {
@@ -250,7 +324,8 @@ public class MostrarProductosMios extends Fragment
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(Uri uri)
+    {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
@@ -272,6 +347,25 @@ public class MostrarProductosMios extends Fragment
         super.onDetach();
         mListener = null;
     }
+    private void dispatchTakePictureIntent()
+    {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null)
+        {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
+        {
+            Bundle extras = data.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            imagenCod = Codificacion.encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
+            buttonPhotoProduct.setImageBitmap(bitmap);
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -288,7 +382,7 @@ public class MostrarProductosMios extends Fragment
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    public class getProducts extends AsyncTask<String, Void, String>
+    public class EjecutarSentencia extends AsyncTask<String, Void, String>
     {
         @Override
         public String doInBackground(String... params)
@@ -351,40 +445,53 @@ public class MostrarProductosMios extends Fragment
         {
             try
             {
-                if (s.equals("[]"))
+                if (tipoReg.equals("Cargar productos"))
                 {
-                    Toast.makeText(getContext(), "Aun no tienes productos registrados.", Toast.LENGTH_SHORT).show();
-                    progress.dismiss();
-                }
-                else
-                {
-                    JSONArray jsonArray = new JSONArray(s);
-                    int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
-                    priceProducts = new int[tomarCuenta];
-                    JSONObject jsonObject = null;
-                    int cLocal = 0;
-                    for (int i = 0; i < jsonArray.length(); i++)
+                    if (s.equals("[]"))
                     {
-                        jsonObject = jsonArray.getJSONObject(i);
-                        if (i >= tomarCuenta)
-                        {
-                            Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
-                            imagesProducts.add(bitmap);
-                            cLocal++;
-                        }
-                        else
-                        {
-                            idProducts.add(Integer.parseInt(jsonObject.getString("id")));
-                            nameProducts.add(jsonObject.getString("name"));
-                            desProducts.add(jsonObject.getString("description"));
-                            priceProducts[i] = Integer.parseInt(jsonObject.getString("price"));
-                        }
+                        Toast.makeText(getContext(), "Aun no tienes productos registrados.", Toast.LENGTH_SHORT).show();
+                        progress.dismiss();
                     }
-                    gvProductos.setAdapter(new ImagenDesPrecio());
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nameProducts);
-                    autoCompleteTextViewProd.setAdapter(arrayAdapter);
-                    progress.dismiss();
+                    else
+                    {
+                        JSONArray jsonArray = new JSONArray(s);
+                        int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
+                        JSONObject jsonObject = null;
+                        int cLocal = 0;
+                        for (int i = 0; i < jsonArray.length(); i++)
+                        {
+                            jsonObject = jsonArray.getJSONObject(i);
+                            if (i >= tomarCuenta)
+                            {
+                                Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
+                                imagesProducts.add(bitmap);
+                                cLocal++;
+                            }
+                            else
+                            {
+                                idProducts.add(Integer.parseInt(jsonObject.getString("id")));
+                                nameProducts.add(jsonObject.getString("name"));
+                                desProducts.add(jsonObject.getString("description"));
+                                priceProducts.add(jsonObject.getString("price"));
+                            }
+                        }
+                        gvProductos.setAdapter(new ImagenDesPrecio());
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nameProducts);
+                        autoCompleteTextViewProd.setAdapter(arrayAdapter);
+                        progress.dismiss();
+                    }
                 }
+                else if (tipoReg.equals("Modificar producto"))
+                {
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Modificado");
+                    if (res.equals("Si"))
+                    {
+                        Toast.makeText(getContext(), "El producto ha sido modificado", Toast.LENGTH_SHORT).show();
+                        dialogMod.dismiss();
+                    }
+                }
+
             }
             catch (JSONException e)
             {
