@@ -224,4 +224,7 @@
     <string name="titulo_nombre_prod">Nombre del producto:</string>
     <string name="Descripcion">Descripción:</string>
     <string name="Precio">Precio:</string>
+    <string name="Agregar_Productos">Agregar mas productos</string>
+    <string name="Quitar">Quitar</string>
+    <string name="Finalizar">Finalizar compra</string>
 </resources>
