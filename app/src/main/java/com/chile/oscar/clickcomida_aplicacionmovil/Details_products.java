@@ -2,6 +2,7 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +67,7 @@ public class Details_products extends Fragment {
     RatingBar ratingBarGlobal, ratingBarUser;
     Bitmap imagenProducto;
     ImageView imageViewFavProd;
-    String store_id, product_id, nombreProd, desProd, precioProd, tipoReg;
+    String store_id, product_id, nombreProd, nombreTienda, desProd, precioProd, tipoReg;
     Float calLocal;
     ListView listViewComentariosProd;
     EditText editTextComentario;
@@ -104,6 +107,7 @@ public class Details_products extends Fragment {
         if (getArguments() != null)
         {
             imagenProducto = Codificacion.decodeBase64(getArguments().getString("imagen_prod"));
+            nombreTienda = getArguments().getString("nombre_tienda");
             store_id = getArguments().getString("store_id");
             product_id = getArguments().getString("product_id");
             nombreProd = getArguments().getString("nombre_prod");
@@ -125,7 +129,11 @@ public class Details_products extends Fragment {
         TextView textViewNombre = (TextView)v.findViewById(R.id.tvNombreProdOther);
         TextView textViewDescripcion = (TextView)v.findViewById(R.id.tvDesProductoOther);
         TextView textViewPrecio = (TextView)v.findViewById(R.id.tvPrecioProductoOther);
+        TextView textViewTituloTienda = (TextView)v.findViewById(R.id.txtTituloTienda);
         editTextComentario = (EditText)v.findViewById(R.id.etComentarioOtherProd);
+        final NumberPicker numberPickerCantidad = (NumberPicker)v.findViewById(R.id.numberPickerCantidad);
+        numberPickerCantidad.setMinValue(1);
+        numberPickerCantidad.setMaxValue(20);
 
         listViewComentariosProd  = (ListView)v.findViewById(R.id.lvComentariosProd);
 
@@ -135,10 +143,21 @@ public class Details_products extends Fragment {
         imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenProducto, getResources()));
         textViewNombre.setText(nombreProd);
         textViewDescripcion.setText(desProd);
+        textViewTituloTienda.setText("Producto de la tienda " + nombreTienda);
         textViewPrecio.setText("$" + precioProd);
 
         cargarFavorito();
 
+        buttonCarro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                //guardarPreferencias(Integer.parseInt(product_id), numberPickerCantidad.getValue());
+                String[] id_cant = new String[1];
+                id_cant[0] = product_id +  "-" + numberPickerCantidad.getValue();
+                saveArray(id_cant, "productos", getContext());
+            }
+        });
         buttonAgregarComentario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -397,6 +416,31 @@ public class Details_products extends Fragment {
         {
             e.printStackTrace();
         }
+    }
+    public void guardarPreferencias(String[] array, String arrayName, int id_product, int cantidad)
+    {
+        SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        String concatenacion = id_product +"-"+cantidad;
+        editor.putString("idprod_cantidadprod", concatenacion);
+        editor.commit();
+        Toast.makeText(getContext(), "Has agregado este producto a tu carrito de compras.", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean saveArray(String[] array, String arrayName, Context mContext)
+    {
+        //Primero debo ver si hay algo dentro del arreglo
+
+        SharedPreferences prefs = mContext.getSharedPreferences("preferencename", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(arrayName +"_size", array.length);
+
+        for(int i=0;i<array.length;i++)
+        {
+            editor.putString(arrayName + "_" + i, array[i]);
+        }
+
+        return editor.commit();
     }
 
     public class EjecutarSentencia extends AsyncTask<String, Void, String>

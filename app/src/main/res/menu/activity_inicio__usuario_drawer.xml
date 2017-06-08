@@ -22,6 +22,10 @@
             android:id="@+id/nav_favorite"
             android:icon="@drawable/favvorite"
             android:title="Favoritos" />
+        <item
+            android:id="@+id/nav_cart"
+            android:icon="@drawable/cart"
+            android:title="Carrito" />
     </group>
 
     <item android:title="Communicate">

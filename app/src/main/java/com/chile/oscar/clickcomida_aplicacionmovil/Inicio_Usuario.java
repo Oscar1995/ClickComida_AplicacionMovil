@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
@@ -168,6 +168,15 @@ public class Inicio_Usuario extends AppCompatActivity
             fragment.setArguments(args);
             fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mi_tienda));
+        }
+        else if (id == R.id.nav_cart)
+        {
+            fragment = new cart_products();
+            Bundle args = new Bundle();
+            //args.putString("user_id", idUsuario);
+            //fragment.setArguments(args);
+            fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.mi_carro));
         }
         else if (id == R.id.nav_share)
         {

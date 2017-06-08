@@ -6,13 +6,16 @@
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.Details_products">
 
     <!-- TODO: Update blank fragment layout -->
+   <ScrollView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView22"
+            android:id="@+id/txtTituloTienda"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorCeleste"
@@ -200,9 +203,24 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foregroundGravity="bottom"
+                android:gravity="center"
+                android:text="@string/titulo_cantidad"
+                android:textColor="@color/colorNegro"
+                android:textStyle="bold" />
+
+            <NumberPicker
+                android:id="@+id/numberPickerCantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
             <Button
                 android:id="@+id/btnAgregarProdCarro"
@@ -213,5 +231,5 @@
                 android:text="@string/titulo_agregar_carro" />
         </LinearLayout>
     </LinearLayout>
-
+   </ScrollView>
 </FrameLayout>

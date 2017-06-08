@@ -62,7 +62,9 @@ public class StoreProductsFragment extends Fragment
     private String mTipo, user_id, tipoLoad;
 
     List<String> ids;
+    List<String> idstore;
     List<String> noms;
+    List<String> nombreTienda;
     List<String> des;
     List<Bitmap> imagens;
     List<String> fechas;
@@ -82,13 +84,15 @@ public class StoreProductsFragment extends Fragment
 
 
     // TODO: Rename and change types and number of parameters
-    public static Details_products newInstance(Bitmap imagen, String product_id, String nombre_prod, String des_prod, String precio_prod)
+    public static Details_products newInstance(Bitmap imagen, String product_id, String nombre_prod, String des_prod, String precio_prod, String nombreTienda, String store_id)
     {
         Details_products fragment = new Details_products();
         Bundle args = new Bundle();
         args.putString("imagen_prod", Codificacion.encodeToBase64(imagen, Bitmap.CompressFormat.PNG, 100));
         args.putString("product_id", product_id);
         args.putString("nombre_prod", nombre_prod);
+        args.putString("nombre_tienda", nombreTienda);
+        args.putString("store_id", store_id);
         args.putString("des_prod", des_prod);
         args.putString("precio_prod", precio_prod);
         fragment.setArguments(args);
@@ -169,7 +173,7 @@ public class StoreProductsFragment extends Fragment
                 if (mTipo.equals("Productos"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(imagens.get(position), ids.get(position), noms.get(position), des.get(position), prices.get(position)));
+                    trans.replace(R.id.content_general, newInstance(imagens.get(position), ids.get(position), noms.get(position), des.get(position), prices.get(position), nombreTienda.get(position), idstore.get(position)));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
@@ -367,6 +371,8 @@ public class StoreProductsFragment extends Fragment
 
                     if (mTipo.equals("Productos"))
                     {
+                        idstore = new ArrayList<>();
+                        nombreTienda = new ArrayList<>();
                         des = new ArrayList<>();
                         prices = new ArrayList<>();
                     }
@@ -394,6 +400,8 @@ public class StoreProductsFragment extends Fragment
                             }
                             else
                             {
+                                nombreTienda.add(object.getString("nombre"));
+                                idstore.add(object.getString("store_id"));
                                 fechas.add(object.getString("fecha_"+fLocal));
                                 fLocal++;
                             }
