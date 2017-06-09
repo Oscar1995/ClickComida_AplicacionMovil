@@ -22,10 +22,12 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Carrito;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Comentarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Carro;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,10 +154,7 @@ public class Details_products extends Fragment {
             @Override
             public void onClick(View v)
             {
-                //guardarPreferencias(Integer.parseInt(product_id), numberPickerCantidad.getValue());
-                String[] id_cant = new String[1];
-                id_cant[0] = product_id +  "-" + numberPickerCantidad.getValue();
-                saveArray(id_cant, "productos", getContext());
+                guardarPreferencias(Integer.parseInt(product_id), numberPickerCantidad.getValue(), Integer.parseInt(store_id));
             }
         });
         buttonAgregarComentario.setOnClickListener(new View.OnClickListener() {
@@ -417,31 +416,38 @@ public class Details_products extends Fragment {
             e.printStackTrace();
         }
     }
-    public void guardarPreferencias(String[] array, String arrayName, int id_product, int cantidad)
+    public void guardarPreferencias(int id_product, int cantidad, int store_id)
     {
         SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        String concatenacion = id_product +"-"+cantidad;
-        editor.putString("idprod_cantidadprod", concatenacion);
-        editor.commit();
+        SharedPreferences.Editor editor = null;
+
+        //int cantTotal = sharedpreferences.getAll().size();
+        String xProd = (String) sharedpreferences.getAll().get("prod_id_"+id_product+"_storeid_"+store_id);
+        if (xProd != null) //Existe el producto, es decir suma la cantidad que existe
+        {
+            String[] splitProd = xProd.split("-");
+            int idProd = Integer.parseInt(splitProd[0]);
+            int idCantidad = Integer.parseInt(splitProd[1]);
+            if (id_product == idProd)
+            {
+                editor = sharedpreferences.edit();
+                int sumTotal = idCantidad + cantidad;
+                String modProd = id_product + "-" + store_id + "-" + sumTotal;
+                editor.putString("prod_id_"+id_product, modProd);
+                editor.commit();
+            }
+        }
+        else
+        {
+            editor = sharedpreferences.edit();
+            String modProd = id_product + "-" + store_id + "-" + cantidad;
+            editor.putString("prod_id_"+id_product, modProd);
+            editor.commit();
+        }
+
         Toast.makeText(getContext(), "Has agregado este producto a tu carrito de compras.", Toast.LENGTH_SHORT).show();
     }
 
-    public boolean saveArray(String[] array, String arrayName, Context mContext)
-    {
-        //Primero debo ver si hay algo dentro del arreglo
-
-        SharedPreferences prefs = mContext.getSharedPreferences("preferencename", 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(arrayName +"_size", array.length);
-
-        for(int i=0;i<array.length;i++)
-        {
-            editor.putString(arrayName + "_" + i, array[i]);
-        }
-
-        return editor.commit();
-    }
 
     public class EjecutarSentencia extends AsyncTask<String, Void, String>
     {
