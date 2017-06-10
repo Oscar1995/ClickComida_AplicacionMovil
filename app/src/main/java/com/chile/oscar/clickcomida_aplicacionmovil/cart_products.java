@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Carrito;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Carro;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Memory;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Tienda;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,18 +67,18 @@ public class cart_products extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    List<Carrito> carritoList = new ArrayList<>();
-    List<Pedidos> pedidosList = new ArrayList<>();
+    List<Tienda> tiendaList = new ArrayList<>();
+    List<Productos_Memory> productosMemoryList = new ArrayList<>();
 
-
+    List<Integer> integerListIdProducto = new ArrayList<>();
     List<Integer> integerListIdStore = new ArrayList<>();
     List<Integer> integerListCantidad= new ArrayList<>();
-
     List<Integer> integerListStore_id= new ArrayList<>();
     List<String> stringArrayListNombre = new ArrayList<>();
     List<Integer> integerListPrice= new ArrayList<>();
-    View v;
 
+    List<Integer> integerListCantidadProdOrden = new ArrayList<>();
+    View v;
     Boolean prodCart = false;
 
     List<JSONObject> jsonObjectList;
@@ -121,6 +124,17 @@ public class cart_products extends Fragment {
         cargarPreferencias();
         new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductosCarro.php", jsonObjectList.toString());
         // Inflate the layout for this fragment
+        /*tiendaList.clear();
+        productosMemoryList.clear();
+        integerListIdProducto.clear();
+        integerListIdStore.clear();
+        integerListCantidad.clear();
+        integerListStore_id.clear();
+        stringArrayListNombre.clear();
+        integerListPrice.clear();
+        integerListCantidadProdOrden.clear();
+        jsonObjectList.clear();*/
+
         v = inflater.inflate(R.layout.fragment_cart_products, container, false);
 
 
@@ -150,51 +164,8 @@ public class cart_products extends Fragment {
         super.onDetach();
         mListener = null;
     }
-    class carroAdapter extends BaseAdapter
-    {
-        @Override
-        public int getCount()
-        {
-            return 0;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_cart, null);
-            TextView textViewNombre = (TextView) convertView.findViewById(R.id.tvNombreProdCarro);
-            TextView textViewPrecio = (TextView) convertView.findViewById(R.id.tvPrecioProdCarro);
-            TextView textViewCantidad = (TextView) convertView.findViewById(R.id.tvCantidadProdCarro);
-            TextView textViewTotal = (TextView) convertView.findViewById(R.id.tvTotalProdCarro);
-
-            /*for (int i=0; i<posList.size(); i++)
-            {
-                int posActual = posList.get(i);
-                textViewNombre.setText(stringArrayListNombre.get(posActual));
-                textViewPrecio.setText(integerListPrice.get(posActual) + "");
-            }*/
-
-
-            ///textViewCantidad.setText(pedidosList.get(position).getCantidadProducto() + "");
-           // textViewTotal.setText(pedidosList.get(position).getTotalProducto() + "");
-
-
-            return convertView;
-        }
-    }
     public void cargarPreferencias()
     {
-        carritoList.clear();
         integerListIdStore.clear();
         integerListCantidad.clear();
 
@@ -227,6 +198,10 @@ public class cart_products extends Fragment {
 
                 if (!integerListIdStore.contains(idStore))integerListIdStore.add(idStore);
 
+                Productos_Memory productos_memory = new Productos_Memory();
+                productos_memory.setId(idProd);
+                productos_memory.setCantidad(idCantidad);
+                productosMemoryList.add(productos_memory);
 
                 try
                 {
@@ -311,19 +286,45 @@ public class cart_products extends Fragment {
             try
             {
                 JSONArray jsonArray = new JSONArray(s);
+                int divArray = jsonArray.length() / 3;
+                int cArray = 0;
                 for (int i=0; i<jsonArray.length(); i++)
                 {
                     JSONObject object = jsonArray.getJSONObject(i);
-                    integerListStore_id.add(object.getInt("id"));
-                    stringArrayListNombre.add(object.getString("name"));
-                    integerListPrice.add(object.getInt("price"));
+                    if (cArray < divArray)
+                    {
+                        integerListStore_id.add(object.getInt("id"));
+                        stringArrayListNombre.add(object.getString("name"));
+                        integerListPrice.add(object.getInt("price"));
+                        cArray++;
+                    }
+                    else
+                    {
+                        if (cArray >= (divArray * 2))
+                        {
+                            integerListIdProducto.add(object.getInt("id"));
+                        }
+                        else
+                        {
+                            Tienda tienda = new Tienda();
+                            tienda.setId(object.getInt("id"));
+                            tienda.setNombre(object.getString("name"));
+                            if (!tiendaList.contains(tienda))
+                            {
+                                tiendaList.add(tienda);
+                            }
+                            cArray++;
+                        }
+
+                    }
+
                 }
                 Button buttonAgregarProductos = null, buttonQuitarProductos = null, buttonFinalizarCompra = null;
 
                 if (prodCart)
                 {
                     Boolean aBooleanProd = true;
-                    final LinearLayout.LayoutParams paramsMATCH_PARENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     LinearLayout.LayoutParams paramsButtonHorizontal = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
                     LinearLayout linearLayoutContenedor = (LinearLayout)v.findViewById(R.id.llContenedor);
@@ -335,9 +336,22 @@ public class cart_products extends Fragment {
                     buttonAgregarProductos.setLayoutParams(params);
                     buttonAgregarProductos.setId(00); //TODO: ID DE LA TIENDA
 
+
+                    for (int a=0; a<integerListIdProducto.size(); a++)
+                    {
+                        for (int j=0; j<productosMemoryList.size(); j++)
+                        {
+                            if (integerListIdProducto.get(a) == productosMemoryList.get(j).getId())
+                            {
+                                integerListCantidadProdOrden.add(productosMemoryList.get(j).getCantidad());
+                            }
+                        }
+                    }
+
                     for (int i=0; i<integerListIdStore.size(); i++)
                     {
-                        int posActual = integerListIdStore.get(i);
+
+                        final int posActual = integerListIdStore.get(i);
                         LinearLayout linearLayoutProd = new LinearLayout(getContext());
                         TextView textViewNombreTienda = new TextView(getContext());
 
@@ -352,19 +366,27 @@ public class cart_products extends Fragment {
                         LinearLayout horizontalText = new LinearLayout(getContext());
                         LinearLayout horizontalBoton = new LinearLayout(getContext());
 
+                        final LinearLayout.LayoutParams paramsMATCH_PARENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
                         linearLayoutProd.setOrientation(LinearLayout.VERTICAL);
                         horizontalText.setGravity(LinearLayout.VERTICAL);
                         horizontalBoton.setOrientation(LinearLayout.HORIZONTAL);
                         horizontalText.setLayoutParams(params);
                         horizontalBoton.setLayoutParams(paramsMATCH_PARENT);
-
                         linearLayoutProd.setLayoutParams(params);
 
+                        String nombreTienda = null;
+                        for (int j=0; j<tiendaList.size(); j++)
+                        {
+                            if (tiendaList.get(j).getId() == posActual)
+                            {
+                                nombreTienda = tiendaList.get(j).getNombre();
+                            }
+                        }
                         //TODO: ESTO SE UNA VEZ POR TIENDA
                         //Nombre tienda
                         textViewNombreTienda.setId(i);
-                        textViewNombreTienda.setText("Tienda " + i);
+                        textViewNombreTienda.setText("Tienda " + nombreTienda);
                         textViewNombreTienda.setLayoutParams(params);
                         textViewNombreTienda.setGravity(Gravity.CENTER);
                         textViewNombreTienda.setTextColor(getResources().getColor(R.color.colorNegro));
@@ -400,29 +422,85 @@ public class cart_products extends Fragment {
                         horizontalText.addView(textViewNombreCantidad);
                         horizontalText.addView(textViewNombreTotal);
 
+                        int acFila = 100;
+                        int cFila = 0;
                         final List<Integer> posProd = new ArrayList<>();
-                        List<String> prodCar = new ArrayList<>();
-                        prodCar.clear();
+                        final List<String> prodCar = new ArrayList<>();
 
                         for (int k=0; k<integerListStore_id.size(); k++)
                         {
                             if (integerListStore_id.get(k) == posActual)
                             {
                                 posProd.add(k);
+                                cFila++;
+                                if (cFila >= 2)
+                                {
+                                    acFila +=100;
+                                }
                             }
                         }
                         for (int j=0; j<posProd.size(); j++)
                         {
-                            prodCar.add(stringArrayListNombre.get(posProd.get(j)));;
+                            String nombre = stringArrayListNombre.get(posProd.get(j));
+                            int precio = integerListPrice.get(posProd.get(j));
+                            int cantidad = integerListCantidadProdOrden.get(posProd.get(j));
+                            int total = (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));
+                            prodCar.add(stringArrayListNombre.get(j));
                         }
 
-
                         //TODO: AQUI SE IMPRIMIRA TODOS LOS PRODUCTOS DE LA TIENDA
+                        paramsMATCH_PARENT.height = acFila;
                         ListView listViewProductos = new ListView(getContext());
                         listViewProductos.setId(i);
                         listViewProductos.setLayoutParams(paramsMATCH_PARENT);
+
+
+                        BaseAdapter baseAdapter = new BaseAdapter()
+                        {
+
+                            @Override
+                            public int getCount()
+                            {
+                                //Guarda la cantidad del producto por orden
+                                return prodCar.size();
+                            }
+
+                            @Override
+                            public Object getItem(int position) {
+                                return null;
+                            }
+
+                            @Override
+                            public long getItemId(int position) {
+                                return 0;
+                            }
+
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent)
+                            {
+
+                                convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_cart, null);
+                                TextView textViewNombre = (TextView) convertView.findViewById(R.id.tvNombreProdCarro);
+                                TextView textViewPrecio = (TextView) convertView.findViewById(R.id.tvPrecioProdCarro);
+                                TextView textViewCantidad = (TextView) convertView.findViewById(R.id.tvCantidadProdCarro);
+                                TextView textViewTotal = (TextView) convertView.findViewById(R.id.tvTotalProdCarro);
+
+                                textViewNombre.setText(stringArrayListNombre.get(posProd.get(position)));
+                                textViewPrecio.setText(integerListPrice.get(posProd.get(position)) + "");
+
+                                textViewCantidad.setText(integerListCantidadProdOrden.get(posProd.get(position)) + "");
+
+                                int total = (integerListPrice.get(posProd.get(position)) * integerListCantidadProdOrden.get(posProd.get(position)));
+                                textViewTotal.setText(total + "");
+
+                                ///textViewCantidad.setText(pedidosList.get(position).getCantidadProducto() + "");
+                                // textViewTotal.setText(pedidosList.get(position).getTotalProducto() + "");
+                                return convertView;
+                            }
+                        };
+
                         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, prodCar);
-                        listViewProductos.setAdapter(arrayAdapter);
+                        listViewProductos.setAdapter(baseAdapter);
                         //TODO: TERMINANDO HASTA AQUI
 
                         buttonFinalizarCompra.setText(getResources().getString(R.string.Finalizar));
