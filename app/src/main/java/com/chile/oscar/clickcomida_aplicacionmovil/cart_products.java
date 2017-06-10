@@ -1,33 +1,30 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Carrito;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Carro;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Memory;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Tienda;
 
@@ -69,6 +66,8 @@ public class cart_products extends Fragment {
 
     List<Tienda> tiendaList = new ArrayList<>();
     List<Productos_Memory> productosMemoryList = new ArrayList<>();
+    List<Productos_Memory> productosMemoryListCache;
+    List<List<Productos_Memory>> productosMemoryListCacheObject = new ArrayList<>();
 
     List<Integer> integerListIdProducto = new ArrayList<>();
     List<Integer> integerListIdStore = new ArrayList<>();
@@ -76,10 +75,16 @@ public class cart_products extends Fragment {
     List<Integer> integerListStore_id= new ArrayList<>();
     List<String> stringArrayListNombre = new ArrayList<>();
     List<Integer> integerListPrice= new ArrayList<>();
-
     List<Integer> integerListCantidadProdOrden = new ArrayList<>();
+    List<Integer> integerListTotal = new ArrayList<>();
+
+
+    List<Integer> cantidadPorTienda = new ArrayList<>();
+
     View v;
     Boolean prodCart = false;
+    int posGlobalDelete;
+    ProgressDialog progress;
 
     List<JSONObject> jsonObjectList;
 
@@ -121,8 +126,11 @@ public class cart_products extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
         cargarPreferencias();
-        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductosCarro.php", jsonObjectList.toString());
         // Inflate the layout for this fragment
         /*tiendaList.clear();
         productosMemoryList.clear();
@@ -214,11 +222,13 @@ public class cart_products extends Fragment {
                     e.printStackTrace();
                 }
             }
-            Toast.makeText(getContext(), "" + jsonObjectList.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "" + jsonObjectList.toString(), Toast.LENGTH_SHORT).show();
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductosCarro.php", jsonObjectList.toString());
         }
         else
         {
             Toast.makeText(getContext(), "Aun no tienes producto agregado a tu carrito de compras", Toast.LENGTH_SHORT).show();
+            progress.dismiss();
         }
     }
     public class EjecutarSentencia extends AsyncTask<String, Void, String>
@@ -325,7 +335,7 @@ public class cart_products extends Fragment {
                 {
                     Boolean aBooleanProd = true;
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     LinearLayout.LayoutParams paramsButtonHorizontal = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
                     LinearLayout linearLayoutContenedor = (LinearLayout)v.findViewById(R.id.llContenedor);
 
@@ -441,18 +451,28 @@ public class cart_products extends Fragment {
                         }
                         for (int j=0; j<posProd.size(); j++)
                         {
-                            String nombre = stringArrayListNombre.get(posProd.get(j));
+                            /*String nombre = stringArrayListNombre.get(posProd.get(j));
                             int precio = integerListPrice.get(posProd.get(j));
                             int cantidad = integerListCantidadProdOrden.get(posProd.get(j));
-                            int total = (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));
+                            int total = (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));*/
                             prodCar.add(stringArrayListNombre.get(j));
                         }
 
                         //TODO: AQUI SE IMPRIMIRA TODOS LOS PRODUCTOS DE LA TIENDA
                         paramsMATCH_PARENT.height = acFila;
-                        ListView listViewProductos = new ListView(getContext());
+                        final ListView listViewProductos = new ListView(getContext());
                         listViewProductos.setId(i);
                         listViewProductos.setLayoutParams(paramsMATCH_PARENT);
+                        productosMemoryListCache = new ArrayList<>();
+                        for (int j=0; j<posProd.size(); j++)
+                        {
+                            Productos_Memory productos_memory = new Productos_Memory();
+                            productos_memory.setId(integerListIdProducto.get(posProd.get(j)));
+                            productos_memory.setCantidad(integerListCantidadProdOrden.get(posProd.get(j)));
+                            productosMemoryListCache.add(productos_memory);
+                        }
+                        productosMemoryListCacheObject.add(productosMemoryListCache);
+
 
 
                         BaseAdapter baseAdapter = new BaseAdapter()
@@ -501,7 +521,24 @@ public class cart_products extends Fragment {
 
                         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, prodCar);
                         listViewProductos.setAdapter(baseAdapter);
+                        listViewProductos.setSelector(getResources().getDrawable(R.drawable.colorbuttonamarillo));
                         //TODO: TERMINANDO HASTA AQUI
+
+                        int totalFinal = 0;
+                        for (int j =0; j<posProd.size(); j++)
+                        {
+                            totalFinal += (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));
+                        }
+                        integerListTotal.add(totalFinal);
+
+
+                        TextView textViewTotal = new TextView(getContext());
+                        textViewTotal.setId(i);
+                        textViewTotal.setText("Total: $" + totalFinal);
+                        textViewTotal.setLayoutParams(paramsMATCH_PARENT);
+                        textViewTotal.setGravity(Gravity.CENTER);
+                        textViewTotal.setTextColor(getResources().getColor(R.color.colorNegro));
+                        textViewTotal.setTypeface(Typeface.DEFAULT_BOLD);
 
                         buttonFinalizarCompra.setText(getResources().getString(R.string.Finalizar));
                         buttonFinalizarCompra.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
@@ -523,6 +560,7 @@ public class cart_products extends Fragment {
                         linearLayoutProd.addView(textViewNombreTienda);
                         linearLayoutProd.addView(horizontalText);
                         linearLayoutProd.addView(listViewProductos);
+                        linearLayoutProd.addView(textViewTotal);
                         linearLayoutProd.addView(horizontalBoton);
                         //Este siempre debe ir abajo
                         linearLayoutContenedor.addView(linearLayoutProd);
@@ -533,13 +571,84 @@ public class cart_products extends Fragment {
                             @Override
                             public void onClick(View v)
                             {
-                                Toast.makeText(getContext(), "Tienda: " +v.getId(), Toast.LENGTH_SHORT).show();
+                                List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(v.getId()));
+                                //int store_id = integerListIdStore.get(v.getId());
+                                int id = productos_memories.get(posGlobalDelete).getId();
+                                //int cantidad = productos_memories.get(posGlobalDelete).getCantidad();
+
+                                //String formato = id + "-" + store_id + "-" + cantidad; //id_product + "-" + store_id + "-" + sumTotal;
+                                String formato = "prod_id_"+id;
+                                SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.remove(formato);
+                                editor.commit();
+
+                                Toast.makeText(getContext(), "Producto quitado", Toast.LENGTH_SHORT).show();
+                                Fragment currentFragment = new cart_products();
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
+
+
                             }
                         });
                         buttonFinalizarCompra.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
-                                Toast.makeText(getContext(), "Tienda: " +v.getId(), Toast.LENGTH_SHORT).show();
+                            public void onClick(final View v)
+                            {
+                                final int total = integerListTotal.get(v.getId());
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setTitle("Confirmación de la compra")
+                                        .setMessage("El monto total es de $" + total + " pesos")
+                                        .setPositiveButton("Aceptar",
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which)
+                                                    {
+                                                        JSONObject object = new JSONObject();
+                                                        try
+                                                        {
+                                                            List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
+                                                            int cantidadTotal = productosMemoryListCacheObject.get(v.getId()).size();
+                                                            object.put("total_price", total);
+                                                            object.put("user_id", Coordenadas.id);
+                                                            object.put("store_id", integerListIdStore.get(v.getId()));
+                                                            object.put("cantidad_total", cantidadTotal);
+
+                                                            for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
+                                                            {
+                                                                JSONObject objectProductos = new JSONObject();
+                                                                objectProductos.put("id", productosMemoryListCacheObject.get(v.getId()).get(i).getId());
+                                                                objectProductos.put("cantidad", productosMemoryListCacheObject.get(v.getId()).get(i).getCantidad());
+                                                                jsonObjects.add(objectProductos);
+                                                            }
+                                                            object.put("lista", jsonObjects.toString());
+                                                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ordenarProductos.php", object.toString());
+                                                        }
+                                                        catch (JSONException e)
+                                                        {
+                                                            e.printStackTrace();
+                                                        }
+
+                                                    }
+                                                })
+                                        .setNegativeButton("Cancelar",
+                                                new DialogInterface.OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which)
+                                                    {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                builder.show();
+                            }
+                        });
+
+                        listViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                            {
+                                List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
+                                posGlobalDelete = position;
                             }
                         });
                     }
@@ -552,6 +661,7 @@ public class cart_products extends Fragment {
                         }
                     });
                 }
+                progress.dismiss();
             }
             catch (JSONException e)
             {

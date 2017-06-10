@@ -73,11 +73,12 @@ public class ProductsOtherUser extends Fragment
     }
 
     // TODO: Rename and change types and number of parameters
-    public static Details_products newInstance(Bitmap imagenProd, String store_id, String product_id, String nomProd,  String prodDes, String precioProd)
+    public static Details_products newInstance(Bitmap imagenProd, String nombreTienda, String store_id, String product_id, String nomProd,  String prodDes, String precioProd)
     {
         Details_products fragment = new Details_products();
         Bundle args = new Bundle();
         args.putString("imagen_prod", Codificacion.encodeToBase64(imagenProd, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nombreTienda);
         args.putString("store_id", store_id);
         args.putString("product_id", product_id);
         args.putString("nombre_prod", nomProd);
@@ -135,7 +136,7 @@ public class ProductsOtherUser extends Fragment
             public void onClick(View v)
             {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
+                trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), nombreTienda, store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
