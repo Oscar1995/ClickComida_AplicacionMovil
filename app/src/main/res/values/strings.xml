@@ -230,4 +230,8 @@
     <string name="Finalizar">Finalizar compra</string>
     <string name="Carro">Carro de compras</string>
     <string name="titulo_cantidad">Cantidad</string>
+    <string name="tacking">Seguimiento</string>
+    <string name="tracking">Seguimiento del pedido</string>
+    <string name="pedido_n">Pedido numero</string>
+    <string name="estado_pedido">Estado</string>
 </resources>

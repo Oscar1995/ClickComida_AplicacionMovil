@@ -64,6 +64,8 @@ public class cart_products extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    String tipoReg = "";
+
     List<Tienda> tiendaList = new ArrayList<>();
     List<Productos_Memory> productosMemoryList = new ArrayList<>();
     List<Productos_Memory> productosMemoryListCache;
@@ -78,7 +80,7 @@ public class cart_products extends Fragment {
     List<Integer> integerListCantidadProdOrden = new ArrayList<>();
     List<Integer> integerListTotal = new ArrayList<>();
 
-
+    int posTienda;
     List<Integer> cantidadPorTienda = new ArrayList<>();
 
     View v;
@@ -223,6 +225,7 @@ public class cart_products extends Fragment {
                 }
             }
             //Toast.makeText(getContext(), "" + jsonObjectList.toString(), Toast.LENGTH_SHORT).show();
+            tipoReg = "Carro";
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductosCarro.php", jsonObjectList.toString());
         }
         else
@@ -295,373 +298,391 @@ public class cart_products extends Fragment {
         {
             try
             {
-                JSONArray jsonArray = new JSONArray(s);
-                int divArray = jsonArray.length() / 3;
-                int cArray = 0;
-                for (int i=0; i<jsonArray.length(); i++)
+                if (tipoReg.equals("Pedido"))
                 {
-                    JSONObject object = jsonArray.getJSONObject(i);
-                    if (cArray < divArray)
+                    JSONObject object = new JSONObject(s);
+                    String res = object.getString("Correcto");
+
+                    SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+                    for (int i=0; i<productosMemoryListCacheObject.get(posTienda).size(); i++)
                     {
-                        integerListStore_id.add(object.getInt("id"));
-                        stringArrayListNombre.add(object.getString("name"));
-                        integerListPrice.add(object.getInt("price"));
-                        cArray++;
+                        String formato = "prod_id_"+productosMemoryListCacheObject.get(posTienda).get(i).getId();
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.remove(formato);
+                        editor.commit();
                     }
-                    else
+                    tipoReg = "Carro";
+                    Toast.makeText(getContext(), "Los productos llegaran pronto a tu domicilio, consulta en la pestaña seguimmiento para el donde viene tu pedido.", Toast.LENGTH_LONG).show();
+                    Fragment currentFragment = new cart_products();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
+                }
+                else if (tipoReg.equals("Carro"))
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    int divArray = jsonArray.length() / 3;
+                    int cArray = 0;
+                    for (int i=0; i<jsonArray.length(); i++)
                     {
-                        if (cArray >= (divArray * 2))
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        if (cArray < divArray)
                         {
-                            integerListIdProducto.add(object.getInt("id"));
+                            integerListStore_id.add(object.getInt("id"));
+                            stringArrayListNombre.add(object.getString("name"));
+                            integerListPrice.add(object.getInt("price"));
+                            cArray++;
                         }
                         else
                         {
-                            Tienda tienda = new Tienda();
-                            tienda.setId(object.getInt("id"));
-                            tienda.setNombre(object.getString("name"));
-                            if (!tiendaList.contains(tienda))
+                            if (cArray >= (divArray * 2))
                             {
-                                tiendaList.add(tienda);
+                                integerListIdProducto.add(object.getInt("id"));
                             }
-                            cArray++;
-                        }
-
-                    }
-
-                }
-                Button buttonAgregarProductos = null, buttonQuitarProductos = null, buttonFinalizarCompra = null;
-
-                if (prodCart)
-                {
-                    Boolean aBooleanProd = true;
-
-                    final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    LinearLayout.LayoutParams paramsButtonHorizontal = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
-                    LinearLayout linearLayoutContenedor = (LinearLayout)v.findViewById(R.id.llContenedor);
-
-                    buttonAgregarProductos = new Button(getContext());
-                    buttonAgregarProductos.setText(getResources().getString(R.string.Agregar_Productos));
-                    buttonAgregarProductos.setBackground(getResources().getDrawable(R.drawable.colorbutton));
-                    buttonAgregarProductos.setTextColor(getResources().getColor(R.color.textoBlanco));
-                    buttonAgregarProductos.setLayoutParams(params);
-                    buttonAgregarProductos.setId(00); //TODO: ID DE LA TIENDA
-
-
-                    for (int a=0; a<integerListIdProducto.size(); a++)
-                    {
-                        for (int j=0; j<productosMemoryList.size(); j++)
-                        {
-                            if (integerListIdProducto.get(a) == productosMemoryList.get(j).getId())
+                            else
                             {
-                                integerListCantidadProdOrden.add(productosMemoryList.get(j).getCantidad());
-                            }
-                        }
-                    }
-
-                    for (int i=0; i<integerListIdStore.size(); i++)
-                    {
-
-                        final int posActual = integerListIdStore.get(i);
-                        LinearLayout linearLayoutProd = new LinearLayout(getContext());
-                        TextView textViewNombreTienda = new TextView(getContext());
-
-                        TextView textViewNombreProducto = new TextView(getContext());
-                        TextView textViewNombrePrecio = new TextView(getContext());
-                        TextView textViewNombreCantidad = new TextView(getContext());
-                        TextView textViewNombreTotal = new TextView(getContext());
-
-                        buttonQuitarProductos = new Button(getContext());
-                        buttonFinalizarCompra = new Button(getContext());
-
-                        LinearLayout horizontalText = new LinearLayout(getContext());
-                        LinearLayout horizontalBoton = new LinearLayout(getContext());
-
-                        final LinearLayout.LayoutParams paramsMATCH_PARENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-                        linearLayoutProd.setOrientation(LinearLayout.VERTICAL);
-                        horizontalText.setGravity(LinearLayout.VERTICAL);
-                        horizontalBoton.setOrientation(LinearLayout.HORIZONTAL);
-                        horizontalText.setLayoutParams(params);
-                        horizontalBoton.setLayoutParams(paramsMATCH_PARENT);
-                        linearLayoutProd.setLayoutParams(params);
-
-                        String nombreTienda = null;
-                        for (int j=0; j<tiendaList.size(); j++)
-                        {
-                            if (tiendaList.get(j).getId() == posActual)
-                            {
-                                nombreTienda = tiendaList.get(j).getNombre();
-                            }
-                        }
-                        //TODO: ESTO SE UNA VEZ POR TIENDA
-                        //Nombre tienda
-                        textViewNombreTienda.setId(i);
-                        textViewNombreTienda.setText("Tienda " + nombreTienda);
-                        textViewNombreTienda.setLayoutParams(params);
-                        textViewNombreTienda.setGravity(Gravity.CENTER);
-                        textViewNombreTienda.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewNombreTienda.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        //Encabezado,
-                        textViewNombreProducto.setText("Nombre");
-                        textViewNombreProducto.setLayoutParams(paramsButtonHorizontal);
-                        textViewNombreProducto.setGravity(Gravity.CENTER);
-                        textViewNombreProducto.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewNombreProducto.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        textViewNombrePrecio.setText("$");
-                        textViewNombrePrecio.setLayoutParams(paramsButtonHorizontal);
-                        textViewNombrePrecio.setGravity(Gravity.CENTER);
-                        textViewNombrePrecio.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewNombrePrecio.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        textViewNombreCantidad.setText("Cantidad");
-                        textViewNombreCantidad.setLayoutParams(paramsButtonHorizontal);
-                        textViewNombreCantidad.setGravity(Gravity.CENTER);
-                        textViewNombreCantidad.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewNombreCantidad.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        textViewNombreTotal.setText("Total");
-                        textViewNombreTotal.setLayoutParams(paramsButtonHorizontal);
-                        textViewNombreTotal.setGravity(Gravity.CENTER);
-                        textViewNombreTotal.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewNombreTotal.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        horizontalText.addView(textViewNombreProducto);
-                        horizontalText.addView(textViewNombrePrecio);
-                        horizontalText.addView(textViewNombreCantidad);
-                        horizontalText.addView(textViewNombreTotal);
-
-                        int acFila = 100;
-                        int cFila = 0;
-                        final List<Integer> posProd = new ArrayList<>();
-                        final List<String> prodCar = new ArrayList<>();
-
-                        for (int k=0; k<integerListStore_id.size(); k++)
-                        {
-                            if (integerListStore_id.get(k) == posActual)
-                            {
-                                posProd.add(k);
-                                cFila++;
-                                if (cFila >= 2)
+                                Tienda tienda = new Tienda();
+                                tienda.setId(object.getInt("id"));
+                                tienda.setNombre(object.getString("name"));
+                                if (!tiendaList.contains(tienda))
                                 {
-                                    acFila +=100;
+                                    tiendaList.add(tienda);
+                                }
+                                cArray++;
+                            }
+
+                        }
+
+                    }
+                    Button buttonAgregarProductos = null, buttonQuitarProductos = null, buttonFinalizarCompra = null;
+
+                    if (prodCart)
+                    {
+                        Boolean aBooleanProd = true;
+
+                        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams paramsButtonHorizontal = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+                        LinearLayout linearLayoutContenedor = (LinearLayout)v.findViewById(R.id.llContenedor);
+
+                        buttonAgregarProductos = new Button(getContext());
+                        buttonAgregarProductos.setText(getResources().getString(R.string.Agregar_Productos));
+                        buttonAgregarProductos.setBackground(getResources().getDrawable(R.drawable.colorbutton));
+                        buttonAgregarProductos.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonAgregarProductos.setLayoutParams(params);
+                        buttonAgregarProductos.setId(00); //TODO: ID DE LA TIENDA
+
+
+                        for (int a=0; a<integerListIdProducto.size(); a++)
+                        {
+                            for (int j=0; j<productosMemoryList.size(); j++)
+                            {
+                                if (integerListIdProducto.get(a) == productosMemoryList.get(j).getId())
+                                {
+                                    integerListCantidadProdOrden.add(productosMemoryList.get(j).getCantidad());
                                 }
                             }
                         }
-                        for (int j=0; j<posProd.size(); j++)
-                        {
-                            /*String nombre = stringArrayListNombre.get(posProd.get(j));
-                            int precio = integerListPrice.get(posProd.get(j));
-                            int cantidad = integerListCantidadProdOrden.get(posProd.get(j));
-                            int total = (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));*/
-                            prodCar.add(stringArrayListNombre.get(j));
-                        }
 
-                        //TODO: AQUI SE IMPRIMIRA TODOS LOS PRODUCTOS DE LA TIENDA
-                        paramsMATCH_PARENT.height = acFila;
-                        final ListView listViewProductos = new ListView(getContext());
-                        listViewProductos.setId(i);
-                        listViewProductos.setLayoutParams(paramsMATCH_PARENT);
-                        productosMemoryListCache = new ArrayList<>();
-                        for (int j=0; j<posProd.size(); j++)
-                        {
-                            Productos_Memory productos_memory = new Productos_Memory();
-                            productos_memory.setId(integerListIdProducto.get(posProd.get(j)));
-                            productos_memory.setCantidad(integerListCantidadProdOrden.get(posProd.get(j)));
-                            productosMemoryListCache.add(productos_memory);
-                        }
-                        productosMemoryListCacheObject.add(productosMemoryListCache);
-
-
-
-                        BaseAdapter baseAdapter = new BaseAdapter()
+                        for (int i=0; i<integerListIdStore.size(); i++)
                         {
 
-                            @Override
-                            public int getCount()
+                            final int posActual = integerListIdStore.get(i);
+                            LinearLayout linearLayoutProd = new LinearLayout(getContext());
+                            TextView textViewNombreTienda = new TextView(getContext());
+
+                            TextView textViewNombreProducto = new TextView(getContext());
+                            TextView textViewNombrePrecio = new TextView(getContext());
+                            TextView textViewNombreCantidad = new TextView(getContext());
+                            TextView textViewNombreTotal = new TextView(getContext());
+
+                            buttonQuitarProductos = new Button(getContext());
+                            buttonFinalizarCompra = new Button(getContext());
+
+                            LinearLayout horizontalText = new LinearLayout(getContext());
+                            LinearLayout horizontalBoton = new LinearLayout(getContext());
+
+                            final LinearLayout.LayoutParams paramsMATCH_PARENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+                            linearLayoutProd.setOrientation(LinearLayout.VERTICAL);
+                            horizontalText.setGravity(LinearLayout.VERTICAL);
+                            horizontalBoton.setOrientation(LinearLayout.HORIZONTAL);
+                            horizontalText.setLayoutParams(params);
+                            horizontalBoton.setLayoutParams(paramsMATCH_PARENT);
+                            linearLayoutProd.setLayoutParams(params);
+
+                            String nombreTienda = null;
+                            for (int j=0; j<tiendaList.size(); j++)
                             {
-                                //Guarda la cantidad del producto por orden
-                                return prodCar.size();
+                                if (tiendaList.get(j).getId() == posActual)
+                                {
+                                    nombreTienda = tiendaList.get(j).getNombre();
+                                }
+                            }
+                            //TODO: ESTO SE UNA VEZ POR TIENDA
+                            //Nombre tienda
+                            textViewNombreTienda.setId(i);
+                            textViewNombreTienda.setText("Tienda " + nombreTienda);
+                            textViewNombreTienda.setLayoutParams(params);
+                            textViewNombreTienda.setGravity(Gravity.CENTER);
+                            textViewNombreTienda.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewNombreTienda.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            //Encabezado,
+                            textViewNombreProducto.setText("Nombre");
+                            textViewNombreProducto.setLayoutParams(paramsButtonHorizontal);
+                            textViewNombreProducto.setGravity(Gravity.CENTER);
+                            textViewNombreProducto.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewNombreProducto.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            textViewNombrePrecio.setText("$");
+                            textViewNombrePrecio.setLayoutParams(paramsButtonHorizontal);
+                            textViewNombrePrecio.setGravity(Gravity.CENTER);
+                            textViewNombrePrecio.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewNombrePrecio.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            textViewNombreCantidad.setText("Cantidad");
+                            textViewNombreCantidad.setLayoutParams(paramsButtonHorizontal);
+                            textViewNombreCantidad.setGravity(Gravity.CENTER);
+                            textViewNombreCantidad.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewNombreCantidad.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            textViewNombreTotal.setText("Total");
+                            textViewNombreTotal.setLayoutParams(paramsButtonHorizontal);
+                            textViewNombreTotal.setGravity(Gravity.CENTER);
+                            textViewNombreTotal.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewNombreTotal.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            horizontalText.addView(textViewNombreProducto);
+                            horizontalText.addView(textViewNombrePrecio);
+                            horizontalText.addView(textViewNombreCantidad);
+                            horizontalText.addView(textViewNombreTotal);
+
+                            int acFila = 100;
+                            int cFila = 0;
+                            final List<Integer> posProd = new ArrayList<>();
+                            final List<String> prodCar = new ArrayList<>();
+
+                            for (int k=0; k<integerListStore_id.size(); k++)
+                            {
+                                if (integerListStore_id.get(k) == posActual)
+                                {
+                                    posProd.add(k);
+                                    cFila++;
+                                    if (cFila >= 2)
+                                    {
+                                        acFila +=100;
+                                    }
+                                }
+                            }
+                            for (int j=0; j<posProd.size(); j++)
+                            {
+                                prodCar.add(stringArrayListNombre.get(j));
                             }
 
-                            @Override
-                            public Object getItem(int position) {
-                                return null;
+                            //TODO: AQUI SE IMPRIMIRA TODOS LOS PRODUCTOS DE LA TIENDA
+                            paramsMATCH_PARENT.height = acFila;
+                            final ListView listViewProductos = new ListView(getContext());
+                            listViewProductos.setId(i);
+                            listViewProductos.setLayoutParams(paramsMATCH_PARENT);
+                            productosMemoryListCache = new ArrayList<>();
+                            for (int j=0; j<posProd.size(); j++)
+                            {
+                                Productos_Memory productos_memory = new Productos_Memory();
+                                productos_memory.setId(integerListIdProducto.get(posProd.get(j)));
+                                productos_memory.setCantidad(integerListCantidadProdOrden.get(posProd.get(j)));
+                                productosMemoryListCache.add(productos_memory);
                             }
+                            productosMemoryListCacheObject.add(productosMemoryListCache);
 
-                            @Override
-                            public long getItemId(int position) {
-                                return 0;
-                            }
-
-                            @Override
-                            public View getView(int position, View convertView, ViewGroup parent)
+                            BaseAdapter baseAdapter = new BaseAdapter()
                             {
 
-                                convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_cart, null);
-                                TextView textViewNombre = (TextView) convertView.findViewById(R.id.tvNombreProdCarro);
-                                TextView textViewPrecio = (TextView) convertView.findViewById(R.id.tvPrecioProdCarro);
-                                TextView textViewCantidad = (TextView) convertView.findViewById(R.id.tvCantidadProdCarro);
-                                TextView textViewTotal = (TextView) convertView.findViewById(R.id.tvTotalProdCarro);
+                                @Override
+                                public int getCount()
+                                {
+                                    //Guarda la cantidad del producto por orden
+                                    return prodCar.size();
+                                }
 
-                                textViewNombre.setText(stringArrayListNombre.get(posProd.get(position)));
-                                textViewPrecio.setText(integerListPrice.get(posProd.get(position)) + "");
+                                @Override
+                                public Object getItem(int position) {
+                                    return null;
+                                }
 
-                                textViewCantidad.setText(integerListCantidadProdOrden.get(posProd.get(position)) + "");
+                                @Override
+                                public long getItemId(int position) {
+                                    return 0;
+                                }
 
-                                int total = (integerListPrice.get(posProd.get(position)) * integerListCantidadProdOrden.get(posProd.get(position)));
-                                textViewTotal.setText(total + "");
+                                @Override
+                                public View getView(int position, View convertView, ViewGroup parent)
+                                {
 
-                                ///textViewCantidad.setText(pedidosList.get(position).getCantidadProducto() + "");
-                                // textViewTotal.setText(pedidosList.get(position).getTotalProducto() + "");
-                                return convertView;
+                                    convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_cart, null);
+                                    TextView textViewNombre = (TextView) convertView.findViewById(R.id.tvNombreProdCarro);
+                                    TextView textViewPrecio = (TextView) convertView.findViewById(R.id.tvPrecioProdCarro);
+                                    TextView textViewCantidad = (TextView) convertView.findViewById(R.id.tvCantidadProdCarro);
+                                    TextView textViewTotal = (TextView) convertView.findViewById(R.id.tvTotalProdCarro);
+
+                                    textViewNombre.setText(stringArrayListNombre.get(posProd.get(position)));
+                                    textViewPrecio.setText(integerListPrice.get(posProd.get(position)) + "");
+
+                                    textViewCantidad.setText(integerListCantidadProdOrden.get(posProd.get(position)) + "");
+
+                                    int total = (integerListPrice.get(posProd.get(position)) * integerListCantidadProdOrden.get(posProd.get(position)));
+                                    textViewTotal.setText(total + "");
+
+                                    ///textViewCantidad.setText(pedidosList.get(position).getCantidadProducto() + "");
+                                    // textViewTotal.setText(pedidosList.get(position).getTotalProducto() + "");
+                                    return convertView;
+                                }
+                            };
+
+                            ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, prodCar);
+                            listViewProductos.setAdapter(baseAdapter);
+                            listViewProductos.setSelector(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            //TODO: TERMINANDO HASTA AQUI
+
+                            int totalFinal = 0;
+                            for (int j =0; j<posProd.size(); j++)
+                            {
+                                totalFinal += (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));
                             }
-                        };
+                            integerListTotal.add(totalFinal);
 
-                        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, prodCar);
-                        listViewProductos.setAdapter(baseAdapter);
-                        listViewProductos.setSelector(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        //TODO: TERMINANDO HASTA AQUI
 
-                        int totalFinal = 0;
-                        for (int j =0; j<posProd.size(); j++)
-                        {
-                            totalFinal += (integerListPrice.get(posProd.get(j)) * integerListCantidadProdOrden.get(posProd.get(j)));
+                            TextView textViewTotal = new TextView(getContext());
+                            textViewTotal.setId(i);
+                            textViewTotal.setText("Total: $" + totalFinal);
+                            textViewTotal.setLayoutParams(paramsMATCH_PARENT);
+                            textViewTotal.setGravity(Gravity.CENTER);
+                            textViewTotal.setTextColor(getResources().getColor(R.color.colorNegro));
+                            textViewTotal.setTypeface(Typeface.DEFAULT_BOLD);
+
+                            buttonFinalizarCompra.setText(getResources().getString(R.string.Finalizar));
+                            buttonFinalizarCompra.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
+                            buttonFinalizarCompra.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonFinalizarCompra.setLayoutParams(paramsButtonHorizontal);
+                            buttonFinalizarCompra.setId(i); //TODO: ID DE LA TIENDA
+
+                            buttonQuitarProductos.setText(getResources().getString(R.string.Quitar));
+                            buttonQuitarProductos.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonQuitarProductos.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonQuitarProductos.setLayoutParams(paramsButtonHorizontal);
+                            buttonQuitarProductos.setId(i); //TODO: ID DE LA TIENDA
+
+                            //ESTE AGREGA LOS BOTONES DE FORMA HORIZONTAL EN UN LAYOUT
+                            horizontalBoton.addView(buttonFinalizarCompra);
+                            horizontalBoton.addView(buttonQuitarProductos);
+
+                            if (aBooleanProd)linearLayoutProd.addView(buttonAgregarProductos); aBooleanProd = false;
+                            linearLayoutProd.addView(textViewNombreTienda);
+                            linearLayoutProd.addView(horizontalText);
+                            linearLayoutProd.addView(listViewProductos);
+                            linearLayoutProd.addView(textViewTotal);
+                            linearLayoutProd.addView(horizontalBoton);
+                            //Este siempre debe ir abajo
+                            linearLayoutContenedor.addView(linearLayoutProd);
+
+
+                            buttonQuitarProductos.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(v.getId()));
+                                    //int store_id = integerListIdStore.get(v.getId());
+                                    int id = productos_memories.get(posGlobalDelete).getId();
+                                    //int cantidad = productos_memories.get(posGlobalDelete).getCantidad();
+
+                                    //String formato = id + "-" + store_id + "-" + cantidad; //id_product + "-" + store_id + "-" + sumTotal;
+                                    String formato = "prod_id_"+id;
+                                    SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                                    editor.remove(formato);
+                                    editor.commit();
+
+                                    tipoReg = "Carro";
+                                    Toast.makeText(getContext(), "Producto quitado", Toast.LENGTH_SHORT).show();
+                                    Fragment currentFragment = new cart_products();
+                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
+
+
+                                }
+                            });
+                            buttonFinalizarCompra.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(final View v)
+                                {
+                                    final int total = integerListTotal.get(v.getId());
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    builder.setTitle("Confirmación de la compra")
+                                            .setMessage("El monto total es de $" + total + " pesos")
+                                            .setPositiveButton("Aceptar",
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which)
+                                                        {
+                                                            JSONObject object = new JSONObject();
+                                                            try
+                                                            {
+                                                                List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
+                                                                int cantidadTotal = productosMemoryListCacheObject.get(v.getId()).size();
+                                                                object.put("total_price", total);
+                                                                object.put("user_id", Coordenadas.id);
+                                                                object.put("store_id", integerListIdStore.get(v.getId()));
+                                                                object.put("cantidad_total", cantidadTotal);
+
+                                                                for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
+                                                                {
+                                                                    JSONObject objectProductos = new JSONObject();
+                                                                    objectProductos.put("id", productosMemoryListCacheObject.get(v.getId()).get(i).getId());
+                                                                    objectProductos.put("cantidad", productosMemoryListCacheObject.get(v.getId()).get(i).getCantidad());
+                                                                    jsonObjects.add(objectProductos);
+                                                                }
+                                                                object.put("lista", jsonObjects.toString());
+                                                                tipoReg = "Pedido";
+                                                                posTienda = v.getId();
+                                                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ordenarProductos.php", object.toString());
+                                                            }
+                                                            catch (JSONException e)
+                                                            {
+                                                                e.printStackTrace();
+                                                            }
+
+                                                        }
+                                                    })
+                                            .setNegativeButton("Cancelar",
+                                                    new DialogInterface.OnClickListener()
+                                                    {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which)
+                                                        {
+                                                            dialog.dismiss();
+                                                        }
+                                                    });
+                                    builder.show();
+                                }
+                            });
+
+                            listViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                                {
+                                    List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
+                                    posGlobalDelete = position;
+                                }
+                            });
                         }
-                        integerListTotal.add(totalFinal);
-
-
-                        TextView textViewTotal = new TextView(getContext());
-                        textViewTotal.setId(i);
-                        textViewTotal.setText("Total: $" + totalFinal);
-                        textViewTotal.setLayoutParams(paramsMATCH_PARENT);
-                        textViewTotal.setGravity(Gravity.CENTER);
-                        textViewTotal.setTextColor(getResources().getColor(R.color.colorNegro));
-                        textViewTotal.setTypeface(Typeface.DEFAULT_BOLD);
-
-                        buttonFinalizarCompra.setText(getResources().getString(R.string.Finalizar));
-                        buttonFinalizarCompra.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
-                        buttonFinalizarCompra.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonFinalizarCompra.setLayoutParams(paramsButtonHorizontal);
-                        buttonFinalizarCompra.setId(i); //TODO: ID DE LA TIENDA
-
-                        buttonQuitarProductos.setText(getResources().getString(R.string.Quitar));
-                        buttonQuitarProductos.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
-                        buttonQuitarProductos.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonQuitarProductos.setLayoutParams(paramsButtonHorizontal);
-                        buttonQuitarProductos.setId(i); //TODO: ID DE LA TIENDA
-
-                        //ESTE AGREGA LOS BOTONES DE FORMA HORIZONTAL EN UN LAYOUT
-                        horizontalBoton.addView(buttonFinalizarCompra);
-                        horizontalBoton.addView(buttonQuitarProductos);
-
-                        if (aBooleanProd)linearLayoutProd.addView(buttonAgregarProductos); aBooleanProd = false;
-                        linearLayoutProd.addView(textViewNombreTienda);
-                        linearLayoutProd.addView(horizontalText);
-                        linearLayoutProd.addView(listViewProductos);
-                        linearLayoutProd.addView(textViewTotal);
-                        linearLayoutProd.addView(horizontalBoton);
-                        //Este siempre debe ir abajo
-                        linearLayoutContenedor.addView(linearLayoutProd);
-
-
-                        buttonQuitarProductos.setOnClickListener(new View.OnClickListener()
+                        buttonAgregarProductos.setOnClickListener(new View.OnClickListener()
                         {
                             @Override
                             public void onClick(View v)
                             {
-                                List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(v.getId()));
-                                //int store_id = integerListIdStore.get(v.getId());
-                                int id = productos_memories.get(posGlobalDelete).getId();
-                                //int cantidad = productos_memories.get(posGlobalDelete).getCantidad();
-
-                                //String formato = id + "-" + store_id + "-" + cantidad; //id_product + "-" + store_id + "-" + sumTotal;
-                                String formato = "prod_id_"+id;
-                                SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedpreferences.edit();
-                                editor.remove(formato);
-                                editor.commit();
-
-                                Toast.makeText(getContext(), "Producto quitado", Toast.LENGTH_SHORT).show();
-                                Fragment currentFragment = new cart_products();
-                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
-
-
-                            }
-                        });
-                        buttonFinalizarCompra.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(final View v)
-                            {
-                                final int total = integerListTotal.get(v.getId());
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                builder.setTitle("Confirmación de la compra")
-                                        .setMessage("El monto total es de $" + total + " pesos")
-                                        .setPositiveButton("Aceptar",
-                                                new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which)
-                                                    {
-                                                        JSONObject object = new JSONObject();
-                                                        try
-                                                        {
-                                                            List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
-                                                            int cantidadTotal = productosMemoryListCacheObject.get(v.getId()).size();
-                                                            object.put("total_price", total);
-                                                            object.put("user_id", Coordenadas.id);
-                                                            object.put("store_id", integerListIdStore.get(v.getId()));
-                                                            object.put("cantidad_total", cantidadTotal);
-
-                                                            for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
-                                                            {
-                                                                JSONObject objectProductos = new JSONObject();
-                                                                objectProductos.put("id", productosMemoryListCacheObject.get(v.getId()).get(i).getId());
-                                                                objectProductos.put("cantidad", productosMemoryListCacheObject.get(v.getId()).get(i).getCantidad());
-                                                                jsonObjects.add(objectProductos);
-                                                            }
-                                                            object.put("lista", jsonObjects.toString());
-                                                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ordenarProductos.php", object.toString());
-                                                        }
-                                                        catch (JSONException e)
-                                                        {
-                                                            e.printStackTrace();
-                                                        }
-
-                                                    }
-                                                })
-                                        .setNegativeButton("Cancelar",
-                                                new DialogInterface.OnClickListener()
-                                                {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which)
-                                                    {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-                                builder.show();
-                            }
-                        });
-
-                        listViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                            {
-                                List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
-                                posGlobalDelete = position;
+                                Toast.makeText(getContext(), "Tienda: " +v.getId(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
-                    buttonAgregarProductos.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            Toast.makeText(getContext(), "Tienda: " +v.getId(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    progress.dismiss();
                 }
-                progress.dismiss();
             }
             catch (JSONException e)
             {

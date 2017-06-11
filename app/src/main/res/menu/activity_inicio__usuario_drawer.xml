@@ -26,6 +26,10 @@
             android:id="@+id/nav_cart"
             android:icon="@drawable/cart"
             android:title="Carrito" />
+        <item
+            android:id="@+id/nav_track"
+            android:icon="@drawable/moto"
+            android:title="Seguimiento" />
     </group>
 
     <item android:title="Communicate">
