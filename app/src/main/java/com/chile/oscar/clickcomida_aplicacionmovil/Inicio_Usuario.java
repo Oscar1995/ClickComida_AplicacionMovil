@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener, Tracking.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener, Tracking.OnFragmentInteractionListener, BusquedaAvanzada.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
@@ -130,6 +130,12 @@ public class Inicio_Usuario extends AppCompatActivity
         if (id == R.id.nav_camera)
         {
             fragment = new MapaInicio();
+            fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+        }
+        else if (id == R.id.nav_search)
+        {
+            fragment = new BusquedaAvanzada();
             fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
         }

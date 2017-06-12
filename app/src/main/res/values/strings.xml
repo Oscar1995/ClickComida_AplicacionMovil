@@ -234,4 +234,7 @@
     <string name="tracking">Seguimiento del pedido</string>
     <string name="pedido_n">Pedido numero</string>
     <string name="estado_pedido">Estado</string>
+    <string name="busqueda_avanzada">Busqueda avanzada</string>
+    <string name="ingreso_producto_busqueda">Ingrese producto a buscar</string>
+    <string name="Resultados_enc">Resultados encontrados:</string>
 </resources>
