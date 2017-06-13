@@ -40,6 +40,7 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -63,7 +64,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapaInicio extends Fragment implements OnMapReadyCallback {
+public class MapaInicio extends Fragment implements OnMapReadyCallback, LocationSource.OnLocationChangedListener {
 
     private final int REQUEST_ACCESS_FINE = 0;
 
@@ -308,28 +309,13 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback {
         }
         return myLocation;
     }
-    /*@Override
+    @Override
     public void onLocationChanged(Location location)
     {
-        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
-        mMap.animateCamera(miUbicacion);
-        //Toast.makeText(getApplicationContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
+        //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
+        //mMap.animateCamera(miUbicacion);
+        Toast.makeText(MapaInicio.this.getContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
     }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }*/
 
     public class cargarTiendasCoordenadas extends AsyncTask<String, Void, String>
     {

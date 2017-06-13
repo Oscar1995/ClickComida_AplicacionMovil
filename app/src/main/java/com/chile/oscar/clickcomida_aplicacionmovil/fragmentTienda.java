@@ -167,11 +167,6 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
             public void onClick(View v)
             {
                 Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
-                /*FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, new MapsActivityTienda());
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();*/
                 final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
                 View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
 

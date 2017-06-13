@@ -1,22 +1,42 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos_Proceso;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.plus.model.people.Person;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +53,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -50,11 +72,15 @@ public class Tracking extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
+    private GoogleApiClient mGoogleApiClient;
     private String mParam1;
     private String mParam2;
     ListView listViewPedidos;
     List<Pedidos_Proceso> pedidos_procesoList;
     ProgressDialog progress;
+    int veces = 1;
+
+    GoogleMap googleMapGlobal;
 
     private OnFragmentInteractionListener mListener;
 
@@ -91,9 +117,44 @@ public class Tracking extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle)
+                    {
+                        Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
+                        /*Timer timer = new Timer();
+                        timer.scheduleAtFixedRate(new TimerTask() {
+                            @Override
+                            public void run()
+                            {
+                                Log.d("Veces", veces + "");
+                                veces++;
+                            }
+                        }, 0, 5000);*/
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i)
+                    {
+                        Toast.makeText(getContext(), "Suspendido", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult)
+                    {
+                        Toast.makeText(getContext(), "Fallido", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+
+
         progress = new ProgressDialog(getContext());
         progress.setMessage("Cargando pedidos...");
         progress.setCanceledOnTouchOutside(false);
@@ -102,19 +163,69 @@ public class Tracking extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tracking, container, false);
         listViewPedidos = (ListView) v.findViewById(R.id.lvPedidos);
         pedidos_procesoList = new ArrayList<>();
-        try
-        {
+        try {
             JSONObject object = new JSONObject();
             object.put("user_id", Coordenadas.id);
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario.php", object.toString());
-        }
-        catch (JSONException e)
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
+        listViewPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                builderMapa.setView(pMap);
+                final AlertDialog mapUpdate = builderMapa.create();
+                mapUpdate.show();
+
+
+                map.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(final GoogleMap googleMap) {
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            googleMapGlobal = googleMap;
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
+                    }
+                });
+                botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getFragmentManager().beginTransaction().remove(map).commit();
+                        mapUpdate.dismiss();
+                    }
+                });
+
+            }
+        });
 
         return v;
     }
+
+    /*@Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
