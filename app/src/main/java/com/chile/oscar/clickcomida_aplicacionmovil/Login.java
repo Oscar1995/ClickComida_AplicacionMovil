@@ -42,7 +42,7 @@ import java.net.URLEncoder;
 
 public class Login extends AppCompatActivity implements View.OnClickListener
 {
-    String uId, uCorreo, uNombre;
+    String uId, uCorreo, uNombre, uRol;
     Button btnIniciar, btnRegistro, btnOlvidado;
     LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
@@ -55,12 +55,24 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     {
         if (cargarPreferencias())
         {
-            i = new Intent(Login.this, Inicio_Usuario.class);
-            i.putExtra("id_user_login", uId);
-            i.putExtra("correo_usuario", uCorreo);
-            i.putExtra("nombre_usuario", uNombre);
-            startActivity(i);
-            this.finish();
+            if (uRol.equals("repartidor"))
+            {
+                i = new Intent(Login.this, Inicio_Usuario.class);
+                i.putExtra("id_user_login", uId);
+                i.putExtra("correo_usuario", uCorreo);
+                i.putExtra("nombre_usuario", uNombre);
+                startActivity(i);
+                this.finish();
+            }
+            /*else if (uRol.equals("repartidor"))
+            {
+                i = new Intent(Login.this, Inicio_Repartidor.class);
+                i.putExtra("id_user_login", uId);
+                i.putExtra("correo_usuario", uCorreo);
+                i.putExtra("nombre_usuario", uNombre);
+                startActivity(i);
+                this.finish();
+            }*/
         }
 
         super.onCreate(savedInstanceState);
@@ -352,6 +364,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         uId = sharedpreferences.getString("id_usuario_shared", "");
         uCorreo = sharedpreferences.getString("correo_usuario_shared", "");
         uNombre = sharedpreferences.getString("nombre_usuario_shared", "");
+        uRol = sharedpreferences.getString("rol_usuario_shared", "");
 
         if(uId.isEmpty() && uCorreo.isEmpty() && uNombre.isEmpty())
         {

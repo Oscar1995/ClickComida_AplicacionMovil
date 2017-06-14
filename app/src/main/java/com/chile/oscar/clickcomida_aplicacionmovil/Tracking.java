@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Camera;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,6 +35,8 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos_Proceso;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -55,6 +58,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -84,6 +88,9 @@ public class Tracking extends Fragment {
     ProgressDialog progress;
     String tipoLoad = "";
     View pMap;
+    AlertDialog mapUpdate;
+    SupportMapFragment map;
+    Boolean viewCreated = false;
 
     GoogleMap googleMapGlobal;
     LatLng latLngLocal;
@@ -174,20 +181,34 @@ public class Tracking extends Fragment {
             object.put("user_id", Coordenadas.id);
             tipoLoad = "Pedidos";
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario.php", object.toString());
-        } catch (JSONException e) {
+        } catch (JSONException e)
+        {
             e.printStackTrace();
         }
+
         listViewPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
+            {
                 final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
-                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+                if (googleMapGlobal != null)
+                {
+                    googleMapGlobal.clear();
+                }
+                if (pMap == null)
+                {
+                    pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                }
+                if (pMap.getParent() != null)
+                {
+                    ((ViewGroup)pMap.getParent()).removeView(pMap);
+                }
 
+                final Boolean[] swPos = {false};
+                map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
                 Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
                 builderMapa.setView(pMap);
-                final AlertDialog mapUpdate = builderMapa.create();
+                mapUpdate = builderMapa.create();
                 mapUpdate.show();
                 map.getMapAsync(new OnMapReadyCallback()
                 {
@@ -232,6 +253,26 @@ public class Tracking extends Fragment {
                         }, 0, 60000);
                         googleMap.setMyLocationEnabled(true);
                         googleMap.getUiSettings().setZoomControlsEnabled(true);
+                        if (googleMap != null)
+                        {
+                            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                                @Override
+                                public void onMyLocationChange(Location location)
+                                {
+                                    //Toast.makeText(getContext(), "Latitud: " + location.getLatitude() + "Longitude: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                                    //mMap.animateCamera(miUbicacion);
+                                    if (!swPos[0])
+                                    {
+                                        googleMap.animateCamera(miUbicacion);
+                                    }
+                                    swPos[0] = true;
+
+                                }
+                            });
+                        }
+
                     }
                 });
                 botonTomarCoor.setOnClickListener(new View.OnClickListener() {

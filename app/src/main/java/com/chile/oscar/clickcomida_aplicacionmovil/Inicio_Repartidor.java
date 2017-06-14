@@ -109,7 +109,7 @@ public class Inicio_Repartidor extends AppCompatActivity
         {
 
         }
-        else if (id == R.id.nav_send)
+        else if (id == R.id.nav_end)
         {
 
             SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
