@@ -85,7 +85,11 @@
         <activity
             android:name=".MapsActivityPrueba"
             android:label="@string/title_activity_maps_prueba" />
-        <activity android:name=".Passwword_forgot"></activity>
+        <activity android:name=".Passwword_forgot" />
+        <activity
+            android:name=".Inicio_Repartidor"
+            android:label="@string/title_activity_inicio__repartidor"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

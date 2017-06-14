@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos_Proceso;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +37,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.plus.model.people.Person;
@@ -78,9 +82,11 @@ public class Tracking extends Fragment {
     ListView listViewPedidos;
     List<Pedidos_Proceso> pedidos_procesoList;
     ProgressDialog progress;
-    int veces = 1;
+    String tipoLoad = "";
+    View pMap;
 
     GoogleMap googleMapGlobal;
+    LatLng latLngLocal;
 
     private OnFragmentInteractionListener mListener;
 
@@ -126,6 +132,7 @@ public class Tracking extends Fragment {
                     public void onConnected(@Nullable Bundle bundle)
                     {
                         Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
+
                         /*Timer timer = new Timer();
                         timer.scheduleAtFixedRate(new TimerTask() {
                             @Override
@@ -152,7 +159,6 @@ public class Tracking extends Fragment {
                 })
                 .addApi(LocationServices.API)
                 .build();
-        mGoogleApiClient.connect();
 
 
         progress = new ProgressDialog(getContext());
@@ -166,27 +172,28 @@ public class Tracking extends Fragment {
         try {
             JSONObject object = new JSONObject();
             object.put("user_id", Coordenadas.id);
+            tipoLoad = "Pedidos";
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario.php", object.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
         listViewPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
                 final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                 final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
                 Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
                 builderMapa.setView(pMap);
                 final AlertDialog mapUpdate = builderMapa.create();
                 mapUpdate.show();
-
-
-                map.getMapAsync(new OnMapReadyCallback() {
+                map.getMapAsync(new OnMapReadyCallback()
+                {
                     @Override
-                    public void onMapReady(final GoogleMap googleMap) {
+                    public void onMapReady(final GoogleMap googleMap)
+                    {
                         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             // TODO: Consider calling
                             //    ActivityCompat#requestPermissions
@@ -195,15 +202,42 @@ public class Tracking extends Fragment {
                             //                                          int[] grantResults)
                             // to handle the case where the user grants the permission. See the documentation
                             // for ActivityCompat#requestPermissions for more details.
-                            googleMapGlobal = googleMap;
+
                             return;
                         }
+
+                        Timer timer = new Timer();
+                        timer.scheduleAtFixedRate(new TimerTask()
+                        {
+                            @Override
+                            public void run()
+                            {
+
+                                try
+                                {
+                                    JSONObject object = new JSONObject();
+                                    object.put("user_id", Coordenadas.id);
+                                    object.put("order_id", pedidos_procesoList.get(position).getOrden_id());
+                                    tipoLoad = "Repartidor";
+                                    googleMapGlobal = googleMap;
+                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ubicacionRepartidor.php", object.toString());
+
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, 0, 60000);
                         googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setZoomControlsEnabled(true);
                     }
                 });
                 botonTomarCoor.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(View v)
+                    {
                         getFragmentManager().beginTransaction().remove(map).commit();
                         mapUpdate.dismiss();
                     }
@@ -228,7 +262,9 @@ public class Tracking extends Fragment {
     }*/
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(Uri uri)
+    {
+        Toast.makeText(getContext(), "hola", Toast.LENGTH_SHORT).show();
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
@@ -237,9 +273,12 @@ public class Tracking extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+        if (context instanceof OnFragmentInteractionListener)
+        {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
+        }
+        else
+        {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
@@ -249,7 +288,6 @@ public class Tracking extends Fragment {
     public void onDetach()
     {
         super.onDetach();
-        mListener = null;
     }
     class PedidosAdapter extends BaseAdapter
     {
@@ -365,27 +403,46 @@ public class Tracking extends Fragment {
         {
             try
             {
-                if (!s.equals("[]"))
+                if (tipoLoad.equals("Pedidos"))
+                {
+                    if (!s.equals("[]"))
+                    {
+                        JSONArray jsonArray = new JSONArray(s);
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            Pedidos_Proceso pedidos_proceso = new Pedidos_Proceso();
+                            pedidos_proceso.setOrden_id(object.getInt("id"));
+                            pedidos_proceso.setOrden_fecha(object.getString("date"));
+                            pedidos_proceso.setEstado(object.getString("description"));
+                            pedidos_proceso.setNombreTienda(object.getString("name"));
+                            pedidos_procesoList.add(pedidos_proceso);
+                        }
+                        progress.dismiss();
+                        listViewPedidos.setAdapter(new PedidosAdapter());
+                    }
+                    else
+                    {
+                        progress.dismiss();
+                        Toast.makeText(getContext(), "Aun no tienes pedidos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if (tipoLoad.equals("Repartidor"))
                 {
                     JSONArray jsonArray = new JSONArray(s);
-                    for (int i=0; i<jsonArray.length(); i++)
+                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                    if (!s.equals("[]"))
                     {
-                        JSONObject object = jsonArray.getJSONObject(i);
-                        Pedidos_Proceso pedidos_proceso = new Pedidos_Proceso();
-                        pedidos_proceso.setOrden_id(object.getInt("id"));
-                        pedidos_proceso.setOrden_fecha(object.getString("date"));
-                        pedidos_proceso.setEstado(object.getString("description"));
-                        pedidos_proceso.setNombreTienda(object.getString("name"));
-                        pedidos_procesoList.add(pedidos_proceso);
+                        if (googleMapGlobal != null)
+                        {
+                            googleMapGlobal.clear();
+                        }
+                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_moto_marker);
+                        latLngLocal = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
+                        googleMapGlobal.addMarker(new MarkerOptions().position(latLngLocal).title("Repartidor")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
                     }
-                    progress.dismiss();
-                    listViewPedidos.setAdapter(new PedidosAdapter());
                 }
-                else
-                {
-                    progress.dismiss();
-                    Toast.makeText(getContext(), "Aun no tienes pedidos", Toast.LENGTH_SHORT).show();
-                }
+
 
             }
             catch (JSONException e)

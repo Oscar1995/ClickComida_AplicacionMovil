@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.icu.util.Calendar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -75,39 +76,6 @@ public class MetodosCreados
         String[] x = variable.split(":");
         return x[1].trim();
     }
-    public void MostrarMapa (SupportMapFragment map, final Context context)
-    {
-        map.getMapAsync(new OnMapReadyCallback()
-        {
-            @Override
-            public void onMapReady(final GoogleMap googleMap)
-            {
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                googleMap.setMyLocationEnabled(true);
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng)
-                    {
-                        googleMap.clear();
-                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                        Coordenadas.latitud = latLng.latitude;
-                        Coordenadas.longitud = latLng.longitude;
-                    }
-                });
-            }
-        });
-    }
     public String ComprobarCampos (String v1, String v2)
     {
         if (!v1.isEmpty() && !v2.isEmpty())
@@ -165,5 +133,11 @@ public class MetodosCreados
         dateParser.applyPattern("EEEE, dd 'de' MMMM 'de' yyyy");
         String dateformat = dateParser.format(date);
         return dateformat;
+    }
+    public Bitmap resizeMapIcons(Bitmap iconName, int width, int height)
+    {
+
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(iconName, width, height, false);
+        return resizedBitmap;
     }
 }

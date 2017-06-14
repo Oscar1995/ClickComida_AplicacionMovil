@@ -420,6 +420,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         }
                         else
                         {
+
                             mMap.addMarker(new MarkerOptions().position(coordenadas).title(getDataMaps.get(i).getNombre()).snippet("Pincha este cuadro para mas información"));
                         }
 

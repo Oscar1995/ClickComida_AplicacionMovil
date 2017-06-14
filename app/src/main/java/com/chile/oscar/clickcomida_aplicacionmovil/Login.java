@@ -295,11 +295,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 String res = jsonResult.getString("Resultado");
                 if (res.equals("Correcto"))
                 {
-                    guardarPreferencias(jsonResult.getString("Id"), jsonResult.getString("Correo"), jsonResult.getString("Nombre"));
-                    i = new Intent(Login.this, Inicio_Usuario.class);
-                    i.putExtra("id_user_login", jsonResult.getString("Id"));
-                    i.putExtra("correo_usuario", jsonResult.getString("Correo"));
-                    i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
+                    guardarPreferencias(jsonResult.getString("Id"), jsonResult.getString("Correo"), jsonResult.getString("Nombre"), jsonResult.getString("Rol"));
+                    if (jsonResult.getString("Rol").equals("miembro"))
+                    {
+                        i = new Intent(Login.this, Inicio_Usuario.class);
+                        i.putExtra("id_user_login", jsonResult.getString("Id"));
+                        i.putExtra("correo_usuario", jsonResult.getString("Correo"));
+                        i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
+                        i.putExtra("rol", jsonResult.getString("Rol"));
+                    }
+                    else if (jsonResult.getString("Rol").equals("repartidor"))
+                    {
+                        i = new Intent(Login.this, Inicio_Repartidor.class);
+                        i.putExtra("id_user_login", jsonResult.getString("Id"));
+                        i.putExtra("correo_usuario", jsonResult.getString("Correo"));
+                        i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
+                        i.putExtra("rol", jsonResult.getString("Rol"));
+                    }
                     startActivity(i);
                     finish();
                 }
@@ -324,13 +336,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener
             }
         }
     }
-    public void guardarPreferencias(String id, String correo, String nombre)
+    public void guardarPreferencias(String id, String correo, String nombre, String rol)
     {
         SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("id_usuario_shared", id);
         editor.putString("correo_usuario_shared", correo);
         editor.putString("nombre_usuario_shared", nombre);
+        editor.putString("rol_usuario_shared", rol);
         editor.commit();
     }
     public boolean cargarPreferencias()

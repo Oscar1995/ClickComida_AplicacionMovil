@@ -237,4 +237,5 @@
     <string name="busqueda_avanzada">Busqueda avanzada</string>
     <string name="ingreso_producto_busqueda">Ingrese producto a buscar</string>
     <string name="Resultados_enc">Resultados encontrados:</string>
+    <string name="title_activity_inicio__repartidor">Inicio_Repartidor</string>
 </resources>
