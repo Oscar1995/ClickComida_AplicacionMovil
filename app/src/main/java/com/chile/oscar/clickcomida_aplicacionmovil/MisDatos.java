@@ -49,6 +49,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,7 +80,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
     AlertDialog dialogAlertDatosUsuario, dialogAlertClave, dialogAlertTelefono1, dialogAlertTelefono2, dialogAlertAgregarTelefono, dialogAlertEliminarTelefono, dialogAlertEliminarTelefono2, dialogAlertUpdateDir1, dialogAlertUpdateDir2, dialogAlertUpdateDir3,
             dialogAlertDeleteDir1, dialogAlertDeleteDir2, dialogAlertDeleteDir3, dialogAlertAddDir1, dialogAlertAddDir2, dialogAlertAddDir3;
     EditText editTextClaveActual;
-    Button buttonAgregarTelefonoNuevo, buttonAgregarDireccionNueva;
+    Button buttonAgregarTelefonoNuevo, buttonAgregarDireccionNueva, buttonUsar1, buttonUsar2, buttonUsar3;
     Boolean mapReady;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -105,6 +106,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
         buttonAgregarTelefonoNuevo = (Button)view.findViewById(R.id.btnAgregarNuevoTelefono); //Listo
         buttonAgregarDireccionNueva = (Button)view.findViewById(R.id.btnAgregarNuevaDireccion);
 
+        buttonUsar1 = (Button)view.findViewById(R.id.btnUsarUno);
+        buttonUsar2 = (Button)view.findViewById(R.id.btnUsarDos);
+        buttonUsar3 = (Button)view.findViewById(R.id.btnUsarTres);
+
         linearLayoutTelefono1 = (LinearLayout)view.findViewById(R.id.llTelefono1);
         linearLayoutTelefono2 = (LinearLayout)view.findViewById(R.id.llTelefono2);
         linearLayoutDir1 = (LinearLayout)view.findViewById(R.id.llDireccion1);
@@ -126,6 +131,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
         buttonAgregarTelefonoNuevo.setOnClickListener(this);
         buttonAgregarDireccionNueva.setOnClickListener(this);
+
+        buttonUsar1.setOnClickListener(this);
+        buttonUsar2.setOnClickListener(this);
+        buttonUsar3.setOnClickListener(this);
+
         imageViewMisDatos.setOnClickListener(this);
         imageViewUpdateTel1.setOnClickListener(this);
         imageViewUpdateTel2.setOnClickListener(this);
@@ -161,13 +171,59 @@ public class MisDatos extends Fragment implements View.OnClickListener
         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", jsonObject.toString());
     }
 
-    boolean tel1 = false, tel2 = false;
-
     @Override
     public void onClick(View v)
     {
         switch (v.getId())
         {
+            case R.id.btnUsarUno:
+                try
+                {
+                    JSONObject object = new JSONObject();
+                    object.put("calle", calleDir.get(0));
+                    object.put("numero", numDir.get(0));
+                    object.put("user_id", Coordenadas.id);
+                    tipoReg = "Definir";
+                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/direccionDefecto.php", object.toString());
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+                break;
+            case R.id.btnUsarDos:
+                try
+                {
+                    JSONObject object = new JSONObject();
+                    object.put("calle", calleDir.get(1));
+                    object.put("numero", numDir.get(1));
+                    object.put("user_id", Coordenadas.id);
+                    tipoReg = "Definir";
+                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/direccionDefecto.php", object.toString());
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+                break;
+            case R.id.btnUsarTres:
+                try
+                {
+                    JSONObject object = new JSONObject();
+                    object.put("calle", calleDir.get(2));
+                    object.put("numero", numDir.get(2));
+                    object.put("user_id", Coordenadas.id);
+                    tipoReg = "Definir";
+                    new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/direccionDefecto.php", object.toString());
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+                break;
             case R.id.btnAgregarNuevaDireccion:
                 if (calleDir.size() != 3)
                 {
@@ -1288,9 +1344,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
         {
             try
             {
-                JSONObject jsonResult = new JSONObject(s);
+
                 if (tipoReg.equals("Traer Datos"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     if (jsonResult != null)
                     {
                         int lonTel = 0;
@@ -1376,11 +1433,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 calleTres.setText(getResources().getString(R.string.calle_usuario) + " " + jsonDireccionTres.getString("street"));
                                 numCalleTres.setText(getResources().getString(R.string.calle_numero_usuario) + " " + jsonDireccionTres.getString("number"));
 
-                                calleDir.add(new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
-                                numDir.add(new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
+                                calleDir.add(new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
+                                numDir.add(new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
                             }
                         }
-                        progress.cancel();
+                        progress.dismiss();
 
                     }
                     else
@@ -1390,6 +1447,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar Nombre"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -1400,6 +1458,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Clave"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Resultado");
                     if (res.equals("Correcto"))
                     {
@@ -1415,6 +1474,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Agregar Telefono"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Agregado");
                     if (res.equals("Si"))
                     {
@@ -1426,6 +1486,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar Telefono"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Resultado");
                     if (res.equals("Si"))
                     {
@@ -1436,6 +1497,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar Telefono 2"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Resultado");
                     if (res.equals("Si"))
                     {
@@ -1446,6 +1508,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Eliminar Telefono 1"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
@@ -1456,6 +1519,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Eliminar Telefono 2"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
@@ -1466,6 +1530,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar direccion 1"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -1476,6 +1541,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar direccion 1"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -1486,6 +1552,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar direccion 2"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -1496,6 +1563,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Modificar direccion 3"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Actualizado");
                     if (res.equals("Si"))
                     {
@@ -1506,6 +1574,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Eliminar Direccion 1"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
@@ -1516,6 +1585,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Eliminar Direccion 2"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
@@ -1526,6 +1596,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Eliminar Direccion 3"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
@@ -1536,6 +1607,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Agregar Direccion 1"))
                 {
+                    JSONObject jsonResult = new JSONObject(s);
                     String res = jsonResult.getString("Direccion");
                     if (res.equals("Si"))
                     {
@@ -1547,6 +1619,59 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         Toast.makeText(getContext(), "Algo paso.", Toast.LENGTH_SHORT).show();
                     }
+                }
+                else if (tipoReg.equals("Definir"))
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    int posDef = 0;
+                    for (int i=0; i<jsonArray.length(); i++)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        if (jsonObject.getString("default").equals("1"))
+                        {
+                            posDef = i;
+                        }
+                    }
+                    if (posDef == 0)
+                    {
+                        buttonUsar1.setText("En uso");
+                        buttonUsar2.setText("Usar");
+                        buttonUsar3.setText("Usar");
+
+                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                    }
+                    else if (posDef == 1)
+                    {
+                        buttonUsar1.setText("Usar");
+                        buttonUsar2.setText("En uso");
+                        buttonUsar3.setText("Usar");
+
+                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                    }
+                    else if (posDef == 2)
+                    {
+                        buttonUsar1.setText("Usar");
+                        buttonUsar2.setText("Usar");
+                        buttonUsar3.setText("En uso");
+
+                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                    }
+                    cargar();
                 }
             }
             catch (JSONException e)

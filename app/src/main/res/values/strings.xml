@@ -238,4 +238,6 @@
     <string name="ingreso_producto_busqueda">Ingrese producto a buscar</string>
     <string name="Resultados_enc">Resultados encontrados:</string>
     <string name="title_activity_inicio__repartidor">Inicio_Repartidor</string>
+    <string name="usar_direccion">Usar esta dirección</string>
+    <string name="Usar">Usar</string>
 </resources>

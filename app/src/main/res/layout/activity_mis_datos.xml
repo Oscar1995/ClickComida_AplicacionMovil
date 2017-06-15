@@ -217,6 +217,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -252,6 +253,21 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnUsarUno"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/colorbuttonamarillo"
+                    android:text="@string/Usar" />
+            </LinearLayout>
+
             <ImageView
                 android:id="@+id/ivUpdateDir1"
                 android:layout_width="45dp"
@@ -263,6 +279,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 app:srcCompat="@drawable/delete" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -282,7 +299,7 @@
                 <TextView
                     android:id="@+id/textView89"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="2dp"
                     android:layout_weight="1"
                     android:text="@string/direccion_2"
@@ -292,17 +309,32 @@
                 <TextView
                     android:id="@+id/txtCalle_misdatos_d"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_usuario" />
 
                 <TextView
                     android:id="@+id/txtNumeros_misdatos_d"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_numero_usuario" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnUsarDos"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/colorbuttonamarillo"
+                    android:text="@string/Usar" />
             </LinearLayout>
 
             <ImageView
@@ -356,6 +388,21 @@
                     android:layout_weight="1"
                     android:text="@string/calle_numero_usuario" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnUsarTres"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/colorbuttonamarillo"
+                    android:text="@string/Usar" />
             </LinearLayout>
 
             <ImageView
