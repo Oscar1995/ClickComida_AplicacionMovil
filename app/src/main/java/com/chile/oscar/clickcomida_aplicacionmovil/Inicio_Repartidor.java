@@ -18,8 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class Inicio_Repartidor extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapaInicioRepartidor.OnFragmentInteractionListener
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
+
+public class Inicio_Repartidor extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapaInicioRepartidor.OnFragmentInteractionListener, PedidoPendientesRepartidor.OnFragmentInteractionListener
 {
     String idUsuario;
     @Override
@@ -104,14 +107,20 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        Fragment fragment = null;
+        boolean fragmentoSeleccionado = false;
         if (id == R.id.nav_start)
         {
             // Handle the camera action
         }
         else if (id == R.id.nav_pedidos)
         {
-
+            fragment = new PedidoPendientesRepartidor();
+            Bundle args = new Bundle();
+            args.putString("user_id", idUsuario);
+            fragment.setArguments(args);
+            fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.pedidos_péndientes));
         }
         else if (id == R.id.nav_share)
         {
@@ -128,6 +137,18 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
             Intent intent = new Intent (Inicio_Repartidor.this, Login.class);
             startActivity(intent);
             this.finish();
+        }
+        if (fragmentoSeleccionado == true)
+        {
+            if (new Validadores().isNetDisponible(getApplicationContext()))
+            {
+                getSupportFragmentManager().beginTransaction().replace(R.id.contentRepartidor, fragment).commit();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Debes estar conectado a una red.", Toast.LENGTH_SHORT).show();
+            }
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

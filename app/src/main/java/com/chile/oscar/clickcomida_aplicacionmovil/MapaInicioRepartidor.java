@@ -177,40 +177,46 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         final Timer timer = new Timer();
-        if (mMap != null)
+        if (getActivity() != null)
         {
-
-            timer.scheduleAtFixedRate(new TimerTask()
+            if (mMap != null)
             {
-                @Override
-                public void run()
+
+                timer.scheduleAtFixedRate(new TimerTask()
                 {
-                    try
+                    @Override
+                    public void run()
                     {
-                        Location location = getMyLocation();
-                        if (location != null)
+                        try
                         {
-                            JSONObject object = new JSONObject();
-                            object.put("latitud", location.getLatitude());
-                            object.put("longitud", location.getLongitude());
-                            object.put("id", mParamId);
+                            if (getActivity() != null)
+                            {
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    JSONObject object = new JSONObject();
+                                    object.put("latitud", location.getLatitude());
+                                    object.put("longitud", location.getLongitude());
+                                    object.put("id", mParamId);
 
 
                             /*LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
                             CameraUpdate miUbicacion = CameraUpdateFactory.newLatLng(latLngLocal);
                             mMap.animateCamera(miUbicacion);*/
 
-                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
+                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
+                                }
+                            }
                         }
-                    }
-                    catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
 
-                }
-            }, 0, 5000);
+                    }
+                }, 0, 5000);
 
+            }
         }
     }
     private Location getMyLocation()

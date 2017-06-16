@@ -1,0 +1,52 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.chile.oscar.clickcomida_aplicacionmovil.PedidoPendientesRepartidor">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView60"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCeleste"
+            android:gravity="center"
+            android:text="@string/pedidos_péndientes"
+            android:textColor="@color/textoBlanco"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnActualizar"
+                style="@android:style/Widget.Material.Light.Button.Inset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Actualizar" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/lvPedidosRepartidor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

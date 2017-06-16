@@ -241,4 +241,7 @@
     <string name="usar_direccion">Usar esta dirección</string>
     <string name="Usar">Usar</string>
     <string name="title_activity_mapa_inicio_repartidor">Map</string>
+    <string name="pedidos_péndientes">Pedidos pendientes</string>
+    <string name="Actualizar">Actualizar</string>
+    <string name="Empezar">Empezar</string>
 </resources>
