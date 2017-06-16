@@ -55,7 +55,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
     {
         if (cargarPreferencias())
         {
-            if (uRol.equals("repartidor"))
+            if (uRol.equals("miembro"))
             {
                 i = new Intent(Login.this, Inicio_Usuario.class);
                 i.putExtra("id_user_login", uId);
@@ -64,7 +64,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 startActivity(i);
                 this.finish();
             }
-            /*else if (uRol.equals("repartidor"))
+            else if (uRol.equals("repartidor"))
             {
                 i = new Intent(Login.this, Inicio_Repartidor.class);
                 i.putExtra("id_user_login", uId);
@@ -72,7 +72,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 i.putExtra("nombre_usuario", uNombre);
                 startActivity(i);
                 this.finish();
-            }*/
+            }
         }
 
         super.onCreate(savedInstanceState);

@@ -3,9 +3,11 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,8 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class Inicio_Repartidor extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Inicio_Repartidor extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapaInicioRepartidor.OnFragmentInteractionListener
+{
     String idUsuario;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,12 @@ public class Inicio_Repartidor extends AppCompatActivity
 
         //Este cambia el valor del titulo del navigation_drawer
         getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+
+        Fragment myFrag = new MapaInicioRepartidor();
+        Bundle args = new Bundle();
+        args.putString("ID_USUARIO", idUsuario);
+        myFrag.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.contentRepartidor, myFrag).commit();
     }
 
     @Override
@@ -125,5 +133,10 @@ public class Inicio_Repartidor extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

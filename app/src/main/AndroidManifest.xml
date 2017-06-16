@@ -89,7 +89,7 @@
         <activity
             android:name=".Inicio_Repartidor"
             android:label="@string/title_activity_inicio__repartidor"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

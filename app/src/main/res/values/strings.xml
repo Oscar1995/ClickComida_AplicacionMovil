@@ -240,4 +240,5 @@
     <string name="title_activity_inicio__repartidor">Inicio_Repartidor</string>
     <string name="usar_direccion">Usar esta dirección</string>
     <string name="Usar">Usar</string>
+    <string name="title_activity_mapa_inicio_repartidor">Map</string>
 </resources>

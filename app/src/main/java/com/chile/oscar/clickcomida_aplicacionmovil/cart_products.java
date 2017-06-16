@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Gravity;
@@ -65,6 +66,8 @@ public class cart_products extends Fragment {
     private String mParam2;
 
     String tipoReg = "";
+    String numero = null;
+    String calle = null;
 
     List<Tienda> tiendaList = new ArrayList<>();
     List<Productos_Memory> productosMemoryList = new ArrayList<>();
@@ -168,6 +171,21 @@ public class cart_products extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+    public void cargarDireccion()
+    {
+
+        try
+        {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", Coordenadas.id);
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultarDireccionComprar.php", jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public void onDetach() {
@@ -227,6 +245,7 @@ public class cart_products extends Fragment {
             //Toast.makeText(getContext(), "" + jsonObjectList.toString(), Toast.LENGTH_SHORT).show();
             tipoReg = "Carro";
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductosCarro.php", jsonObjectList.toString());
+            cargarDireccion();
         }
         else
         {
@@ -316,8 +335,19 @@ public class cart_products extends Fragment {
                     Fragment currentFragment = new cart_products();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
                 }
+                else if (tipoReg.equals("Direccion"))
+                {
+                    JSONArray jsonArray = new JSONArray(s);
+                    for (int i=0; i<jsonArray.length(); i++)
+                    {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        calle = object.getString("street");
+                        numero = object.getString("number");
+                    }
+                }
                 else if (tipoReg.equals("Carro"))
                 {
+                    tipoReg = "Direccion";
                     JSONArray jsonArray = new JSONArray(s);
                     int divArray = jsonArray.length() / 3;
                     int cArray = 0;
@@ -612,54 +642,65 @@ public class cart_products extends Fragment {
                                 @Override
                                 public void onClick(final View v)
                                 {
+                                    Boolean aBooleanDir = false;
+                                    if (numero != null && calle != null) aBooleanDir = true;
+
                                     final int total = integerListTotal.get(v.getId());
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                    builder.setTitle("Confirmación de la compra")
-                                            .setMessage("El monto total es de $" + total + " pesos")
-                                            .setPositiveButton("Aceptar",
-                                                    new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which)
-                                                        {
-                                                            JSONObject object = new JSONObject();
-                                                            try
+                                    if (aBooleanDir)
+                                    {
+                                        builder.setTitle("Confirmación de la compra")
+                                                .setMessage("El monto total es de $" + total + " pesos, y tu direccion es " +calle +" #" + numero + ", si es otra direccion para entregar define otra en tus datos.")
+                                                .setPositiveButton("Aceptar",
+                                                        new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which)
                                                             {
-                                                                List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
-                                                                int cantidadTotal = productosMemoryListCacheObject.get(v.getId()).size();
-                                                                object.put("total_price", total);
-                                                                object.put("user_id", Coordenadas.id);
-                                                                object.put("store_id", integerListIdStore.get(v.getId()));
-                                                                object.put("cantidad_total", cantidadTotal);
-
-                                                                for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
+                                                                JSONObject object = new JSONObject();
+                                                                try
                                                                 {
-                                                                    JSONObject objectProductos = new JSONObject();
-                                                                    objectProductos.put("id", productosMemoryListCacheObject.get(v.getId()).get(i).getId());
-                                                                    objectProductos.put("cantidad", productosMemoryListCacheObject.get(v.getId()).get(i).getCantidad());
-                                                                    jsonObjects.add(objectProductos);
-                                                                }
-                                                                object.put("lista", jsonObjects.toString());
-                                                                tipoReg = "Pedido";
-                                                                posTienda = v.getId();
-                                                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ordenarProductos.php", object.toString());
-                                                            }
-                                                            catch (JSONException e)
-                                                            {
-                                                                e.printStackTrace();
-                                                            }
+                                                                    List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
+                                                                    int cantidadTotal = productosMemoryListCacheObject.get(v.getId()).size();
+                                                                    object.put("total_price", total);
+                                                                    object.put("user_id", Coordenadas.id);
+                                                                    object.put("store_id", integerListIdStore.get(v.getId()));
+                                                                    object.put("cantidad_total", cantidadTotal);
 
-                                                        }
-                                                    })
-                                            .setNegativeButton("Cancelar",
-                                                    new DialogInterface.OnClickListener()
-                                                    {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which)
+                                                                    for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
+                                                                    {
+                                                                        JSONObject objectProductos = new JSONObject();
+                                                                        objectProductos.put("id", productosMemoryListCacheObject.get(v.getId()).get(i).getId());
+                                                                        objectProductos.put("cantidad", productosMemoryListCacheObject.get(v.getId()).get(i).getCantidad());
+                                                                        jsonObjects.add(objectProductos);
+                                                                    }
+                                                                    object.put("lista", jsonObjects.toString());
+                                                                    tipoReg = "Pedido";
+                                                                    posTienda = v.getId();
+                                                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ordenarProductos.php", object.toString());
+                                                                }
+                                                                catch (JSONException e)
+                                                                {
+                                                                    e.printStackTrace();
+                                                                }
+
+                                                            }
+                                                        })
+                                                .setNegativeButton("Cancelar",
+                                                        new DialogInterface.OnClickListener()
                                                         {
-                                                            dialog.dismiss();
-                                                        }
-                                                    });
-                                    builder.show();
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which)
+                                                            {
+                                                                dialog.dismiss();
+                                                            }
+                                                        });
+                                        builder.show();
+                                    }
+                                    else
+                                    {
+                                        Snackbar.make(getView(), "Aun no tienes una direccion definida, anda a tus datos y selecciona una por defecto", Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null).show();
+                                    }
                                 }
                             });
 
@@ -667,7 +708,7 @@ public class cart_products extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                                 {
-                                    List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
+                                    //List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
                                     posGlobalDelete = position;
                                 }
                             });

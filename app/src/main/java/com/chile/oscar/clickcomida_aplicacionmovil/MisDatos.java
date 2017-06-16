@@ -169,6 +169,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
         }
         tipoReg = "Traer Datos";
         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", jsonObject.toString());
+        cargarDefecto();
+    }
+    public void cargarDefecto()
+    {
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", id);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarBotones.php", jsonObject.toString());
     }
 
     @Override
@@ -438,78 +452,72 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ivDeleteTel1:
-                AlertDialog.Builder builderDelete = new AlertDialog.Builder(getContext());
-                View pDelTel1 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                builderDelete.setView(pDelTel1);
-                dialogAlertEliminarTelefono = builderDelete.create();
-                dialogAlertEliminarTelefono.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Eliminar")
+                        .setMessage("¿Seguro que deseas eliminar este telefono?")
+                        .setPositiveButton("Aceptar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
+                                            tipoReg = "Eliminar Telefono 1";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
 
-                Button buttonEliminarTelefono1 = (Button) pDelTel1.findViewById(R.id.btnEliminar_d_f);
-                Button buttonCerrarEliminarTel1 = (Button) pDelTel1.findViewById(R.id.btnCancelar_d_f);
-
-                buttonEliminarTelefono1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        JSONObject object = new JSONObject();
-                        try
-                        {
-                            object.put("Id", id);
-                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
-                            tipoReg = "Eliminar Telefono 1";
-                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
-
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                buttonCerrarEliminarTel1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertEliminarTelefono.dismiss();
-                    }
-                });
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancelar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                    }
+                                });
+                builder.show();
                 break;
             case R.id.ivDeleteTel2:
-                AlertDialog.Builder builderDelete2 = new AlertDialog.Builder(getContext());
-                View pDelTel2 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                builderDelete2.setView(pDelTel2);
-                dialogAlertEliminarTelefono2 = builderDelete2.create();
-                dialogAlertEliminarTelefono2.show();
+                AlertDialog.Builder builderDelTel = new AlertDialog.Builder(getActivity());
+                builderDelTel.setTitle("Eliminar")
+                        .setMessage("¿Seguro que deseas eliminar este telefono?")
+                        .setPositiveButton("Aceptar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
+                                            tipoReg = "Eliminar Telefono 2";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
 
-                Button buttonEliminarTelefono2 = (Button) pDelTel2.findViewById(R.id.btnEliminar_d_f);
-                Button buttonCerrarEliminarTel2 = (Button) pDelTel2.findViewById(R.id.btnCancelar_d_f);
-
-                buttonEliminarTelefono2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        JSONObject object = new JSONObject();
-                        try
-                        {
-                            object.put("Id", id);
-                            object.put("Telefono", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
-                            tipoReg = "Eliminar Telefono 2";
-                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
-
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                buttonCerrarEliminarTel2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertEliminarTelefono2.dismiss();
-                    }
-                });
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancelar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                    }
+                                });
+                builderDelTel.show();
                 break;
 
             case R.id.ivActualizarDatos:
@@ -1437,6 +1445,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 numDir.add(new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
                             }
                         }
+                        tipoReg = "Botones";
                         progress.dismiss();
 
                     }
@@ -1512,7 +1521,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
-                        dialogAlertEliminarTelefono.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Telefono eliminado", Toast.LENGTH_SHORT).show();
                     }
@@ -1523,7 +1531,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
-                        dialogAlertEliminarTelefono2.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Telefono eliminado", Toast.LENGTH_SHORT).show();
                     }
@@ -1622,6 +1629,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Definir"))
                 {
+                    Boolean enUso = false;
                     JSONArray jsonArray = new JSONArray(s);
                     int posDef = 0;
                     for (int i=0; i<jsonArray.length(); i++)
@@ -1630,48 +1638,111 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         if (jsonObject.getString("default").equals("1"))
                         {
                             posDef = i;
+                            enUso = true;
                         }
                     }
-                    if (posDef == 0)
+                    if (enUso)
                     {
-                        buttonUsar1.setText("En uso");
-                        buttonUsar2.setText("Usar");
-                        buttonUsar3.setText("Usar");
+                        if (posDef == 0)
+                        {
+                            buttonUsar1.setText("En uso");
+                            buttonUsar2.setText("Usar");
+                            buttonUsar3.setText("Usar");
 
-                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
-                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
-                    }
-                    else if (posDef == 1)
-                    {
-                        buttonUsar1.setText("Usar");
-                        buttonUsar2.setText("En uso");
-                        buttonUsar3.setText("Usar");
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
+                        else if (posDef == 1)
+                        {
+                            buttonUsar1.setText("Usar");
+                            buttonUsar2.setText("En uso");
+                            buttonUsar3.setText("Usar");
 
-                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
-                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
-                    }
-                    else if (posDef == 2)
-                    {
-                        buttonUsar1.setText("Usar");
-                        buttonUsar2.setText("Usar");
-                        buttonUsar3.setText("En uso");
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
+                        else if (posDef == 2)
+                        {
+                            buttonUsar1.setText("Usar");
+                            buttonUsar2.setText("Usar");
+                            buttonUsar3.setText("En uso");
 
-                        buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
-                        buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
-                        buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
-                        buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
                     }
+
                     cargar();
+                }
+                else if (tipoReg.equals("Botones"))
+                {
+                    Boolean enUso = false;
+                    JSONArray jsonArray = new JSONArray(s);
+                    int posDef = 0;
+                    for (int i=0; i<jsonArray.length(); i++)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        if (jsonObject.getString("default").equals("1"))
+                        {
+                            posDef = i;
+                            enUso = true;
+                        }
+                    }
+                    if (enUso)
+                    {
+                        if (posDef == 0)
+                        {
+                            buttonUsar1.setText("En uso");
+                            buttonUsar2.setText("Usar");
+                            buttonUsar3.setText("Usar");
+
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
+                        else if (posDef == 1)
+                        {
+                            buttonUsar1.setText("Usar");
+                            buttonUsar2.setText("En uso");
+                            buttonUsar3.setText("Usar");
+
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
+                        else if (posDef == 2)
+                        {
+                            buttonUsar1.setText("Usar");
+                            buttonUsar2.setText("Usar");
+                            buttonUsar3.setText("En uso");
+
+                            buttonUsar1.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar1.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar2.setBackground(getResources().getDrawable(R.drawable.colorbuttonamarillo));
+                            buttonUsar2.setTextColor(getResources().getColor(R.color.textoBlanco));
+                            buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                            buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
+                        }
+                    }
+
                 }
             }
             catch (JSONException e)

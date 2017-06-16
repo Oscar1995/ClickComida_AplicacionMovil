@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -233,7 +235,6 @@ public class Tracking extends Fragment {
                             @Override
                             public void run()
                             {
-
                                 try
                                 {
                                     JSONObject object = new JSONObject();
@@ -255,22 +256,14 @@ public class Tracking extends Fragment {
                         googleMap.getUiSettings().setZoomControlsEnabled(true);
                         if (googleMap != null)
                         {
-                            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                                @Override
-                                public void onMyLocationChange(Location location)
-                                {
-                                    //Toast.makeText(getContext(), "Latitud: " + location.getLatitude() + "Longitude: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-                                    //mMap.animateCamera(miUbicacion);
-                                    if (!swPos[0])
-                                    {
-                                        googleMap.animateCamera(miUbicacion);
-                                    }
-                                    swPos[0] = true;
+                            Location location = getMyLocation();
+                            if (location != null)
+                            {
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                                googleMap.animateCamera(miUbicacion);
+                            }
 
-                                }
-                            });
                         }
 
                     }
@@ -288,6 +281,20 @@ public class Tracking extends Fragment {
         });
 
         return v;
+    }
+    private Location getMyLocation()
+    {
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (myLocation == null) {
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            String provider = lm.getBestProvider(criteria, true);
+            myLocation = lm.getLastKnownLocation(provider);
+        }
+        return myLocation;
     }
 
     /*@Override
