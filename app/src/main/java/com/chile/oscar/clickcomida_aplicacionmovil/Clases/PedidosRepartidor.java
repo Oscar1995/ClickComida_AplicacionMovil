@@ -6,6 +6,15 @@ package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
 public class PedidosRepartidor
 {
+    public int getIdOrden() {
+        return idOrden;
+    }
+
+    public void setIdOrden(int idOrden) {
+        this.idOrden = idOrden;
+    }
+
+    int idOrden;
     String pCalle;
 
     public String getpCalle() {

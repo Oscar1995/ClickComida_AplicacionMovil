@@ -204,6 +204,11 @@ public class Inicio_Usuario extends AppCompatActivity
             editor.clear();
             editor.commit();
 
+            SharedPreferences sharedpreferencesCarro =  getSharedPreferences("carro", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editorCarro = sharedpreferencesCarro.edit();
+            editorCarro.clear();
+            editorCarro.commit();
+
             Intent intent = new Intent (Inicio_Usuario.this, Login.class);
             startActivity(intent);
             this.finish();

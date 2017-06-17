@@ -1,11 +1,16 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +56,8 @@ public class PedidoPendientesRepartidor extends Fragment
 
     // TODO: Rename and change types of parameters
     private String mParamId;
-    Button buttonEmpezar;
-
+    ProgressDialog progress;
+    String tipoReg = "";
     ListView listViewPedidos;
     List<PedidosRepartidor> pedidosRepartidorList;
 
@@ -118,6 +123,12 @@ public class PedidoPendientesRepartidor extends Fragment
     {
         try
         {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando pedidos pendientes...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
+            tipoReg = "Pedidos";
             JSONObject object = new JSONObject();
             object.put("id", mParamId);
             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidosFijosRepartidor.php", object.toString());
@@ -167,43 +178,117 @@ public class PedidoPendientesRepartidor extends Fragment
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_lista_repartidor, null);
             TextView textViewCalle = (TextView)convertView.findViewById(R.id.tvCalle);
-            TextView textViewNumero = (TextView)convertView.findViewById(R.id.tvNumero);
             TextView textViewUsuario = (TextView)convertView.findViewById(R.id.tvUsuario);
             TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFecha);
 
-            textViewCalle.setText(pedidosRepartidorList.get(position).getpCalle().toString());
-            textViewNumero.setText(pedidosRepartidorList.get(position).getpNumero().toString());
-            textViewUsuario.setText(pedidosRepartidorList.get(position).getuNombre().toString() + " " + pedidosRepartidorList.get(position).getuApellido().toString());
+            textViewCalle.setText(Html.fromHtml("<b>Calle:</b> " + pedidosRepartidorList.get(position).getpCalle().toString() + " #" + pedidosRepartidorList.get(position).getpNumero().toString()));
+            textViewUsuario.setText(Html.fromHtml("<b>Nombre cliente:</b> " + pedidosRepartidorList.get(position).getuNombre().toString() + " " + pedidosRepartidorList.get(position).getuApellido().toString()));
             textViewFecha.setText(pedidosRepartidorList.get(position).getFecha_Pedido().toString());
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            LinearLayout linearLayoutBoton = (LinearLayout) convertView.findViewById(R.id.llBoton);
-            Button buttonEmpezar = new Button(getContext());
+            Button buttonComenzar = (Button)convertView.findViewById(R.id.btnComenzar);
+            Button buttonEntregar = (Button)convertView.findViewById(R.id.btnEntregar);
+
+            buttonComenzar.setId(position);
+            buttonEntregar.setId(position);
+            buttonComenzar.setText("Comenzar");
+            buttonEntregar.setText("Entregar");
+
             if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Recepcionado"))
             {
-                buttonEmpezar.setText("Empezar");
-                buttonEmpezar.setTextColor(getResources().getColor(R.color.textoBlanco));
-                buttonEmpezar.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
+                buttonComenzar.setEnabled(true);
+                buttonEntregar.setTextColor(Color.LTGRAY);
+                buttonEntregar.setEnabled(false);
             }
             else if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Repartiendo"))
             {
-                buttonEmpezar.setText("Entregar");
-                buttonEmpezar.setTextColor(getResources().getColor(R.color.textoBlanco));
-                buttonEmpezar.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                buttonComenzar.setEnabled(false);
+                buttonEntregar.setTextColor(Color.RED);
+                buttonEntregar.setEnabled(true);
             }
 
-            buttonEmpezar.setLayoutParams(params);
-            buttonEmpezar.setId(position);
-            linearLayoutBoton.addView(buttonEmpezar);
-
-            buttonEmpezar.setOnClickListener(new View.OnClickListener() {
+            buttonComenzar.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    Toast.makeText(getContext(), "id: " +v.getId(), Toast.LENGTH_SHORT).show();
+                public void onClick(final View v)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                    builder.setTitle("Comenzar")
+                            .setMessage("¿Comenzar a repartir al cliente " + pedidosRepartidorList.get(v.getId()).getuNombre().toString() + " " + pedidosRepartidorList.get(v.getId()).getuApellido().toString())
+                            .setPositiveButton("Aceptar",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+
+                                            try
+                                            {
+                                                JSONObject jsonObject = new JSONObject();
+                                                jsonObject.put("estado", "2");
+                                                jsonObject.put("order_id", pedidosRepartidorList.get(v.getId()).getIdOrden());
+                                                tipoReg = "Comenzar";
+                                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarEstadoPedido.php", jsonObject.toString());
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                    })
+                            .setNegativeButton("Mas tarde",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builder.show();
+
+                }
+
+            });
+            buttonEntregar.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(final View v)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                    builder.setTitle("Entregar")
+                            .setMessage("¿Entregar el pedido al cliente " + pedidosRepartidorList.get(v.getId()).getuNombre().toString() + " " + pedidosRepartidorList.get(v.getId()).getuApellido().toString())
+                            .setPositiveButton("Si",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            try
+                                            {
+                                                JSONObject jsonObject = new JSONObject();
+                                                jsonObject.put("estado", "3");
+                                                jsonObject.put("order_id", pedidosRepartidorList.get(v.getId()).getIdOrden());
+                                                tipoReg = "Terminar";
+                                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarEstadoPedido.php", jsonObject.toString());
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    })
+                            .setNegativeButton("No",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builder.show();
                 }
             });
-
-
             return convertView;
         }
     }
@@ -283,30 +368,52 @@ public class PedidoPendientesRepartidor extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
-            if (!s.equals("[]"))
+            if (tipoReg.equals("Pedidos"))
             {
-                try
+                if (!s.equals("[]"))
                 {
-                    pedidosRepartidorList = new ArrayList<>();
-                    JSONArray jsonArray = new JSONArray(s);
-                    for (int i=0; i<jsonArray.length(); i++)
+                    try
                     {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        PedidosRepartidor pedidosRepartidor = new PedidosRepartidor();
-                        pedidosRepartidor.setpCalle(jsonObject.getString("street"));
-                        pedidosRepartidor.setpNumero(jsonObject.getString("number"));
-                        pedidosRepartidor.setuNombre(jsonObject.getString("name"));
-                        pedidosRepartidor.setuApellido(jsonObject.getString("lastname"));
-                        pedidosRepartidor.setEstado_Descripcion(jsonObject.getString("description"));
-                        pedidosRepartidor.setFecha_Pedido(jsonObject.getString("date"));
-                        pedidosRepartidorList.add(pedidosRepartidor);
+                        pedidosRepartidorList = new ArrayList<>();
+                        JSONArray jsonArray = new JSONArray(s);
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            PedidosRepartidor pedidosRepartidor = new PedidosRepartidor();
+                            pedidosRepartidor.setIdOrden(jsonObject.getInt("id"));
+                            pedidosRepartidor.setpCalle(jsonObject.getString("street"));
+                            pedidosRepartidor.setpNumero(jsonObject.getString("number"));
+                            pedidosRepartidor.setuNombre(jsonObject.getString("name"));
+                            pedidosRepartidor.setuApellido(jsonObject.getString("lastname"));
+                            pedidosRepartidor.setEstado_Descripcion(jsonObject.getString("description"));
+                            pedidosRepartidor.setFecha_Pedido(jsonObject.getString("date"));
+                            pedidosRepartidorList.add(pedidosRepartidor);
+                        }
+                        listViewPedidos.setAdapter(new CustomPedidos());
+                        progress.dismiss();
                     }
-                    listViewPedidos.setAdapter(new CustomPedidos());
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
-                catch (JSONException e)
+                else
                 {
-                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Aun no se te han asignado pedidos por repartir", Toast.LENGTH_LONG).show();
+                    progress.dismiss();
                 }
+            }
+            else if (tipoReg.equals("Comenzar"))
+            {
+                Toast.makeText(getContext(), "Has comenzado a repartir...", Toast.LENGTH_SHORT).show();
+                tipoReg = "Pedidos";
+                cargarPedidos();
+            }
+            else if (tipoReg.equals("Terminar"))
+            {
+                Toast.makeText(getContext(), "Has terminado el pedido.", Toast.LENGTH_SHORT).show();
+                tipoReg = "Pedidos";
+                cargarPedidos();
             }
         }
     }

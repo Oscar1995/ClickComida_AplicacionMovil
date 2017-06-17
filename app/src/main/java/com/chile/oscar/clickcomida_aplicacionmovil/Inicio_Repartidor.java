@@ -111,7 +111,9 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
         boolean fragmentoSeleccionado = false;
         if (id == R.id.nav_start)
         {
-            // Handle the camera action
+            fragment = new MapaInicioRepartidor();
+            fragmentoSeleccionado = true;
+            getSupportActionBar().setTitle(getResources().getString(R.string.Inicio));
         }
         else if (id == R.id.nav_pedidos)
         {
@@ -157,7 +159,8 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onFragmentInteraction(Uri uri)
+    {
 
     }
 }

@@ -1683,7 +1683,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
                         }
                     }
-
                     cargar();
                 }
                 else if (tipoReg.equals("Botones"))

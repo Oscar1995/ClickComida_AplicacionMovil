@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -20,14 +22,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapaRepartidorCoordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +47,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +71,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
     // TODO: Rename and change types of parameters
     private String mParamId;
     private GoogleMap mMap;
+    List<MapaRepartidorCoordenadas> mapaRepartidorCoordenadasList;
     View view;
 
     private OnFragmentInteractionListener mListener;
@@ -310,7 +320,42 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String s)
         {
+            if (!s.equals("[]"))
+            {
+                try
+                {
+                    mapaRepartidorCoordenadasList = new ArrayList<>();
+                    JSONArray jsonArray = new JSONArray(s);
+                    for (int i=0; i<jsonArray.length(); i++)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
 
+                        MapaRepartidorCoordenadas mapaRepartidorCoordenadas = new MapaRepartidorCoordenadas();
+                        mapaRepartidorCoordenadas.setOrden_id(jsonObject.getInt("id"));
+                        mapaRepartidorCoordenadas.setcCalle(jsonObject.getString("street"));
+                        mapaRepartidorCoordenadas.setcNumero(jsonObject.getString("number"));
+                        mapaRepartidorCoordenadas.setdLatitude(jsonObject.getDouble("latitude"));
+                        mapaRepartidorCoordenadas.setdLongitud(jsonObject.getDouble("longitude"));
+                        mapaRepartidorCoordenadas.setuName(jsonObject.getString("name"));
+                        mapaRepartidorCoordenadas.setuApellido(jsonObject.getString("lastname"));
+                        mapaRepartidorCoordenadasList.add(mapaRepartidorCoordenadas);
+                    }
+                    if (mMap != null)
+                    {
+                        mMap.clear();
+                    }
+                    for (int i=0; i<mapaRepartidorCoordenadasList.size(); i++)
+                    {
+                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
+                        LatLng latLngLocal = new LatLng(mapaRepartidorCoordenadasList.get(i).getdLatitude(), mapaRepartidorCoordenadasList.get(i).getdLongitud());
+                        mMap.addMarker(new MarkerOptions().position(latLngLocal).snippet(mapaRepartidorCoordenadasList.get(i).getcCalle() + " #" + mapaRepartidorCoordenadasList.get(i).getcNumero()).title(mapaRepartidorCoordenadasList.get(i).getuName() + " " + mapaRepartidorCoordenadasList.get(i).getuApellido())).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
+                    }
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

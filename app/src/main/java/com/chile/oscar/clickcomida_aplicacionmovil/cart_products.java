@@ -665,6 +665,8 @@ public class cart_products extends Fragment {
                                                                     object.put("user_id", Coordenadas.id);
                                                                     object.put("store_id", integerListIdStore.get(v.getId()));
                                                                     object.put("cantidad_total", cantidadTotal);
+                                                                    object.put("calle", calle);
+                                                                    object.put("numero", numero);
 
                                                                     for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
                                                                     {

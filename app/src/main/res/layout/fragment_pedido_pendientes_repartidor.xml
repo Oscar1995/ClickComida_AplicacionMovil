@@ -30,7 +30,7 @@
 
             <Button
                 android:id="@+id/btnActualizar"
-                style="@android:style/Widget.Material.Light.Button.Inset"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/Actualizar" />

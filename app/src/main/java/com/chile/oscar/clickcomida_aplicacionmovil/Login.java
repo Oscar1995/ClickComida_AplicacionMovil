@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.facebook.CallbackManager;
@@ -365,6 +366,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         uCorreo = sharedpreferences.getString("correo_usuario_shared", "");
         uNombre = sharedpreferences.getString("nombre_usuario_shared", "");
         uRol = sharedpreferences.getString("rol_usuario_shared", "");
+        Coordenadas.id = uId;
 
         if(uId.isEmpty() && uCorreo.isEmpty() && uNombre.isEmpty())
         {
