@@ -59,7 +59,7 @@ public class PedidoPendientesRepartidor extends Fragment
     ProgressDialog progress;
     String tipoReg = "";
     ListView listViewPedidos;
-    List<PedidosRepartidor> pedidosRepartidorList;
+    List<PedidosRepartidor> pedidosRepartidorList = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -374,7 +374,10 @@ public class PedidoPendientesRepartidor extends Fragment
                 {
                     try
                     {
-                        pedidosRepartidorList = new ArrayList<>();
+                        if (!pedidosRepartidorList.isEmpty())
+                        {
+                            pedidosRepartidorList.clear();
+                        }
                         JSONArray jsonArray = new JSONArray(s);
                         for (int i=0; i<jsonArray.length(); i++)
                         {

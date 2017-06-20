@@ -650,7 +650,7 @@ public class cart_products extends Fragment {
                                     if (aBooleanDir)
                                     {
                                         builder.setTitle("Confirmación de la compra")
-                                                .setMessage("El monto total es de $" + total + " pesos, y tu direccion es " +calle +" #" + numero + ", si es otra direccion para entregar define otra en tus datos.")
+                                                .setMessage("El monto total es de $" + total + " pesos, y tu direccion es " + calle +" #" + numero + ", si esta es tu direccion pincha en ACEPTAR de lo contrario CANCELAR.")
                                                 .setPositiveButton("Aceptar",
                                                         new DialogInterface.OnClickListener() {
                                                             @Override

@@ -2,12 +2,14 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -44,6 +46,8 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
 {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_PICTURE = 2;
+    private final static int REQUEST_ACCESS_CAMERA = 123;
+    private final static int WRITE_EXTERNAL_STORAGE = 124;
 
     String imagenGeneral = "";
 
@@ -262,7 +266,64 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         {
             case R.id.ibImagenPrincipal:
                 //dispatchTakePictureIntent();
-                AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                final CharSequence[] items = new CharSequence[3];
+
+                items[0] = "Camara";
+                items[1] = "Galeria";
+                items[2] = "Cancelar";
+
+                builder.setTitle("Elije una opción")
+                        .setItems(items, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                if (items[which].equals("Camara"))
+                                {
+                                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                        {
+                                            //Aqui pregunta primero cuando los permidos no estan activados
+                                            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Päsa aqui cuando los permisos estan activados
+                                        dispatchTakePictureIntent();
+                                    }
+                                }
+                                else if (items[which].equals("Galeria"))
+                                {
+                                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                        {
+                                            //Aqui pregunta primero cuando los permidos no estan activados
+                                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Päsa aqui cuando los permisos estan activados
+                                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        intent.setType("image/*");
+                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                    }
+                                }
+                                else if (items[which].equals("Cancelar"))
+                                {
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+                builder.show();
+
+                /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                 View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
                 builderChange.setView(p);
 
@@ -279,8 +340,20 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                     {
                         if (position == 0)
                         {
+                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                {
+                                    Toast.makeText(getContext(), "0", Toast.LENGTH_SHORT).show();
+                                    dispatchTakePictureIntent();
+                                }
+                                else
+                                {
+                                    Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
+                                    requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                }
+                            }
                             dialogAlert.dismiss();
-                            dispatchTakePictureIntent();
                         }
                         else if(position == 1)
                         {
@@ -294,10 +367,51 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                             dialogAlert.dismiss();
                         }
                     }
-                });
+                });*/
                 break;
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_ACCESS_CAMERA:
+                {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    dispatchTakePictureIntent();
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            case WRITE_EXTERNAL_STORAGE:
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
     class CustomAdapter extends BaseAdapter
     {
 

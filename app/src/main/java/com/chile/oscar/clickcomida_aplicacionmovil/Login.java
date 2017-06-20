@@ -3,13 +3,16 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class Login extends AppCompatActivity implements View.OnClickListener
+public class Login extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener
 {
     String uId, uCorreo, uNombre, uRol;
     Button btnIniciar, btnRegistro, btnOlvidado;
@@ -84,6 +87,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         btnOlvidado = (Button)findViewById(R.id.btnClaveOlvidada);
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
+
+        txtCorreo.setOnFocusChangeListener(this);
 
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
@@ -133,6 +138,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener
         {
             case R.id.btnIniciarSesion:
 
+                txtCorreo.setText(txtCorreo.getText().toString().replace(" ", ""));
                 int nCaracterCorreo = txtCorreo.getText().toString().length();
                 int nCaracterClave = txtClave.getText().toString().length();
 
@@ -203,8 +209,21 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                         }
                         else
                         {
-                            Toast.makeText(getApplicationContext(), "Debes estar conectado a una red para iniciar sesión.", Toast.LENGTH_SHORT).show();
                             progress.dismiss();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat));
+
+                            builder.setTitle("No hay conexión a internet")
+                                    .setMessage("Debes conectarte a una red.")
+                                    .setPositiveButton("Aceptar",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which)
+                                                {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+
+                            builder.show();
                         }
                     }
                 }
@@ -241,6 +260,22 @@ public class Login extends AppCompatActivity implements View.OnClickListener
 
         }
     }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus)
+    {
+        switch (v.getId())
+        {
+            case R.id.etCorreoLogin:
+                if (hasFocus == false)
+                {
+                    txtCorreo.setText(txtCorreo.getText().toString().replace(" ", ""));
+                }
+
+                break;
+        }
+    }
+
     public class VerificarCorreoClave extends AsyncTask<String, Void, String>
     {
         @Override
@@ -332,13 +367,37 @@ public class Login extends AppCompatActivity implements View.OnClickListener
                 {
                     if (itsEmail)
                     {
-                        Toast.makeText(getApplicationContext(), "El correo y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
                         progress.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat));
+                        builder.setTitle("Usuario no identificado")
+                                .setMessage("El correo electronico y/o contraseña son incorrectos.")
+                                .setPositiveButton("Aceptar",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                        builder.show();
+
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), "El nickname y/o contraseña son incorrectos.", Toast.LENGTH_SHORT).show();
                         progress.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat));
+                        builder.setTitle("Usuario no identificado")
+                                .setMessage("El nickname y/o contraseña son incorrectos.")
+                                .setPositiveButton("Aceptar",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                        builder.show();
                     }
                 }
             }

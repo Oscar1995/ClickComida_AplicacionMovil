@@ -16,7 +16,11 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.InflateException;
@@ -40,6 +44,7 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
@@ -67,6 +72,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ToLongBiFunction;
 
 public class MisDatos extends Fragment implements View.OnClickListener
 {
@@ -86,6 +92,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.activity_mis_datos, container, false);
+
+        /*ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //for crate home button
+        //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        //((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);*/
+
+
 
         eNombre = (TextView) view.findViewById(R.id.txtNombre_misdatos);
         eApellido = (TextView) view.findViewById(R.id.txtApellido_misdatos);

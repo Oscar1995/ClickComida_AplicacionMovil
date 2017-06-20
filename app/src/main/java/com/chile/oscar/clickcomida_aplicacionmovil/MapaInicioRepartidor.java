@@ -72,6 +72,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
     private String mParamId;
     private GoogleMap mMap;
     List<MapaRepartidorCoordenadas> mapaRepartidorCoordenadasList;
+
     View view;
 
     private OnFragmentInteractionListener mListener;
@@ -324,7 +325,14 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
             {
                 try
                 {
-                    mapaRepartidorCoordenadasList = new ArrayList<>();
+                    if (mapaRepartidorCoordenadasList == null) //Comprueba si el objeto es creado
+                    {
+                        mapaRepartidorCoordenadasList = new ArrayList<>();
+                    }
+                    if (mapaRepartidorCoordenadasList.isEmpty() == false)
+                    {
+                        mapaRepartidorCoordenadasList.clear();
+                    }
                     JSONArray jsonArray = new JSONArray(s);
                     for (int i=0; i<jsonArray.length(); i++)
                     {

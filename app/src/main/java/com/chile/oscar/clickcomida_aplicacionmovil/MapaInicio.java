@@ -161,7 +161,8 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap)
+    {
         googlemapsGlobal = googleMap;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -173,16 +174,6 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
             {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE);
             }
-        }
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
         }
         googlemapsGlobal.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -271,7 +262,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         return;
                     }
                     googlemapsGlobal.setMyLocationEnabled(true);
-                    //Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
 
                 }
                 else
