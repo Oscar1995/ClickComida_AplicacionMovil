@@ -2,6 +2,7 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,12 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +36,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -50,6 +57,8 @@ public class BusquedaAvanzada extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList;
+    List<Bitmap> bitmapList;
 
     TextView textViewResultados;
     EditText editTextCampo;
@@ -172,6 +181,30 @@ public class BusquedaAvanzada extends Fragment {
         super.onDetach();
         mListener = null;
     }
+    class customAdvanced extends BaseAdapter
+    {
+
+        @Override
+        public int getCount() {
+            return bitmapList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -238,12 +271,32 @@ public class BusquedaAvanzada extends Fragment {
         {
             if (!s.equals("[]"))
             {
+                busquedaAvanzadaProductosList = new ArrayList<>();
+                bitmapList = new ArrayList<>();
                 try
                 {
                     JSONArray jsonArray = new JSONArray(s);
+                    int nMitad = jsonArray.length() / 2;
+                    int vLocal = 0;
                     for (int i=0; i<jsonArray.length(); i++)
                     {
                         JSONObject object = jsonArray.getJSONObject(i);
+                        if (i >= nMitad)
+                        {
+                            bitmapList.add(Codificacion.decodeBase64(object.getString("photo_" + vLocal)));
+                            vLocal++;
+                        }
+                        else
+                        {
+                            BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
+                            busquedaAvanzadaProductos.setIdProd(object.getInt("id"));
+                            busquedaAvanzadaProductos.setIdStore(object.getInt("" + i));
+                            busquedaAvanzadaProductos.setNameProd(object.getString("name"));
+                            busquedaAvanzadaProductos.setNameStore(object.getString("" + i));
+                            busquedaAvanzadaProductos.setDesProd(object.getString("description"));
+                            busquedaAvanzadaProductos.setpProd(object.getInt("price"));
+                            busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
+                        }
 
                         /*[{"id":"18","0":"21","name":"Compu","1":"Luz","2":"18","3":"Compu","description":"lala","4":"lala","price":"250","5":"250"}]
 
