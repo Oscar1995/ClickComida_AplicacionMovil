@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapaRepartidorCoordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
@@ -188,46 +189,44 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         final Timer timer = new Timer();
-        if (getActivity() != null)
+        if (mMap != null)
         {
-            if (mMap != null)
-            {
 
-                timer.scheduleAtFixedRate(new TimerTask()
+            timer.scheduleAtFixedRate(new TimerTask()
+            {
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
+                    try
                     {
-                        try
+                        if (getActivity() != null)
                         {
-                            if (getActivity() != null)
+                            Location location = getMyLocation();
+                            if (location != null)
                             {
-                                Location location = getMyLocation();
-                                if (location != null)
-                                {
-                                    JSONObject object = new JSONObject();
-                                    object.put("latitud", location.getLatitude());
-                                    object.put("longitud", location.getLongitude());
-                                    object.put("id", mParamId);
+                                JSONObject object = new JSONObject();
+                                object.put("latitud", location.getLatitude());
+                                object.put("longitud", location.getLongitude());
+                                object.put("id", Coordenadas.id);
+                                Log.d("Respuesta", "Enviado");
 
 
                             /*LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
                             CameraUpdate miUbicacion = CameraUpdateFactory.newLatLng(latLngLocal);
                             mMap.animateCamera(miUbicacion);*/
 
-                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
-                                }
+                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
                             }
                         }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
                     }
-                }, 0, 5000);
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
 
-            }
+                }
+            }, 0, 5000);
+
         }
     }
     private Location getMyLocation()
@@ -325,14 +324,15 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
             {
                 try
                 {
-                    if (mapaRepartidorCoordenadasList == null) //Comprueba si el objeto es creado
+                    /*if (mapaRepartidorCoordenadasList == null) //Comprueba si el objeto es creado
                     {
                         mapaRepartidorCoordenadasList = new ArrayList<>();
                     }
                     if (mapaRepartidorCoordenadasList.isEmpty() == false)
                     {
                         mapaRepartidorCoordenadasList.clear();
-                    }
+                    }*/
+                    mapaRepartidorCoordenadasList = new ArrayList<>();
                     JSONArray jsonArray = new JSONArray(s);
                     for (int i=0; i<jsonArray.length(); i++)
                     {

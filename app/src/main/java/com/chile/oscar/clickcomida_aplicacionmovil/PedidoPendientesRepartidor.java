@@ -14,6 +14,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -59,7 +60,7 @@ public class PedidoPendientesRepartidor extends Fragment
     ProgressDialog progress;
     String tipoReg = "";
     ListView listViewPedidos;
-    List<PedidosRepartidor> pedidosRepartidorList = new ArrayList<>();
+    List<PedidosRepartidor> pedidosRepartidorList;
 
     private OnFragmentInteractionListener mListener;
 
@@ -193,13 +194,13 @@ public class PedidoPendientesRepartidor extends Fragment
             buttonComenzar.setText("Comenzar");
             buttonEntregar.setText("Entregar");
 
-            if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Recepcionado"))
+            if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("En Preparación"))
             {
                 buttonComenzar.setEnabled(true);
                 buttonEntregar.setTextColor(Color.LTGRAY);
                 buttonEntregar.setEnabled(false);
             }
-            else if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Repartiendo"))
+            else if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("En Reparto"))
             {
                 buttonComenzar.setEnabled(false);
                 buttonEntregar.setTextColor(Color.RED);
@@ -372,12 +373,9 @@ public class PedidoPendientesRepartidor extends Fragment
             {
                 if (!s.equals("[]"))
                 {
+                    pedidosRepartidorList = new ArrayList<>();
                     try
                     {
-                        if (!pedidosRepartidorList.isEmpty())
-                        {
-                            pedidosRepartidorList.clear();
-                        }
                         JSONArray jsonArray = new JSONArray(s);
                         for (int i=0; i<jsonArray.length(); i++)
                         {
@@ -402,20 +400,30 @@ public class PedidoPendientesRepartidor extends Fragment
                 }
                 else
                 {
+                    if (pedidosRepartidorList != null)
+                    {
+                        if (!pedidosRepartidorList.isEmpty())
+                        {
+                            pedidosRepartidorList.clear();
+                        }
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, pedidosRepartidorList);
+                        listViewPedidos.setAdapter(arrayAdapter);
+                    }
+
                     Toast.makeText(getContext(), "Aun no se te han asignado pedidos por repartir", Toast.LENGTH_LONG).show();
                     progress.dismiss();
                 }
             }
             else if (tipoReg.equals("Comenzar"))
             {
+                pedidosRepartidorList.clear();
                 Toast.makeText(getContext(), "Has comenzado a repartir...", Toast.LENGTH_SHORT).show();
-                tipoReg = "Pedidos";
                 cargarPedidos();
             }
             else if (tipoReg.equals("Terminar"))
             {
+                pedidosRepartidorList.clear();
                 Toast.makeText(getContext(), "Has terminado el pedido.", Toast.LENGTH_SHORT).show();
-                tipoReg = "Pedidos";
                 cargarPedidos();
             }
         }

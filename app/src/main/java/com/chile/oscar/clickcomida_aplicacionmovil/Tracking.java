@@ -251,7 +251,7 @@ public class Tracking extends Fragment {
                                 }
 
                             }
-                        }, 0, 60000);
+                        }, 0, 5000);
                         googleMap.setMyLocationEnabled(true);
                         googleMap.getUiSettings().setZoomControlsEnabled(true);
                         if (googleMap != null)
@@ -260,8 +260,8 @@ public class Tracking extends Fragment {
                             if (location != null)
                             {
                                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-                                googleMap.animateCamera(miUbicacion);
+                                //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                                //googleMap.animateCamera(miUbicacion);
                             }
 
                         }
@@ -487,7 +487,16 @@ public class Tracking extends Fragment {
                         }
                         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_moto_marker);
                         latLngLocal = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
+                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
                         googleMapGlobal.addMarker(new MarkerOptions().position(latLngLocal).title("Repartidor")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
+                        googleMapGlobal.animateCamera(miUbicacion);
+                    }
+                    else
+                    {
+                        if (googleMapGlobal != null)
+                        {
+                            googleMapGlobal.clear();
+                        }
                     }
                 }
 
