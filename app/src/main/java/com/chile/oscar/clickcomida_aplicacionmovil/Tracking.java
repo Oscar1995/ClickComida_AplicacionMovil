@@ -91,6 +91,7 @@ public class Tracking extends Fragment {
     String tipoLoad = "";
     View pMap;
     AlertDialog mapUpdate;
+    Boolean sonidoRep =false;
     SupportMapFragment map;
     Boolean viewCreated = false;
 
@@ -99,7 +100,8 @@ public class Tracking extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Tracking() {
+    public Tracking()
+    {
         // Required empty public constructor
     }
 
@@ -490,6 +492,26 @@ public class Tracking extends Fragment {
                         CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
                         googleMapGlobal.addMarker(new MarkerOptions().position(latLngLocal).title("Repartidor")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
                         googleMapGlobal.animateCamera(miUbicacion);
+
+                        Location locationMe = getMyLocation();
+                        if (locationMe != null && latLngLocal != null)
+                        {
+                            LatLng latLng = new LatLng(locationMe.getLatitude(), locationMe.getLongitude());
+
+                            Integer MetrosDistancia = new MetodosCreados().CalculationByDistance(latLng, latLngLocal);
+                            if (MetrosDistancia == 0)
+                            {
+                                if (sonidoRep == false)
+                                {
+                                    new MetodosCreados().MostrarNotificacion(getContext(), getResources());
+                                    sonidoRep = true;
+                                }
+
+                            }
+                            Log.d("Distancia: " , MetrosDistancia + " metros.");
+                        }
+
+
                     }
                     else
                     {

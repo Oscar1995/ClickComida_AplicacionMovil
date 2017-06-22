@@ -1,12 +1,16 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +26,7 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,8 +62,8 @@ public class BusquedaAvanzada extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList;
-    List<Bitmap> bitmapList;
+    List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
+    List<Bitmap> bitmapList = new ArrayList<>();
 
     TextView textViewResultados;
     EditText editTextCampo;
@@ -66,6 +71,7 @@ public class BusquedaAvanzada extends Fragment {
     Spinner spinnerFiltro;
     GridView gridViewProductos;
     int posFiltro;
+    ProgressDialog progress;
 
     private OnFragmentInteractionListener mListener;
 
@@ -73,26 +79,26 @@ public class BusquedaAvanzada extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BusquedaAvanzada.
-     */
+
     // TODO: Rename and change types and number of parameters
-    public static BusquedaAvanzada newInstance(String param1, String param2) {
-        BusquedaAvanzada fragment = new BusquedaAvanzada();
+    public static Details_products newInstance(Bitmap bitmapProd, String nomTienda, int store_id, int product_id, String nomProd, String desProd, int precioProd)
+    {
+        Details_products fragment = new Details_products();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("imagen_prod", Codificacion.encodeToBase64(bitmapProd, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nomTienda);
+        args.putString("store_id", store_id + "");
+        args.putString("product_id", product_id + "");
+        args.putString("nombre_prod", nomProd);
+        args.putString("des_prod", desProd);
+        args.putString("precio_prod", precioProd + "");
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -106,12 +112,13 @@ public class BusquedaAvanzada extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_busqueda_avanzada, container, false);
 
-        final String[] nomFiltros = {"Nombre", "Menor Precio", "Mayor Precio"};
+        final String[] nomFiltros = {"Nombre", "Menor precio", "Mayor precio"};
         editTextCampo = (EditText)v.findViewById(R.id.etProducto);
         imageViewLupa = (ImageView)v.findViewById(R.id.ivLupa);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
         textViewResultados = (TextView)v.findViewById(R.id.tvResultados);
         gridViewProductos = (GridView)v.findViewById(R.id.gvProductosSearch);
+        textViewResultados.setVisibility(View.GONE);
 
         imageViewLupa.setOnClickListener(new View.OnClickListener()
         {
@@ -122,6 +129,11 @@ public class BusquedaAvanzada extends Fragment {
                 {
                     if (!editTextCampo.getText().toString().isEmpty())
                     {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Buscando producto con el termino \"" + editTextCampo.getText().toString() + "\"");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
                         JSONObject object = new JSONObject();
                         object.put("producto", editTextCampo.getText().toString());
                         object.put("tipo", nomFiltros[posFiltro]);
@@ -153,6 +165,17 @@ public class BusquedaAvanzada extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+        gridViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
+                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                trans.addToBackStack(null);
+                trans.commit();
             }
         });
         return v;
@@ -200,8 +223,21 @@ public class BusquedaAvanzada extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_busqueda_avanzada, null);
+
+            ImageView imageViewProducto = (ImageView)convertView.findViewById(R.id.ivProducto);
+            TextView textViewProducto = (TextView)convertView.findViewById(R.id.tvNombreProd);
+            TextView textViewTienda = (TextView)convertView.findViewById(R.id.tvNombreTienda);
+            TextView textViewPrecio = (TextView)convertView.findViewById(R.id.tvPrecio);
+
+            imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
+            textViewProducto.setText(busquedaAvanzadaProductosList.get(position).getNameProd().toString());
+            textViewTienda.setText(busquedaAvanzadaProductosList.get(position).getNameStore().toString());
+            textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
+
+            return convertView;
         }
     }
 
@@ -271,8 +307,11 @@ public class BusquedaAvanzada extends Fragment {
         {
             if (!s.equals("[]"))
             {
-                busquedaAvanzadaProductosList = new ArrayList<>();
-                bitmapList = new ArrayList<>();
+                if (!busquedaAvanzadaProductosList.isEmpty())
+                {
+                    busquedaAvanzadaProductosList.clear();
+                    bitmapList.clear();
+                }
                 try
                 {
                     JSONArray jsonArray = new JSONArray(s);
@@ -290,9 +329,9 @@ public class BusquedaAvanzada extends Fragment {
                         {
                             BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
                             busquedaAvanzadaProductos.setIdProd(object.getInt("id"));
-                            busquedaAvanzadaProductos.setIdStore(object.getInt("" + i));
+                            busquedaAvanzadaProductos.setIdStore(object.getInt("" + 0));
                             busquedaAvanzadaProductos.setNameProd(object.getString("name"));
-                            busquedaAvanzadaProductos.setNameStore(object.getString("" + i));
+                            busquedaAvanzadaProductos.setNameStore(object.getString("" + 1));
                             busquedaAvanzadaProductos.setDesProd(object.getString("description"));
                             busquedaAvanzadaProductos.setpProd(object.getInt("price"));
                             busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
@@ -307,6 +346,10 @@ public class BusquedaAvanzada extends Fragment {
                         desProd = "description"
                         precioProd = "price"*/
                     }
+                    textViewResultados.setVisibility(View.VISIBLE);
+                    textViewResultados.setText(Html.fromHtml("<b>Resultados encontrados:</b> " + (vLocal + 1)));
+                    gridViewProductos.setAdapter(new customAdvanced());
+                    progress.dismiss();
                 }
                 catch (JSONException e)
                 {
@@ -315,6 +358,7 @@ public class BusquedaAvanzada extends Fragment {
             }
             else
             {
+                progress.dismiss();
                 Toast.makeText(getContext(), "No se ha encontrado resultado con el nombre "+ editTextCampo.getText().toString(), Toast.LENGTH_SHORT).show();
             }
         }

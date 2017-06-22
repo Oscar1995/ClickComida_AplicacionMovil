@@ -1,20 +1,28 @@
 package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.util.Calendar;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,9 +31,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by Oscar on 18-05-2017.
@@ -139,5 +150,51 @@ public class MetodosCreados
 
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(iconName, width, height, false);
         return resizedBitmap;
+    }
+    public void MostrarNotificacion(Context context, Resources resources)
+    {
+
+
+        Intent miNotificacion = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.cl"));
+        PendingIntent pending = PendingIntent.getActivity(context, 0, miNotificacion, 0);
+
+        //Constriccion de la notificacion
+        NotificationCompat.Builder constructor = new NotificationCompat.Builder(context);
+        constructor.setSmallIcon(R.mipmap.ic_launcher);
+        constructor.setContentIntent(pending);
+        constructor.setAutoCancel(true);
+        constructor.setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher));
+        constructor.setContentTitle("El repartidor ya esta cerca");
+        constructor.setContentText("Ver su posición");
+        constructor.setSubText("Toca aqui para mas detalles");
+
+        //Enviar la notificacion
+        NotificationManager AdminNotificacion = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        AdminNotificacion.notify(1, constructor.build());
+
+        MediaPlayer player = MediaPlayer.create(context, R.raw.motorep);
+        player.start();
+    }
+    public int CalculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius=6371;//radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLon = Math.toRadians(lon2-lon1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult= Radius*c;
+        double km=valueResult/1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec =  Integer.valueOf(newFormat.format(km));
+        double meter=valueResult%1000;
+        int  meterInDec= Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value",""+valueResult+"   KM  "+kmInDec+" Meter   "+meterInDec);
+
+        return meterInDec;
     }
 }
