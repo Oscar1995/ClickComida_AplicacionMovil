@@ -28,8 +28,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Nombre de la tienda"
-                android:textColor="@color/colorNegro"
-                android:textStyle="bold" />
+                android:textColor="@color/colorNegro" />
 
             <TextView
                 android:id="@+id/tvCalle"

@@ -27,7 +27,7 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 public class Inicio_Usuario extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener, Tracking.OnFragmentInteractionListener, BusquedaAvanzada.OnFragmentInteractionListener, WorkFragment.OnFragmentInteractionListener
+        implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener, Tracking.OnFragmentInteractionListener, BusquedaAvanzada.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
@@ -197,9 +197,11 @@ public class Inicio_Usuario extends AppCompatActivity
         }
         else if (id == R.id.nav_work)
         {
-            fragment = new WorkFragment();
+            /*fragment = new WorkFragment();
             fragmentoSeleccionado = true;
-            getSupportActionBar().setTitle(getResources().getString(R.string.buscar_trabajo));
+            getSupportActionBar().setTitle(getResources().getString(R.string.buscar_trabajo));*/
+            Intent intent = new Intent(Inicio_Usuario.this, WorksActivity.class);
+            startActivity(intent);
         }
         else if (id == R.id.nav_send)
         {

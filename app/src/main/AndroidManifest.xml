@@ -96,6 +96,11 @@
             android:name=".Inicio_Repartidor"
             android:label="@string/title_activity_inicio__repartidor"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".WorksActivity"
+            android:label="@string/title_activity_works"
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".Inicio_Usuario"></activity>
     </application>
 
 </manifest>

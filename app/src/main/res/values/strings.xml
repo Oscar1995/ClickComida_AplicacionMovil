@@ -250,4 +250,5 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_work">WorkActivity</string>
     <string name="ver_requisitos">Ver requisitos</string>
+    <string name="title_activity_works">Busqueda de trabajo</string>
 </resources>
