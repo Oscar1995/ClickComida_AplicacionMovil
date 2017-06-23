@@ -245,4 +245,9 @@
     <string name="Actualizar">Actualizar</string>
     <string name="Empezar">Empezar</string>
     <string name="Inicio">Inicio</string>
+    <string name="buscar_trabajo">Buscar trabajo</string>
+    <string name="title_activity_tab_work">TabWorkActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_work">WorkActivity</string>
+    <string name="ver_requisitos">Ver requisitos</string>
 </resources>

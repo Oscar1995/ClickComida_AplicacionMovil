@@ -36,15 +36,15 @@
             android:title="Seguimiento" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Otros">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_work"
+                android:icon="@drawable/icon_work"
+                android:title="Buscar trabajo" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/icon_w"
                 android:title="@string/cerrar_sesion" />
         </menu>
     </item>
