@@ -41,5 +41,6 @@
         android:layout_marginRight="80dp"
         android:background="@drawable/colorbuttonred"
         android:text="@string/titulo_fijar_posicion"
-        android:textColor="@color/textoBlanco" />
+        android:textColor="@color/textoBlanco"
+        android:visibility="gone" />
 </RelativeLayout>

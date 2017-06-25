@@ -99,8 +99,7 @@
         <activity
             android:name=".WorksActivity"
             android:label="@string/title_activity_works"
-            android:theme="@style/AppTheme"
-            android:parentActivityName=".Inicio_Usuario"></activity>
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

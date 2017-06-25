@@ -1,13 +1,39 @@
 package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by Oscar on 22-06-2017.
  */
 
 public class TiendaNotices
 {
-    String nomTienda, calleTienda, numTienda, fechaPublicacion, noticeRequerimiento;
+    String nomTienda;
+    String calleTienda;
+    String numTienda;
+    String fechaPublicacion;
+    String noticeRequerimiento;
+    String user_id;
     int noticeVacant;
+
+    public LatLng getLatLngStore() {
+        return latLngStore;
+    }
+
+    public void setLatLngStore(LatLng latLngStore) {
+        this.latLngStore = latLngStore;
+    }
+
+    LatLng latLngStore;
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
 
     public String getNomTienda() {
         return nomTienda;

@@ -1,5 +1,6 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,11 +25,18 @@ public class WorksActivity extends AppCompatActivity {
 
     private SectionsPageAdapter sectionPageAdapter;
     private ViewPager viewPager;
+
+    public WorksActivity()
+    {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_works);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         sectionPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         viewPager = (ViewPager)findViewById(R.id.container);

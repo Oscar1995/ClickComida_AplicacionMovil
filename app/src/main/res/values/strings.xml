@@ -251,4 +251,6 @@
     <string name="title_activity_work">WorkActivity</string>
     <string name="ver_requisitos">Ver requisitos</string>
     <string name="title_activity_works">Busqueda de trabajo</string>
+    <string name="boton_mapa">Ver en el mapa</string>
+    <string name="ver_mapa">Ver en el mapa</string>
 </resources>

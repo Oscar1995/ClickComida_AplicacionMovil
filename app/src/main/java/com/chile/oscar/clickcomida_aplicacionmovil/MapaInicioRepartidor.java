@@ -225,7 +225,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                     }
 
                 }
-            }, 0, 5000);
+            }, 0, 2000);
 
         }
     }
