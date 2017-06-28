@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.icu.util.Calendar;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +42,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -81,6 +85,10 @@ public class StoreFragmentSelected extends Fragment {
     int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
     String[] desc = {"Tomar foto", "Ir a galeria", "Cancelar"};
     ImageView imageViewTienda;
+    GoogleMap googleMapGlobal;
+    View vMod;
+    AlertDialog mapUpdate;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -204,9 +212,22 @@ public class StoreFragmentSelected extends Fragment {
         });
         buttonModificarDatos.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+
                 final AlertDialog.Builder builderMod = new AlertDialog.Builder(getContext());
-                View vMod = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_tienda, null);
+                if (googleMapGlobal != null)
+                {
+                    googleMapGlobal.clear();
+                }
+                if (vMod == null)
+                {
+                    vMod = getActivity().getLayoutInflater().inflate(R.layout.modificar_datos_tienda, null);
+                }
+                if (vMod.getParent() != null)
+                {
+                    ((ViewGroup)vMod.getParent()).removeView(vMod);
+                }
                 final EditText editTextNombreTienda = (EditText) vMod.findViewById(R.id.etTiendaMod);
                 final EditText editTextDesTienda = (EditText) vMod.findViewById(R.id.etDesMod);
                 final EditText editTextCalle = (EditText) vMod.findViewById(R.id.etCalleMod);
@@ -222,6 +243,8 @@ public class StoreFragmentSelected extends Fragment {
                 //MapView mapViewTienda = (MapView)vMod.findViewById(R.id.mpTienda);
                 Button buttonModTienda = (Button) vMod.findViewById(R.id.btnModTienda);
 
+
+
                 SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mpTienda);
 
                 linearLayoutUno.setVisibility(View.GONE);
@@ -232,7 +255,8 @@ public class StoreFragmentSelected extends Fragment {
                 editTextCalle.setText(calle);
                 editTextNum.setText(numero);
 
-                if (lunch_hour == "null" && lunch_after_hour == "null") {
+                if (lunch_hour == "null" && lunch_after_hour == "null")
+                {
                     linearLayoutUno.setVisibility(View.VISIBLE);
                     textViewTituloUno.setText(getResources().getString(R.string.horario_continuado));
                     textViewHora1.setText(new MetodosCreados().HoraNormal(open_hour));
@@ -250,8 +274,9 @@ public class StoreFragmentSelected extends Fragment {
                 map.getMapAsync(new OnMapReadyCallback()
                 {
                     @Override
-                    public void onMapReady(GoogleMap googleMap)
+                    public void onMapReady(final GoogleMap googleMap)
                     {
+                        googleMapGlobal = googleMap;
                         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             // TODO: Consider calling
                             //    ActivityCompat#requestPermissions
@@ -265,6 +290,30 @@ public class StoreFragmentSelected extends Fragment {
                         googleMap.setMyLocationEnabled(true);
                         googleMap.getUiSettings().setZoomControlsEnabled(true);
                         googleMap.getUiSettings().setMapToolbarEnabled(false);
+                        Location location = getMyLocation();
+                        if (location != null)
+                        {
+                            LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                            CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                            googleMap.animateCamera(miUbicacion);
+                        }
+
+                        googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                            @Override
+                            public void onCameraMove()
+                            {
+                                if (googleMap != null)
+                                {
+                                    googleMap.clear();
+                                }
+                                LatLng latlngLocal = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                googleMap.addMarker(new MarkerOptions().position(latlngLocal).title(nombre));
+
+                                Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                            }
+                        });
+
                         LatLng latLng = new LatLng(Float.parseFloat(latitud), Float.parseFloat(longitud));
                         googleMap.addMarker(new MarkerOptions().position(latLng).title(nombre));
 
@@ -335,7 +384,7 @@ public class StoreFragmentSelected extends Fragment {
 
 
                 builderMod.setView(vMod);
-                final AlertDialog mapUpdate = builderMod.create();
+                mapUpdate = builderMod.create();
                 mapUpdate.show();
             }
         });
@@ -358,6 +407,20 @@ public class StoreFragmentSelected extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+    private Location getMyLocation()
+    {
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (myLocation == null) {
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            String provider = lm.getBestProvider(criteria, true);
+            myLocation = lm.getLastKnownLocation(provider);
+        }
+        return myLocation;
     }
 
     @Override
@@ -556,6 +619,7 @@ public class StoreFragmentSelected extends Fragment {
                     if (res.equals("Si"))
                     {
                         Toast.makeText(getContext(), "Los datos han sido modificados.", Toast.LENGTH_SHORT).show();
+                        mapUpdate.dismiss();
                     }
                 }
                 catch (JSONException e)

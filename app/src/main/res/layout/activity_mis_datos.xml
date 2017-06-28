@@ -215,7 +215,7 @@
         <LinearLayout
             android:id="@+id/llDireccion1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
@@ -232,7 +232,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
-                    android:layout_weight="1"
                     android:text="@string/direccion_1"
                     android:textColor="@color/colorNegro"
                     android:textStyle="bold" />
@@ -240,14 +239,14 @@
                 <TextView
                     android:id="@+id/txtCalle_misdatos"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_usuario" />
 
                 <TextView
                     android:id="@+id/txtNumeroCalle_misdatos"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_numero_usuario" />
 
@@ -255,7 +254,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -263,21 +262,22 @@
                     android:id="@+id/btnUsarUno"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="@drawable/colorbuttonamarillo"
                     android:text="@string/Usar" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/ivUpdateDir1"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:srcCompat="@drawable/update" />
 
             <ImageView
                 android:id="@+id/ivDeleteDir1"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:srcCompat="@drawable/delete" />
 
         </LinearLayout>
@@ -324,7 +324,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -332,21 +332,21 @@
                     android:id="@+id/btnUsarDos"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@drawable/colorbuttonamarillo"
                     android:text="@string/Usar" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/ivUpdateDir2"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:srcCompat="@drawable/update" />
 
             <ImageView
                 android:id="@+id/ivDeleteDir2"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:srcCompat="@drawable/delete" />
         </LinearLayout>
 
@@ -367,7 +367,7 @@
                 <TextView
                     android:id="@+id/textView89"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="2dp"
                     android:layout_weight="1"
                     android:text="@string/direccion_3"
@@ -377,14 +377,14 @@
                 <TextView
                     android:id="@+id/txtCallemisdatos_t"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_usuario" />
 
                 <TextView
                     android:id="@+id/txtNumeromisdatos_t"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/calle_numero_usuario" />
 
@@ -392,7 +392,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -400,15 +400,15 @@
                     android:id="@+id/btnUsarTres"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@drawable/colorbuttonamarillo"
                     android:text="@string/Usar" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/ivUpdateDir3"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:srcCompat="@drawable/update" />
 
             <ImageView

@@ -8,12 +8,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -21,6 +27,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.InflateException;
@@ -45,13 +52,18 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -83,11 +95,16 @@ public class MisDatos extends Fragment implements View.OnClickListener
     LinearLayout linearLayoutTelefono1, linearLayoutTelefono2, linearLayoutDir1, linearLayoutDir2, linearLayoutDir3;
     ImageView imageViewMisDatos, imageViewUpdateTel1, imageViewUpdateTel2, imageViewUpdateDir1, imageViewUpdateDir2, imageViewUpdateDir3, imageViewDeleteTel1, imageViewDeleteTel2, imageViewDeteleDir1, imageViewDeleteDir2, imageViewDeleteDir3;
     List<String> calleDir, numDir , vTelefonos;
+    List<LatLng> latLngsDirs = new ArrayList<>();
     AlertDialog dialogAlertDatosUsuario, dialogAlertClave, dialogAlertTelefono1, dialogAlertTelefono2, dialogAlertAgregarTelefono, dialogAlertEliminarTelefono, dialogAlertEliminarTelefono2, dialogAlertUpdateDir1, dialogAlertUpdateDir2, dialogAlertUpdateDir3,
             dialogAlertDeleteDir1, dialogAlertDeleteDir2, dialogAlertDeleteDir3, dialogAlertAddDir1, dialogAlertAddDir2, dialogAlertAddDir3;
     EditText editTextClaveActual;
     Button buttonAgregarTelefonoNuevo, buttonAgregarDireccionNueva, buttonUsar1, buttonUsar2, buttonUsar3;
     Boolean mapReady;
+    View pMap;
+    GoogleMap googleMapGlobal;
+    ProgressDialog progress;
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -183,6 +200,10 @@ public class MisDatos extends Fragment implements View.OnClickListener
             e.printStackTrace();
         }
         tipoReg = "Traer Datos";
+        progress = new ProgressDialog(getContext());
+        progress.setMessage("Cargando datos...");
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();
         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/datos_usuario.php", jsonObject.toString());
         cargarDefecto();
     }
@@ -337,9 +358,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         @Override
                         public void onClick(View v)
                         {
+                            if (googleMapGlobal != null)
+                            {
+                                googleMapGlobal.clear();
+                            }
+                            if (pMap == null)
+                            {
+                                pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                            }
+                            if (pMap.getParent() != null)
+                            {
+                                ((ViewGroup)pMap.getParent()).removeView(pMap);
+                            }
                             Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                            View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
 
                             final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
@@ -347,9 +379,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             builderMapa.setView(pMap);
                             final AlertDialog mapUpdate = builderMapa.create();
                             mapUpdate.show();
+                            botonTomarCoor.setVisibility(View.VISIBLE);
+                            final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
-
-                            map.getMapAsync(new OnMapReadyCallback() {
+                            map.getMapAsync(new OnMapReadyCallback()
+                            {
                                 @Override
                                 public void onMapReady(final GoogleMap googleMap)
                                 {
@@ -363,26 +397,52 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                         // for ActivityCompat#requestPermissions for more details.
                                         return;
                                     }
+                                    googleMapGlobal = googleMap;
                                     googleMap.setMyLocationEnabled(true);
-                                    googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                                    LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                    googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+
+                                    Location location = getMyLocation();
+                                    if (location != null)
+                                    {
+                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                        googleMap.animateCamera(miUbicacion);
+                                    }
+
+                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
                                         @Override
-                                        public void onMapClick(LatLng latLng)
+                                        public void onCameraMove()
                                         {
-                                            googleMap.clear();
-                                            //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                            googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                            Coordenadas.latitud = latLng.latitude;
-                                            Coordenadas.longitud = latLng.longitude;
+                                            if (googleMap != null)
+                                            {
+                                                googleMap.clear();
+                                            }
+                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+
+                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
                                             mapReady = true;
                                         }
                                     });
+
+                                    /*googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                                        @Override
+                                        public void onMapClick(LatLng latLng)
+                                        {
+                                            //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
+                                            googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+
+                                        }
+                                    });*/
                                 }
                             });
                             botonTomarCoor.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v)
                                 {
-                                    getFragmentManager().beginTransaction().remove(map).commit();
                                     mapUpdate.dismiss();
                                 }
                             });
@@ -701,6 +761,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 dialogAlertTelefono1.show();
 
                 final EditText editTextTelefono = (EditText)pTelefono.findViewById(R.id.etNuevoTelefonp_us);
+                editTextTelefono.setText(new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
                 Button buttonModTel = (Button)pTelefono.findViewById(R.id.btnModificarTelefono_us);
                 Button buttonCerrar = (Button)pTelefono.findViewById(R.id.btnCerrarTelefono_us);
 
@@ -754,6 +815,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 dialogAlertTelefono2.show();
 
                 final EditText editTextTelefono2 = (EditText)pTelefono2.findViewById(R.id.etNuevoTelefonp_us);
+                editTextTelefono2.setText(new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
                 Button buttonModTel2 = (Button)pTelefono2.findViewById(R.id.btnModificarTelefono_us);
                 Button buttonCerrar2 = (Button)pTelefono2.findViewById(R.id.btnCerrarTelefono_us);
 
@@ -810,6 +872,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 final EditText editTextCalle1 = (EditText)pDir1.findViewById(R.id.eNuevaCalle);
                 final EditText editTextNumero1 = (EditText)pDir1.findViewById(R.id.eNuevoNumeroCalle);
 
+                editTextCalle1.setText(calleDir.get(0));
+                editTextNumero1.setText(numDir.get(0));
+
                 Button buttonAbrirMapa1 = (Button)pDir1.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar1 = (Button)pDir1.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrar1 = (Button)pDir1.findViewById(R.id.btnCerrarDireccion_us);
@@ -817,13 +882,25 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 mapReady = false;
 
 
-                buttonAbrirMapa1.setOnClickListener(new View.OnClickListener() {
+                buttonAbrirMapa1.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
                     public void onClick(View v)
                     {
+                        if (googleMapGlobal != null)
+                        {
+                            googleMapGlobal.clear();
+                        }
+                        if (pMap == null)
+                        {
+                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                        }
+                        if (pMap.getParent() != null)
+                        {
+                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                        }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                        View pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
 
                         final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
@@ -831,12 +908,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         builderMapa.setView(pMap);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
+                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
 
                         map.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(final GoogleMap googleMap)
                             {
+                                googleMapGlobal = googleMap;
+
                                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                     // TODO: Consider calling
                                     //    ActivityCompat#requestPermissions
@@ -848,18 +928,37 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     return;
                                 }
                                 googleMap.setMyLocationEnabled(true);
-                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                    @Override
-                                    public void onMapClick(LatLng latLng)
+
+                                LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+                                if (calleDir.size() >= 3)
+                                {
+
+                                    Location location = getMyLocation();
+                                    if (location != null)
                                     {
-                                        googleMap.clear();
-                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                        Coordenadas.latitud = latLng.latitude;
-                                        Coordenadas.longitud = latLng.longitude;
-                                        mapReady = true;
+                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                        googleMap.animateCamera(miUbicacion);
                                     }
-                                });
+
+                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                        @Override
+                                        public void onCameraMove()
+                                        {
+                                            if (googleMap != null)
+                                            {
+                                                googleMap.clear();
+                                            }
+                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+
+                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                            mapReady = true;
+                                        }
+                                    });
+                                }
                             }
                         });
                         botonTomarCoor.setOnClickListener(new View.OnClickListener() {
@@ -937,6 +1036,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 final EditText editTextCalle2 = (EditText)pDir2.findViewById(R.id.eNuevaCalle);
                 final EditText editTextNumero2 = (EditText)pDir2.findViewById(R.id.eNuevoNumeroCalle);
 
+                editTextCalle2.setText(calleDir.get(1));
+                editTextNumero2.setText(numDir.get(1));
+
                 Button buttonAbrirMapa2 = (Button)pDir2.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar2 = (Button)pDir2.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrarUp2 = (Button)pDir2.findViewById(R.id.btnCerrarDireccion_us);
@@ -948,17 +1050,28 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     @Override
                     public void onClick(View v)
                     {
+                        if (googleMapGlobal != null)
+                        {
+                            googleMapGlobal.clear();
+                        }
+                        if (pMap == null)
+                        {
+                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                        }
+                        if (pMap.getParent() != null)
+                        {
+                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                        }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                        View pMap2 = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
 
                         final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
-                        Button botonTomarCoor = (Button) pMap2.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap2);
+                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
-
 
                         map2.getMapAsync(new OnMapReadyCallback() {
                             @Override
@@ -975,20 +1088,40 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     return;
                                 }
                                 googleMap.setMyLocationEnabled(true);
-                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                    @Override
-                                    public void onMapClick(LatLng latLng)
+                                LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+                                if (calleDir.size() >= 3)
+                                {
+
+                                    Location location = getMyLocation();
+                                    if (location != null)
                                     {
-                                        googleMap.clear();
-                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                        Coordenadas.latitud = latLng.latitude;
-                                        Coordenadas.longitud = latLng.longitude;
-                                        mapReady = true;
+                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                        googleMap.animateCamera(miUbicacion);
                                     }
-                                });
+
+                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                        @Override
+                                        public void onCameraMove()
+                                        {
+                                            if (googleMap != null)
+                                            {
+                                                googleMap.clear();
+                                            }
+                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+
+                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                            mapReady = true;
+                                        }
+                                    });
+
+                                }
                             }
                         });
+
                         botonTomarCoor.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v)
@@ -1062,6 +1195,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 final EditText editTextCalle3 = (EditText)pDir3.findViewById(R.id.eNuevaCalle);
                 final EditText editTextNumero3 = (EditText)pDir3.findViewById(R.id.eNuevoNumeroCalle);
 
+                editTextCalle3.setText(calleDir.get(2));
+                editTextNumero3.setText(numDir.get(2));
+
                 Button buttonAbrirMapa3 = (Button)pDir3.findViewById(R.id.btnAbrirMapa);
                 Button buttonModificar3 = (Button)pDir3.findViewById(R.id.btnModificarDireccion_us);
                 Button buttonCerrarUp3 = (Button)pDir3.findViewById(R.id.btnCerrarDireccion_us);
@@ -1073,14 +1209,26 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     @Override
                     public void onClick(View v)
                     {
+                        if (googleMapGlobal != null)
+                        {
+                            googleMapGlobal.clear();
+                        }
+                        if (pMap == null)
+                        {
+                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                        }
+                        if (pMap.getParent() != null)
+                        {
+                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                        }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                        View pMap2 = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
 
                         final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
-                        Button botonTomarCoor = (Button) pMap2.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap2);
+                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        builderMapa.setView(pMap);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
 
@@ -1100,18 +1248,37 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     return;
                                 }
                                 googleMap.setMyLocationEnabled(true);
-                                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                                    @Override
-                                    public void onMapClick(LatLng latLng)
+                                LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+                                if (calleDir.size() >= 3)
+                                {
+
+                                    Location location = getMyLocation();
+                                    if (location != null)
                                     {
-                                        googleMap.clear();
-                                        //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                                        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
-                                        Coordenadas.latitud = latLng.latitude;
-                                        Coordenadas.longitud = latLng.longitude;
-                                        mapReady = true;
+                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                        googleMap.animateCamera(miUbicacion);
                                     }
-                                });
+
+                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                        @Override
+                                        public void onCameraMove()
+                                        {
+                                            if (googleMap != null)
+                                            {
+                                                googleMap.clear();
+                                            }
+                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+
+                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                            mapReady = true;
+                                        }
+                                    });
+
+                                }
                             }
                         });
                         botonTomarCoor.setOnClickListener(new View.OnClickListener() {
@@ -1302,6 +1469,20 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 break;
         }
     }
+    private Location getMyLocation()
+    {
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (myLocation == null) {
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            String provider = lm.getBestProvider(criteria, true);
+            myLocation = lm.getLastKnownLocation(provider);
+        }
+        return myLocation;
+    }
 
 
     public class EjecutarConsulta extends AsyncTask<String, Void, String> //Enviar id
@@ -1382,7 +1563,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         linearLayoutDir2.setVisibility(View.GONE);
                         linearLayoutDir3.setVisibility(View.GONE);
 
-                        eNombre.setText(getResources().getString(R.string.usuario_nombre) + " " + jsonResult.getString("Nombre"));
+                        eNombre.setText(Html.fromHtml("<b>" + getResources().getString(R.string.usuario_nombre) + "</b>") + " " + jsonResult.getString("Nombre"));
                         eApellido.setText(getResources().getString(R.string.usuario_apellido) + " " + jsonResult.getString("Apellido"));
                         eNickname.setText(getResources().getString(R.string.usuario_nickname) + " " + jsonResult.getString("Nickname"));
                         eCorreo.setText(getResources().getString(R.string.correo_usuario) + " " + jsonResult.getString("Email"));
@@ -1697,6 +1878,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
                             buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
                         }
+                        progress.dismiss();
+                    }
+                    else
+                    {
+                        progress.dismiss();
                     }
                     cargar();
                 }
@@ -1755,6 +1941,11 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             buttonUsar3.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
                             buttonUsar3.setTextColor(getResources().getColor(R.color.textoBlanco));
                         }
+                        progress.dismiss();
+                    }
+                    else
+                    {
+                        progress.dismiss();
                     }
 
                 }

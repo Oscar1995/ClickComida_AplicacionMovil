@@ -76,6 +76,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
     List<String> desProd = new ArrayList<>();
     List<String> precioProd = new ArrayList<>();
     List<String> photosProd = new ArrayList<>();
+
     Bitmap imageBitmap;
     String tipo = "";
     ImageButton buttonPhotoProduct;

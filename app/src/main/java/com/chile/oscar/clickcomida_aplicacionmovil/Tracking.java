@@ -487,7 +487,7 @@ public class Tracking extends Fragment {
                         {
                             googleMapGlobal.clear();
                         }
-                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_moto_marker);
+                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
                         latLngLocal = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
                         CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
                         googleMapGlobal.addMarker(new MarkerOptions().position(latLngLocal).title("Repartidor")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));

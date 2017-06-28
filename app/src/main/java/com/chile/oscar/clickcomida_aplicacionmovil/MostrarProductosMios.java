@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -68,6 +69,7 @@ public class MostrarProductosMios extends Fragment
     ArrayList<String> priceProducts = new ArrayList<>();
     ImageButton buttonPhotoProduct;
     AlertDialog dialogMod;
+    Boolean fotoCambiada = false;
 
     int posProd, positionGlobal;
     GridView gvProductos;
@@ -144,6 +146,7 @@ public class MostrarProductosMios extends Fragment
             }
             else
             {
+                //Aqui carga por defecto
                 imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagesProducts.get(position), getResources()));
                 textViewNom.setText(nameProducts.get(position));
                 textViewPrecio.setText("$" + priceProducts.get(position));
@@ -258,6 +261,7 @@ public class MostrarProductosMios extends Fragment
                     builderModificar.setView(pUpdate);
                     dialogMod = builderModificar.create();
                     dialogMod.show();
+                    fotoCambiada = false;
 
                     final EditText textNombreProd = (EditText) pUpdate.findViewById(R.id.etNombreProdMod);
                     final EditText textDesProd = (EditText) pUpdate.findViewById(R.id.etDesProdMod);
@@ -278,22 +282,50 @@ public class MostrarProductosMios extends Fragment
                         @Override
                         public void onClick(View v)
                         {
-                            try
+                            if (textNombreProd.getText().toString().isEmpty() && textDesProd.getText().toString().isEmpty() && textPreProd.getText().toString().isEmpty())
                             {
-                                tipoReg = "Modificar producto";
-                                JSONObject jsonObject = new JSONObject();
-                                jsonObject.put("id", idProducts.get(positionGlobal));
-                                jsonObject.put("name", textNombreProd.getText().toString().trim());
-                                jsonObject.put("description", textDesProd.getText().toString().trim());
-                                jsonObject.put("price", textPreProd.getText().toString().trim());
-                                jsonObject.put("imagen", imagenCod);
-                                jsonObject.put("store_id", store_id);
-                                new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarProductos_mios.php", jsonObject.toString());
+                                if (textNombreProd.getText().toString().isEmpty())
+                                {
+                                    textNombreProd.setError("Completa este campo.");
+                                }
+                                if (textDesProd.getText().toString().isEmpty())
+                                {
+                                    textDesProd.setError("Completa este campo.");
+                                }
+                                if (textPreProd.getText().toString().isEmpty())
+                                {
+                                    textPreProd.setError("Completa este campo.");
+                                }
                             }
-                            catch (JSONException e)
+                            else
                             {
-                                e.printStackTrace();
+                                try
+                                {
+                                    tipoReg = "Modificar producto";
+                                    JSONObject jsonObject = new JSONObject();
+                                    jsonObject.put("id", idProducts.get(positionGlobal));
+                                    jsonObject.put("name", textNombreProd.getText().toString().trim());
+                                    jsonObject.put("description", textDesProd.getText().toString().trim());
+                                    jsonObject.put("price", textPreProd.getText().toString().trim());
+                                    if (fotoCambiada == true)
+                                    {
+                                        jsonObject.put("imagen", imagenCod);
+                                    }
+                                    else
+                                    {
+                                        Bitmap bitmap = ((BitmapDrawable)buttonPhotoProduct.getDrawable()).getBitmap();
+                                        jsonObject.put("imagen", Codificacion.encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100));
+                                    }
+
+                                    jsonObject.put("store_id", store_id);
+                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarProductos_mios.php", jsonObject.toString());
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                }
                             }
+
 
                         }
                     });
@@ -360,6 +392,7 @@ public class MostrarProductosMios extends Fragment
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
         {
+            fotoCambiada = true;
             Bundle extras = data.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
             imagenCod = Codificacion.encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
