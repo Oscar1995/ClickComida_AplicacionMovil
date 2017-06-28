@@ -17,9 +17,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,13 +69,16 @@ public class BusquedaAvanzada extends Fragment {
     List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
     List<Bitmap> bitmapList = new ArrayList<>();
 
-    TextView textViewResultados;
+    TextView textViewResultados, txtTitulo;
     EditText editTextCampo;
     ImageView imageViewLupa;
     Spinner spinnerFiltro;
     GridView gridViewProductos;
     int posFiltro;
+    RadioButton radioButtonProducto, radioButtonTienda;
     ProgressDialog progress;
+    LinearLayout linearLayoutLista, linearLayoutFiltro;
+    Boolean aBooleanProdOrStore;
 
     private OnFragmentInteractionListener mListener;
 
@@ -118,7 +125,39 @@ public class BusquedaAvanzada extends Fragment {
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
         textViewResultados = (TextView)v.findViewById(R.id.tvResultados);
         gridViewProductos = (GridView)v.findViewById(R.id.gvProductosSearch);
+        txtTitulo = (TextView)v.findViewById(R.id.txtInfoBuscar);
+        radioButtonProducto = (RadioButton)v.findViewById(R.id.rbtProducto);
+        radioButtonTienda = (RadioButton)v.findViewById(R.id.rbtTienda);
+        linearLayoutLista = (LinearLayout)v.findViewById(R.id.llLista);
+        linearLayoutFiltro = (LinearLayout)v.findViewById(R.id.llFiltro);
+
+
+
+        linearLayoutLista.setVisibility(View.GONE);
+        linearLayoutFiltro.setVisibility(View.GONE);
         textViewResultados.setVisibility(View.GONE);
+
+        radioButtonProducto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                linearLayoutLista.setVisibility(View.VISIBLE);
+                linearLayoutFiltro.setVisibility(View.VISIBLE);
+                aBooleanProdOrStore = true;
+            }
+        });
+        radioButtonTienda.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+
+                linearLayoutLista.setVisibility(View.VISIBLE);
+                linearLayoutFiltro.setVisibility(View.GONE);
+                aBooleanProdOrStore = false;
+            }
+        });
 
         imageViewLupa.setOnClickListener(new View.OnClickListener()
         {
@@ -137,7 +176,19 @@ public class BusquedaAvanzada extends Fragment {
                         JSONObject object = new JSONObject();
                         object.put("producto", editTextCampo.getText().toString());
                         object.put("tipo", nomFiltros[posFiltro]);
-                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
+
+                        //Cuando aBooleanProdOrStore es true se activa el producto, de lo contrario es la tienda
+                        if (aBooleanProdOrStore)
+                        {
+                            //Producto
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
+                        }
+                        else
+                        {
+                            //Tienda
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
+                        }
+
                     }
                     else
                     {
