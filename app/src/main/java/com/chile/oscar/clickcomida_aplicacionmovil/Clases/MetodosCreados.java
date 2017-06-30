@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -24,6 +25,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -149,6 +151,40 @@ public class MetodosCreados
         String dateformat = dateParser.format(date);
         return dateformat;
     }
+    public String formatearFecha2 (String fecha)
+    {
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-M-d");
+
+        Date date = null;
+        try
+        {
+            date = dateParser.parse(fecha);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        dateParser.applyPattern("yyyy-MM-dd");
+        String dateformat = dateParser.format(date);
+        return dateformat;
+    }
+    public String formatearFecha3 (String fecha)
+    {
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-M-d");
+
+        Date date = null;
+        try
+        {
+            date = dateParser.parse(fecha);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        dateParser.applyPattern("EEEE, dd 'de' MMMM 'de' yyyy");
+        String dateformat = dateParser.format(date);
+        return dateformat;
+    }
     public Bitmap resizeMapIcons(Bitmap iconName, int width, int height)
     {
 
@@ -214,5 +250,19 @@ public class MetodosCreados
             myLocation = lm.getLastKnownLocation(provider);
         }
         return myLocation;
+    }
+    public String LlamarCalendario (Context context)
+    {
+        final String[] formatDate = {""};
+        java.util.Calendar newCalendar = java.util.Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+            {
+                formatDate[0] = year + "-" + (month + 1) + "-" + dayOfMonth;
+            }
+        }, newCalendar.get(java.util.Calendar.YEAR), newCalendar.get(java.util.Calendar.MONTH), newCalendar.get(java.util.Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+        return formatDate[0];
     }
 }

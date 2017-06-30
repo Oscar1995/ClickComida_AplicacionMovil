@@ -100,6 +100,7 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
     Boolean sonidoRep =false;
     SupportMapFragment map;
     Boolean viewCreated = false;
+    String[] formatoFechas = new String[2];
 
     GoogleMap googleMapGlobal;
     LatLng latLngLocal;
@@ -159,9 +160,9 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
         Button buttonBuscarEspecifico = (Button)v.findViewById(R.id.btnBuscarEspecifico);
         Button buttonBuscarEntre = (Button)v.findViewById(R.id.btnBuscarEntre);
 
-        TextView textViewEspecifico = (TextView)v.findViewById(R.id.tvFechaEspecifico);
-        TextView textViewEntre1 = (TextView)v.findViewById(R.id.tvFechaEntre1);
-        TextView textViewEntre2 = (TextView)v.findViewById(R.id.tvFechaEntre2);
+        final TextView textViewEspecifico = (TextView)v.findViewById(R.id.tvFechaEspecifico);
+        final TextView textViewEntre1 = (TextView)v.findViewById(R.id.tvFechaEntre1);
+        final TextView textViewEntre2 = (TextView)v.findViewById(R.id.tvFechaEntre2);
 
         linearLayoutEspecifico.setVisibility(View.GONE);
         linearLayoutEntre.setVisibility(View.GONE);
@@ -196,29 +197,59 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
-                        Toast.makeText(getContext(), "" + year + "/" + month + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
+                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        textViewEspecifico.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
             }
         });
-        textViewEntre1.setOnClickListener(new View.OnClickListener() {
+        textViewEntre1.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-
+            public void onClick(View v)
+            {
+                Calendar newCalendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+                    {
+                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        textViewEntre1.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
+                    }
+                }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
             }
         });
         textViewEntre2.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
+            public void onClick(View v)
+            {
+                Calendar newCalendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+                    {
+                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        textViewEntre2.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
+                    }
+                }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
             }
         });
         buttonBuscarEspecifico.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                if (!textViewEspecifico.getText().toString().equals("Pincha aqui para definir fecha"))
+                {
 
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Debes definir una fecha para realizar la busqueda del pedido", Toast.LENGTH_LONG).show();
+                }
             }
         });
         buttonBuscarEntre.setOnClickListener(new View.OnClickListener()
@@ -226,7 +257,14 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
             @Override
             public void onClick(View v)
             {
+                if (textViewEntre1.getText().toString().equals("Pincha aqui para definir fecha") || textViewEntre2.getText().toString().equals("Pincha aqui para definir fecha"))
+                {
+                    Toast.makeText(getContext(), "Debes definir una fecha para realizar la busqueda del pedido", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
 
+                }
             }
         });
 
