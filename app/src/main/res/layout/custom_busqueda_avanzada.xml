@@ -10,17 +10,18 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
+            android:layout_weight="2.7"
             android:orientation="vertical">
 
             <ImageView
@@ -32,15 +33,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1.2"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvNombreProd"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
                 android:text="Completo Italiano Especial"
                 android:textColor="@color/colorNegro" />
@@ -48,7 +50,7 @@
             <TextView
                 android:id="@+id/tvNombreTienda"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
                 android:text="nombre tienda"
                 android:textColor="@color/colorNegro"
@@ -57,7 +59,8 @@
             <TextView
                 android:id="@+id/tvPrecio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
                 android:text="$0"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold" />

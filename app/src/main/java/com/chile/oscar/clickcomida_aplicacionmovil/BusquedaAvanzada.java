@@ -29,8 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaTiendas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,6 +70,7 @@ public class BusquedaAvanzada extends Fragment {
     private String mParam1;
     private String mParam2;
     List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
+    List<BusquedaAvanzadaTiendas> busquedaAvanzadaTiendasList = new ArrayList<>();
     List<Bitmap> bitmapList = new ArrayList<>();
 
     TextView textViewResultados, txtTitulo;
@@ -102,6 +106,49 @@ public class BusquedaAvanzada extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+    public static StoreOtherUser newInstanceStoreOtherUser(Bitmap bitmapStore, String nomTienda, String desTienda, String sCalle, String sNumero, String startDay, String endDay, String openHour, String closeHour, String lunchOpenHour, String lunchAfterHour, String storeId, String latitud, String longitud, String userId)
+    {
+        StoreOtherUser fragment = new StoreOtherUser();
+        Bundle args = new Bundle();
+        args.putString("imagen_tienda", Codificacion.encodeToBase64(bitmapStore, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nomTienda);
+        args.putString("des_tienda", desTienda);
+        args.putString("calle_tienda", sCalle);
+        args.putString("numero_tienda", sNumero);
+        args.putString("start_day", startDay);
+        args.putString("end_day", endDay);
+        args.putString("open_hour", openHour);
+        args.putString("close_hour", closeHour);
+        args.putString("lunch_open_hour", lunchOpenHour);
+        args.putString("lunch_after_hour", lunchAfterHour);
+        args.putString("tienda_id", storeId);
+        args.putString("latitud", latitud);
+        args.putString("longitud", longitud);
+        args.putString("user_id", userId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    public static StoreProductsFragment newInstanceStoreMe(Bitmap bitmapStore, String nomTienda, String desTienda, String sCalle, String sNumero, String startDay, String endDay, String openHour, String closeHour, String lunchOpenHour, String lunchAfterHour, String storeId, String latitud, String longitud)
+    {
+        StoreProductsFragment fragment = new StoreProductsFragment();
+        Bundle args = new Bundle();
+        args.putString("imagen_tienda", Codificacion.encodeToBase64(bitmapStore, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nomTienda);
+        args.putString("des_tienda", desTienda);
+        args.putString("calle_tienda", sCalle);
+        args.putString("numero_tienda", sNumero);
+        args.putString("start_day", startDay);
+        args.putString("end_day", endDay);
+        args.putString("open_hour", openHour);
+        args.putString("close_hour", closeHour);
+        args.putString("lunch_open_hour", lunchOpenHour);
+        args.putString("lunch_after_hour", lunchAfterHour);
+        args.putString("tienda_id", storeId);
+        args.putString("latitud", latitud);
+        args.putString("longitud", longitud);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -131,28 +178,28 @@ public class BusquedaAvanzada extends Fragment {
         linearLayoutLista = (LinearLayout)v.findViewById(R.id.llLista);
         linearLayoutFiltro = (LinearLayout)v.findViewById(R.id.llFiltro);
 
-
-
         linearLayoutLista.setVisibility(View.GONE);
         linearLayoutFiltro.setVisibility(View.GONE);
         textViewResultados.setVisibility(View.GONE);
 
-        radioButtonProducto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
+        radioButtonProducto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            public void onClick(View v)
             {
+                if (!bitmapList.isEmpty())bitmapList.clear();
+                textViewResultados.setVisibility(View.GONE);
+                radioButtonTienda.setChecked(false);
                 linearLayoutLista.setVisibility(View.VISIBLE);
                 linearLayoutFiltro.setVisibility(View.VISIBLE);
                 aBooleanProdOrStore = true;
             }
         });
-        radioButtonTienda.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
+        radioButtonTienda.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
-            {
-
+            public void onClick(View v) {
+                if (!bitmapList.isEmpty())bitmapList.clear();
+                textViewResultados.setVisibility(View.GONE);
+                radioButtonProducto.setChecked(false);
                 linearLayoutLista.setVisibility(View.VISIBLE);
                 linearLayoutFiltro.setVisibility(View.GONE);
                 aBooleanProdOrStore = false;
@@ -169,9 +216,7 @@ public class BusquedaAvanzada extends Fragment {
                     if (!editTextCampo.getText().toString().isEmpty())
                     {
                         progress = new ProgressDialog(getContext());
-                        progress.setMessage("Buscando producto con el termino \"" + editTextCampo.getText().toString() + "\"");
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
+
 
                         JSONObject object = new JSONObject();
                         object.put("producto", editTextCampo.getText().toString());
@@ -181,12 +226,18 @@ public class BusquedaAvanzada extends Fragment {
                         if (aBooleanProdOrStore)
                         {
                             //Producto
+                            progress.setMessage("Buscando producto con el termino \"" + editTextCampo.getText().toString() + "\"");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
                             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
                         }
                         else
                         {
                             //Tienda
-                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
+                            progress.setMessage("Buscando tienda con el termino \"" + editTextCampo.getText().toString() + "\"");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzadaTienda.php", object.toString());
                         }
 
                     }
@@ -222,11 +273,33 @@ public class BusquedaAvanzada extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();
+                if (aBooleanProdOrStore)
+                {
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
+                }
+                else
+                {
+                    if (busquedaAvanzadaTiendasList.get(position).getUserId() == Integer.parseInt(Coordenadas.id))
+                    {
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, newInstanceStoreMe(bitmapList.get(position), busquedaAvanzadaTiendasList.get(position).getNameStore(), busquedaAvanzadaTiendasList.get(position).getDescriptionStore(), busquedaAvanzadaTiendasList.get(position).getStreetStore(), busquedaAvanzadaTiendasList.get(position).getNumberStore() + "", busquedaAvanzadaTiendasList.get(position).getStartDay(), busquedaAvanzadaTiendasList.get(position).getEndDay(), busquedaAvanzadaTiendasList.get(position).getOpenHour(), busquedaAvanzadaTiendasList.get(position).getCloseHour(), busquedaAvanzadaTiendasList.get(position).getLunchHour(), busquedaAvanzadaTiendasList.get(position).getLunchAfterHour(), busquedaAvanzadaTiendasList.get(position).getStoreId() + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().latitude + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().longitude + ""));
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
+                    }
+                    else
+                    {
+                        FragmentTransaction trans = getFragmentManager().beginTransaction();
+                        trans.replace(R.id.content_general, newInstanceStoreOtherUser(bitmapList.get(position), busquedaAvanzadaTiendasList.get(position).getNameStore(), busquedaAvanzadaTiendasList.get(position).getDescriptionStore(), busquedaAvanzadaTiendasList.get(position).getStreetStore(), busquedaAvanzadaTiendasList.get(position).getNumberStore() + "", busquedaAvanzadaTiendasList.get(position).getStartDay(), busquedaAvanzadaTiendasList.get(position).getEndDay(), busquedaAvanzadaTiendasList.get(position).getOpenHour(), busquedaAvanzadaTiendasList.get(position).getCloseHour(), busquedaAvanzadaTiendasList.get(position).getLunchHour(), busquedaAvanzadaTiendasList.get(position).getLunchAfterHour(), busquedaAvanzadaTiendasList.get(position).getStoreId() + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().latitude + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().longitude + "", busquedaAvanzadaTiendasList.get(position).getUserId() + ""));
+                        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        trans.addToBackStack(null);
+                        trans.commit();
+                    }
+                }
             }
         });
         return v;
@@ -277,16 +350,38 @@ public class BusquedaAvanzada extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_busqueda_avanzada, null);
-
             ImageView imageViewProducto = (ImageView)convertView.findViewById(R.id.ivProducto);
             TextView textViewProducto = (TextView)convertView.findViewById(R.id.tvNombreProd);
             TextView textViewTienda = (TextView)convertView.findViewById(R.id.tvNombreTienda);
             TextView textViewPrecio = (TextView)convertView.findViewById(R.id.tvPrecio);
 
-            imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
-            textViewProducto.setText(busquedaAvanzadaProductosList.get(position).getNameProd().toString());
-            textViewTienda.setText(busquedaAvanzadaProductosList.get(position).getNameStore().toString());
-            textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
+            if (aBooleanProdOrStore)
+            {
+                imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
+                textViewProducto.setText(busquedaAvanzadaProductosList.get(position).getNameProd().toString());
+                textViewTienda.setText(busquedaAvanzadaProductosList.get(position).getNameStore().toString());
+                textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
+            }
+            else
+            {
+                imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
+                String openupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getOpenHour());
+                String closeupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getCloseHour());
+
+                if (busquedaAvanzadaTiendasList.get(position).getLunchHour().equals("00:00:00") && busquedaAvanzadaTiendasList.get(position).getLunchAfterHour().equals("00:00:00"))
+                {
+                    textViewProducto.setText("De " + busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+                }
+                else
+                {
+                    String openupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchHour());
+                    String closeupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchAfterHour());
+                    textViewProducto.setText("De " + busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ ", horario continuado desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+                }
+
+                textViewTienda.setText(busquedaAvanzadaTiendasList.get(position).getNameStore().toString());
+                textViewPrecio.setText("Pasaje: " + busquedaAvanzadaTiendasList.get(position).getStreetStore() + " #" + busquedaAvanzadaTiendasList.get(position).getNumberStore());
+            }
 
             return convertView;
         }
@@ -358,49 +453,89 @@ public class BusquedaAvanzada extends Fragment {
         {
             if (!s.equals("[]"))
             {
-                if (!busquedaAvanzadaProductosList.isEmpty())
-                {
-                    busquedaAvanzadaProductosList.clear();
-                    bitmapList.clear();
-                }
+
                 try
                 {
-                    JSONArray jsonArray = new JSONArray(s);
-                    int nMitad = jsonArray.length() / 2;
-                    int vLocal = 0;
-                    for (int i=0; i<jsonArray.length(); i++)
+                    //Cuando aBooleanProdOrStore es true se activa el producto, de lo contrario es la tienda
+                    if (aBooleanProdOrStore)
                     {
-                        JSONObject object = jsonArray.getJSONObject(i);
-                        if (i >= nMitad)
+                        //Producto
+                        if (!busquedaAvanzadaProductosList.isEmpty())
                         {
-                            bitmapList.add(Codificacion.decodeBase64(object.getString("photo_" + vLocal)));
-                            vLocal++;
+                            busquedaAvanzadaProductosList.clear();
+                            bitmapList.clear();
                         }
-                        else
+                        JSONArray jsonArray = new JSONArray(s);
+                        int nMitad = jsonArray.length() / 2;
+                        int vLocal = 0;
+                        for (int i=0; i<jsonArray.length(); i++)
                         {
-                            BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
-                            busquedaAvanzadaProductos.setIdProd(object.getInt("id"));
-                            busquedaAvanzadaProductos.setIdStore(object.getInt("" + 0));
-                            busquedaAvanzadaProductos.setNameProd(object.getString("name"));
-                            busquedaAvanzadaProductos.setNameStore(object.getString("" + 1));
-                            busquedaAvanzadaProductos.setDesProd(object.getString("description"));
-                            busquedaAvanzadaProductos.setpProd(object.getInt("price"));
-                            busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            if (i >= nMitad)
+                            {
+                                bitmapList.add(Codificacion.decodeBase64(object.getString("photo_" + vLocal)));
+                                vLocal++;
+                            }
+                            else
+                            {
+                                BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
+                                busquedaAvanzadaProductos.setIdProd(object.getInt("id"));
+                                busquedaAvanzadaProductos.setIdStore(object.getInt("" + 0));
+                                busquedaAvanzadaProductos.setNameProd(object.getString("name"));
+                                busquedaAvanzadaProductos.setNameStore(object.getString("" + 1));
+                                busquedaAvanzadaProductos.setDesProd(object.getString("description"));
+                                busquedaAvanzadaProductos.setpProd(object.getInt("price"));
+                                busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
+                            }
                         }
-
-                        /*[{"id":"18","0":"21","name":"Compu","1":"Luz","2":"18","3":"Compu","description":"lala","4":"lala","price":"250","5":"250"}]
-
-                        id_product = "id"
-                        id_store = "0"
-                        nameProd = "name"
-                        nameStore = "1"
-                        desProd = "description"
-                        precioProd = "price"*/
+                        textViewResultados.setVisibility(View.VISIBLE);
+                        textViewResultados.setText(Html.fromHtml("<b>Resultados encontrados:</b> " + (vLocal)));
+                        gridViewProductos.setAdapter(new customAdvanced());
+                        progress.dismiss();
                     }
-                    textViewResultados.setVisibility(View.VISIBLE);
-                    textViewResultados.setText(Html.fromHtml("<b>Resultados encontrados:</b> " + (vLocal + 1)));
-                    gridViewProductos.setAdapter(new customAdvanced());
-                    progress.dismiss();
+                    else
+                    {
+                        if (!busquedaAvanzadaTiendasList.isEmpty())
+                        {
+                            busquedaAvanzadaTiendasList.clear();
+                            bitmapList.clear();
+                        }
+                        JSONArray jsonArray = new JSONArray(s);
+                        int nMitad = jsonArray.length() / 2;
+                        int vLocal = 0;
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            if (i >= nMitad)
+                            {
+                                bitmapList.add(Codificacion.decodeBase64(object.getString("photo_" + vLocal)));
+                                vLocal++;
+                            }
+                            else
+                            {
+                                BusquedaAvanzadaTiendas busquedaAvanzadaTiendas = new BusquedaAvanzadaTiendas();
+                                busquedaAvanzadaTiendas.setStoreId(object.getInt("id"));
+                                busquedaAvanzadaTiendas.setNameStore(object.getString("name"));
+                                busquedaAvanzadaTiendas.setDescriptionStore(object.getString("description"));
+                                busquedaAvanzadaTiendas.setStreetStore(object.getString("street"));
+                                busquedaAvanzadaTiendas.setNumberStore(object.getInt("number"));
+                                busquedaAvanzadaTiendas.setStartDay(object.getString("start_day"));
+                                busquedaAvanzadaTiendas.setEndDay(object.getString("end_day"));
+                                busquedaAvanzadaTiendas.setOpenHour(object.getString("open_hour"));
+                                busquedaAvanzadaTiendas.setCloseHour(object.getString("close_hour"));
+                                busquedaAvanzadaTiendas.setLunchHour(object.getString("lunch_hour"));
+                                busquedaAvanzadaTiendas.setLunchAfterHour(object.getString("lunch_after_hour"));
+                                busquedaAvanzadaTiendas.setLatLngStore(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
+                                busquedaAvanzadaTiendas.setUserId(object.getInt("user_id"));
+                                busquedaAvanzadaTiendasList.add(busquedaAvanzadaTiendas);
+                            }
+                        }
+                        textViewResultados.setVisibility(View.VISIBLE);
+                        textViewResultados.setText(Html.fromHtml("<b>Resultados encontrados:</b> " + (vLocal)));
+                        gridViewProductos.setAdapter(new customAdvanced());
+                        progress.dismiss();
+                    }
+
                 }
                 catch (JSONException e)
                 {

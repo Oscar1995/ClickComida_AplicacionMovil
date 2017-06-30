@@ -255,6 +255,6 @@
     <string name="ver_mapa">Ver en el mapa</string>
     <string name="Productos">Productos</string>
     <string name="Tiendas">Tiendas</string>
-    <string name="deseo_buscar">¿Que deseas buscar?</string>
     <string name="ordenar_por">Ordenar por:</string>
+    <string name="deseo_buscar">¿Que deseas buscar?</string>
 </resources>
