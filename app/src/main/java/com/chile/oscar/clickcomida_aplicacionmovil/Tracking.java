@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -27,7 +28,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +66,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,7 +81,7 @@ import java.util.TimerTask;
  * Use the {@link Tracking#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Tracking extends Fragment {
+public class Tracking extends Fragment implements DatePickerDialog.OnDateSetListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -134,43 +140,9 @@ public class Tracking extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(@Nullable Bundle bundle)
-                    {
-                        Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
-
-                        /*Timer timer = new Timer();
-                        timer.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run()
-                            {
-                                Log.d("Veces", veces + "");
-                                veces++;
-                            }
-                        }, 0, 5000);*/
-                    }
-
-                    @Override
-                    public void onConnectionSuspended(int i)
-                    {
-                        Toast.makeText(getContext(), "Suspendido", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult)
-                    {
-                        Toast.makeText(getContext(), "Fallido", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addApi(LocationServices.API)
-                .build();
-
 
         progress = new ProgressDialog(getContext());
         progress.setMessage("Cargando pedidos...");
@@ -178,6 +150,87 @@ public class Tracking extends Fragment {
         progress.show();
 
         View v = inflater.inflate(R.layout.fragment_tracking, container, false);
+
+        final LinearLayout linearLayoutEspecifico = (LinearLayout)v.findViewById(R.id.llEspecifico);
+        final LinearLayout linearLayoutEntre = (LinearLayout)v.findViewById(R.id.llEntre);
+        final RadioButton radioButtonEspecifico = (RadioButton) v.findViewById(R.id.rbtEspecifico);
+        final RadioButton radioButtonEntre = (RadioButton) v.findViewById(R.id.rbtEntre);
+
+        Button buttonBuscarEspecifico = (Button)v.findViewById(R.id.btnBuscarEspecifico);
+        Button buttonBuscarEntre = (Button)v.findViewById(R.id.btnBuscarEntre);
+
+        TextView textViewEspecifico = (TextView)v.findViewById(R.id.tvFechaEspecifico);
+        TextView textViewEntre1 = (TextView)v.findViewById(R.id.tvFechaEntre1);
+        TextView textViewEntre2 = (TextView)v.findViewById(R.id.tvFechaEntre2);
+
+        linearLayoutEspecifico.setVisibility(View.GONE);
+        linearLayoutEntre.setVisibility(View.GONE);
+
+        radioButtonEspecifico.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                radioButtonEntre.setChecked(false);
+                linearLayoutEspecifico.setVisibility(View.VISIBLE);
+                linearLayoutEntre.setVisibility(View.GONE);
+            }
+        });
+        radioButtonEntre.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                radioButtonEspecifico.setChecked(false);
+                linearLayoutEspecifico.setVisibility(View.GONE);
+                linearLayoutEntre.setVisibility(View.VISIBLE);
+            }
+        });
+
+        textViewEspecifico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                Calendar newCalendar = Calendar.getInstance();
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+                    {
+                        Toast.makeText(getContext(), "" + year + "/" + month + "/" + dayOfMonth, Toast.LENGTH_SHORT).show();
+                    }
+                }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
+            }
+        });
+        textViewEntre1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        textViewEntre2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        buttonBuscarEspecifico.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        buttonBuscarEntre.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+            }
+        });
+
+
         listViewPedidos = (ListView) v.findViewById(R.id.lvPedidos);
         pedidos_procesoList = new ArrayList<>();
         try {
@@ -339,6 +392,13 @@ public class Tracking extends Fragment {
     {
         super.onDetach();
     }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+    {
+
+    }
+
     class PedidosAdapter extends BaseAdapter
     {
 

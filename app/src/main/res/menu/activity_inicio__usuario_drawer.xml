@@ -32,8 +32,8 @@
             android:title="Carrito" />
         <item
             android:id="@+id/nav_track"
-            android:icon="@drawable/moto"
-            android:title="Seguimiento" />
+            android:icon="@drawable/historial"
+            android:title="Historial de pedidos" />
     </group>
 
     <item android:title="Otros">

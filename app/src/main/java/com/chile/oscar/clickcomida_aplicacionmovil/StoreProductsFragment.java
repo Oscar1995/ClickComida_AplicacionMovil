@@ -15,12 +15,15 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaTiendas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
-import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Favoritos_Tienda;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,12 +38,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -61,17 +60,12 @@ public class StoreProductsFragment extends Fragment
     // TODO: Rename and change types of parameters
     private String mTipo, user_id, tipoLoad;
 
-    List<String> ids;
-    List<String> idstore;
-    List<String> noms;
-    List<String> nombreTienda;
-    List<String> des;
-    List<Bitmap> imagens;
-    List<String> fechas;
-    List<String> prices;
+    List<Bitmap> bitmapList = new ArrayList<>();
 
-    List<Favoritos_Tienda> favoritosTiendaList;
+    List<BusquedaAvanzadaTiendas> busquedaAvanzadaTiendasList = new ArrayList<>();
+    List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
 
+    List<String> stringListFechas = new ArrayList<>();
     ListView listViewProducts_Stores;
     ProgressDialog progress;
 
@@ -84,37 +78,39 @@ public class StoreProductsFragment extends Fragment
 
 
     // TODO: Rename and change types and number of parameters
-    public static Details_products newInstance(Bitmap imagen, String product_id, String nombre_prod, String des_prod, String precio_prod, String nombreTienda, String store_id)
+    public static Details_products newInstance(Bitmap bitmapProd, String nomTienda, int store_id, int product_id, String nomProd, String desProd, int precioProd)
     {
         Details_products fragment = new Details_products();
         Bundle args = new Bundle();
-        args.putString("imagen_prod", Codificacion.encodeToBase64(imagen, Bitmap.CompressFormat.PNG, 100));
-        args.putString("product_id", product_id);
-        args.putString("nombre_prod", nombre_prod);
-        args.putString("nombre_tienda", nombreTienda);
-        args.putString("store_id", store_id);
-        args.putString("des_prod", des_prod);
-        args.putString("precio_prod", precio_prod);
+        args.putString("imagen_prod", Codificacion.encodeToBase64(bitmapProd, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nomTienda);
+        args.putString("store_id", store_id + "");
+        args.putString("product_id", product_id + "");
+        args.putString("nombre_prod", nomProd);
+        args.putString("des_prod", desProd);
+        args.putString("precio_prod", precioProd + "");
         fragment.setArguments(args);
         return fragment;
     }
-    public static StoreOtherUser newStoreOther (Bitmap imagen, String... params)
+    public static StoreOtherUser newInstanceStoreOtherUser(Bitmap bitmapStore, String nomTienda, String desTienda, String sCalle, String sNumero, String startDay, String endDay, String openHour, String closeHour, String lunchOpenHour, String lunchAfterHour, String storeId, String latitud, String longitud, String userId)
     {
         StoreOtherUser fragment = new StoreOtherUser();
         Bundle args = new Bundle();
-        args.putString("imagen_tienda", Codificacion.encodeToBase64(imagen, Bitmap.CompressFormat.PNG, 100));
-        args.putString("nombre_tienda", params[0]);
-        args.putString("des_tienda", params[1]);
-        args.putString("calle_tienda", params[2]);
-        args.putString("numero_tienda", params[3]);
-        args.putString("start_day", params[4]);
-        args.putString("end_day", params[5]);
-        args.putString("open_hour", params[6]);
-        args.putString("close_hour", params[7]);
-        args.putString("lunch_open_hour", params[8]);
-        args.putString("lunch_after_hour", params[9]);
-        args.putString("tienda_id", params[10]);
-        args.putString("user_id", params[11]);
+        args.putString("imagen_tienda", Codificacion.encodeToBase64(bitmapStore, Bitmap.CompressFormat.PNG, 100));
+        args.putString("nombre_tienda", nomTienda);
+        args.putString("des_tienda", desTienda);
+        args.putString("calle_tienda", sCalle);
+        args.putString("numero_tienda", sNumero);
+        args.putString("start_day", startDay);
+        args.putString("end_day", endDay);
+        args.putString("open_hour", openHour);
+        args.putString("close_hour", closeHour);
+        args.putString("lunch_open_hour", lunchOpenHour);
+        args.putString("lunch_after_hour", lunchAfterHour);
+        args.putString("tienda_id", storeId);
+        args.putString("latitud", latitud);
+        args.putString("longitud", longitud);
+        args.putString("user_id", userId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -173,7 +169,7 @@ public class StoreProductsFragment extends Fragment
                 if (mTipo.equals("Productos"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(imagens.get(position), ids.get(position), noms.get(position), des.get(position), prices.get(position), nombreTienda.get(position), idstore.get(position)));
+                    trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
@@ -181,20 +177,7 @@ public class StoreProductsFragment extends Fragment
                 else if (mTipo.equals("Tiendas"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newStoreOther(
-                            imagens.get(position),
-                            noms.get(position),
-                            favoritosTiendaList.get(position).getDescripcion(),
-                            favoritosTiendaList.get(position).getCalle(),
-                            favoritosTiendaList.get(position).getNumero(),
-                            favoritosTiendaList.get(position).getStart_day(),
-                            favoritosTiendaList.get(position).getEnd_day(),
-                            favoritosTiendaList.get(position).getOpen_hour(),
-                            favoritosTiendaList.get(position).getClose_hour(),
-                            favoritosTiendaList.get(position).getLunch_open_hour(),
-                            favoritosTiendaList.get(position).getLunch_after_hour(),
-                            ids.get(position),
-                            favoritosTiendaList.get(position).getUser_id()));
+                    trans.replace(R.id.content_general, newInstanceStoreOtherUser(bitmapList.get(position), busquedaAvanzadaTiendasList.get(position).getNameStore(), busquedaAvanzadaTiendasList.get(position).getDescriptionStore(), busquedaAvanzadaTiendasList.get(position).getStreetStore(), busquedaAvanzadaTiendasList.get(position).getNumberStore() + "", busquedaAvanzadaTiendasList.get(position).getStartDay(), busquedaAvanzadaTiendasList.get(position).getEndDay(), busquedaAvanzadaTiendasList.get(position).getOpenHour(), busquedaAvanzadaTiendasList.get(position).getCloseHour(), busquedaAvanzadaTiendasList.get(position).getLunchHour(), busquedaAvanzadaTiendasList.get(position).getLunchAfterHour(), busquedaAvanzadaTiendasList.get(position).getStoreId() + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().latitude + "", busquedaAvanzadaTiendasList.get(position).getLatLngStore().longitude + "", busquedaAvanzadaTiendasList.get(position).getUserId() + ""));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
@@ -250,7 +233,7 @@ public class StoreProductsFragment extends Fragment
 
         @Override
         public int getCount() {
-            return imagens.size();
+            return bitmapList.size();
         }
 
         @Override
@@ -273,9 +256,18 @@ public class StoreProductsFragment extends Fragment
                 TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
 
-                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(imagens.get(position), getResources()));
-                textViewNombre.setText(noms.get(position));
-                textViewDesStore.setText("Agregado el: " + new MetodosCreados().formatearFecha(fechas.get(position)));
+                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
+                if (mTipo.equals("Productos"))
+                {
+                    textViewNombre.setText(busquedaAvanzadaProductosList.get(position).getNameProd());
+                    textViewDesStore.setText("Agregado el: " + new MetodosCreados().formatearFecha(stringListFechas.get(position)));
+                }
+                else
+                {
+                    textViewNombre.setText(busquedaAvanzadaTiendasList.get(position).getNameStore());
+                    textViewDesStore.setText("Agregado el: " + new MetodosCreados().formatearFecha(stringListFechas.get(position)));
+                }
+
             }
             catch (Exception ex)
             {
@@ -366,75 +358,77 @@ public class StoreProductsFragment extends Fragment
                 else
                 {
                     JSONArray jsonArray = new JSONArray(s);
-                    int tomarCuenta = jsonArray.length() / 3; //1: Informacion, 2:fotos, 3:fechas de creacion
-                    JSONObject jsonObject = null;
-
-                    if (mTipo.equals("Productos"))
-                    {
-                        idstore = new ArrayList<>();
-                        nombreTienda = new ArrayList<>();
-                        des = new ArrayList<>();
-                        prices = new ArrayList<>();
-                    }
-
-                    ids = new ArrayList<>();
-                    noms= new ArrayList<>();
-                    fechas = new ArrayList<>();
-                    imagens = new ArrayList<>();
-                    favoritosTiendaList = new ArrayList<>();
-
+                    int tomarCuenta = jsonArray.length() / 2; //1: Informacion, 2:fotos
                     int cLocal = 0;
-                    int fLocal = 0;
 
+                    if (busquedaAvanzadaTiendasList != null)
+                    {
+                        if (!busquedaAvanzadaTiendasList.isEmpty())
+                        {
+                            busquedaAvanzadaTiendasList.clear();
+                            stringListFechas.clear();
+                            bitmapList.clear();
+                        }
+                    }
+                    if (busquedaAvanzadaProductosList != null)
+                    {
+                        if (!busquedaAvanzadaProductosList.isEmpty())
+                        {
+                            busquedaAvanzadaProductosList.clear();
+                            stringListFechas.clear();
+                            bitmapList.clear();
+                        }
+                    }
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
-                        String x = jsonArray.getString(i);
                         if (i >= tomarCuenta)
                         {
-                            JSONObject object = new JSONObject(x);
-
-                            if (cLocal <= (tomarCuenta-1))
-                            {
-                                imagens.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
-                                cLocal++;
-                            }
-                            else
-                            {
-                                nombreTienda.add(object.getString("nombre"));
-                                idstore.add(object.getString("store_id"));
-                                fechas.add(object.getString("fecha_"+fLocal));
-                                fLocal++;
-                            }
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            bitmapList.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
+                            cLocal++;
                         }
                         else
                         {
-
-                            JSONArray jsonArray1 = new JSONArray(x);
-                            jsonObject = jsonArray1.getJSONObject(0);
-
                             if (mTipo.equals("Productos"))
                             {
-                                des.add(jsonObject.getString("description"));
-                                prices.add(jsonObject.getString("price"));
+                                /*"id" -> Id de la tienda
+                                "0" -> Id del producto
+                                "2" -> Nombre del producto
+                                "name" -> Tienda
+                                "description" -> descripcion del producto
+                                "price" -> precio del producto*/
+
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
+                                busquedaAvanzadaProductos.setIdProd(object.getInt("" + 0));
+                                busquedaAvanzadaProductos.setIdStore(object.getInt("id"));
+                                busquedaAvanzadaProductos.setNameProd(object.getString("" + 2));
+                                busquedaAvanzadaProductos.setNameStore(object.getString("name"));
+                                busquedaAvanzadaProductos.setDesProd(object.getString("description"));
+                                busquedaAvanzadaProductos.setpProd(object.getInt("price"));
+                                stringListFechas.add(object.getString("created_at"));
+                                busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
                             }
                             else if (mTipo.equals("Tiendas"))
                             {
-                                Favoritos_Tienda favoritos_tienda = new Favoritos_Tienda();
-                                favoritos_tienda.setDescripcion(jsonObject.getString("description"));
-                                favoritos_tienda.setCalle(jsonObject.getString("street"));
-                                favoritos_tienda.setNumero(jsonObject.getString("number"));
-                                favoritos_tienda.setOpen_hour(jsonObject.getString("open_hour"));
-                                favoritos_tienda.setClose_hour(jsonObject.getString("close_hour"));
-                                favoritos_tienda.setLunch_open_hour(jsonObject.getString("lunch_hour"));
-                                favoritos_tienda.setLunch_after_hour(jsonObject.getString("lunch_after_hour"));
-                                favoritos_tienda.setStart_day(jsonObject.getString("start_day"));
-                                favoritos_tienda.setEnd_day(jsonObject.getString("end_day"));
-                                favoritos_tienda.setUser_id(jsonObject.getString("user_id"));
-                                favoritosTiendaList.add(favoritos_tienda);
-
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                BusquedaAvanzadaTiendas busquedaAvanzadaTiendas = new BusquedaAvanzadaTiendas();
+                                busquedaAvanzadaTiendas.setStoreId(object.getInt("id"));
+                                busquedaAvanzadaTiendas.setNameStore(object.getString("name"));
+                                busquedaAvanzadaTiendas.setDescriptionStore(object.getString("description"));
+                                busquedaAvanzadaTiendas.setStreetStore(object.getString("street"));
+                                busquedaAvanzadaTiendas.setNumberStore(object.getInt("number"));
+                                busquedaAvanzadaTiendas.setStartDay(object.getString("start_day"));
+                                busquedaAvanzadaTiendas.setEndDay(object.getString("end_day"));
+                                busquedaAvanzadaTiendas.setOpenHour(object.getString("open_hour"));
+                                busquedaAvanzadaTiendas.setCloseHour(object.getString("close_hour"));
+                                busquedaAvanzadaTiendas.setLunchHour(object.getString("lunch_hour"));
+                                busquedaAvanzadaTiendas.setLunchAfterHour(object.getString("lunch_after_hour"));
+                                busquedaAvanzadaTiendas.setLatLngStore(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
+                                busquedaAvanzadaTiendas.setUserId(0);
+                                stringListFechas.add(object.getString("created_at"));
+                                busquedaAvanzadaTiendasList.add(busquedaAvanzadaTiendas);
                             }
-                            ids.add(jsonObject.getString("id"));
-                            noms.add(jsonObject.getString("name"));
                         }
                     }
                     progress.dismiss();

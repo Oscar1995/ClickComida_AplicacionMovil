@@ -193,7 +193,7 @@ public class Inicio_Usuario extends AppCompatActivity
             //args.putString("user_id", idUsuario);
             //fragment.setArguments(args);
             fragmentoSeleccionado = true;
-            getSupportActionBar().setTitle(getResources().getString(R.string.tacking));
+            getSupportActionBar().setTitle(getResources().getString(R.string.historial));
         }
         else if (id == R.id.nav_work)
         {

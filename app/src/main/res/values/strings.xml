@@ -257,4 +257,9 @@
     <string name="Tiendas">Tiendas</string>
     <string name="ordenar_por">Ordenar por:</string>
     <string name="deseo_buscar">¿Que deseas buscar?</string>
+    <string name="historial">Historial de pedidos</string>
+    <string name="deseo_fecha">¿Deseas buscar un pedido antiguo?</string>
+    <string name="buscar_fecha_esp">Buscar por fecha en especifico</string>
+    <string name="buscar_fecha_entre">Buscar por fechas entre...</string>
+    <string name="pincha_aqui">Pincha aqui para definir fecha</string>
 </resources>

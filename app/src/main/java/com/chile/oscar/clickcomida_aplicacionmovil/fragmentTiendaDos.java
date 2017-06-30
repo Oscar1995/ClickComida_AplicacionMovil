@@ -1,6 +1,8 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.graphics.ImageFormat;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
@@ -12,12 +14,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -47,9 +51,11 @@ import java.text.ParseException;
 
 public class fragmentTiendaDos extends Fragment
 {
-    boolean continuado, tomorrow, h1, h2, h3, h4;
+    boolean continuado, tomorrow, h1, h2, h3, h4, isContinuado;
     String[] dias;
     String imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, id_usuario, latitud, longitud;
+    String diaInicio, diaFin, Hora1, Hora2, Hora3, Hora4;
+    ProgressDialog progress;
 
     int posInicio = 0;
     int posFin = 0;
@@ -93,6 +99,7 @@ public class fragmentTiendaDos extends Fragment
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dias);
         sStart.setAdapter(adapter);
         sEnd.setAdapter(adapter);
+
 
         sStart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -211,7 +218,13 @@ public class fragmentTiendaDos extends Fragment
                             {
                                 if (new Validadores().isNetDisponible(getContext()))
                                 {
-                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", "00:00:00", "00:00:00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                    isContinuado = true;
+                                    diaInicio = sStart.getItemAtPosition(posInicio).toString();
+                                    diaFin = sEnd.getItemAtPosition(posInicio).toString();
+                                    Hora1 = textViewHoraUno.getText().toString() + ":00";
+                                    Hora2 = textViewHoraDos.getText().toString() + ":00";
+                                    RegistrarTienda(true, nombre_tienda);
+                                    //new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", "00:00:00", "00:00:00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
                                 }
                                 else
                                 {
@@ -234,7 +247,13 @@ public class fragmentTiendaDos extends Fragment
                             {
                                 if (new Validadores().isNetDisponible(getContext()))
                                 {
-                                    new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
+                                    isContinuado = false;
+                                    Hora1 = textViewHoraUno.getText().toString() + ":00";
+                                    Hora2 = textViewHoraDos.getText().toString() + ":00";
+                                    Hora3 = textViewHoraTres.getText().toString() + ":00";
+                                    Hora4 = textViewHoraCuatro.getText().toString() + ":00";
+                                    RegistrarTienda(false, nombre_tienda);
+                                    //new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombre_tienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, textViewHoraUno.getText().toString() + ":00", textViewHoraDos.getText().toString() + ":00", textViewHoraTres.getText().toString() + ":00", textViewHoraCuatro.getText().toString() + ":00", sStart.getItemAtPosition(posInicio).toString(), sEnd.getItemAtPosition(posFin).toString(), id_usuario, latitud, longitud));
                                 }
                                 else
                                 {
@@ -265,6 +284,18 @@ public class fragmentTiendaDos extends Fragment
         });
 
         return view;
+    }
+    public void RegistrarTienda(boolean aBooleanContinuado, String nombreTienda)
+    {
+        if (aBooleanContinuado)
+        {
+            new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombreTienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, Hora1, Hora2, "00:00:00", "00:00:00", diaInicio, diaFin, id_usuario, latitud, longitud));
+        }
+        else
+        {
+            new consultarTienda().execute(getResources().getString(R.string.direccion_web)+ "Controlador/insertar_tienda.php", newInstance(imagen_cod, nombreTienda, des_tienda, calle_tienda, numero_tienda, desPos, numPos, Hora1, Hora2, Hora3, Hora4, diaInicio, diaFin, id_usuario, latitud, longitud));
+        }
+
     }
 
     @Override
@@ -434,6 +465,10 @@ public class fragmentTiendaDos extends Fragment
                 {
                     if (sw == true)
                     {
+                        if (progress != null)
+                        {
+                            progress.dismiss();
+                        }
                         Toast.makeText(getContext(), "Tu tienda ha sido creada, entra la pestaña llamada mis tiendas.", Toast.LENGTH_LONG).show();
                         FragmentTransaction trans = getFragmentManager().beginTransaction();
                         trans.replace(R.id.content_general, new MapaInicio());
@@ -444,12 +479,49 @@ public class fragmentTiendaDos extends Fragment
                     else if (jsonResult.getString("Resultado").equals("1"))
                     {
                         Toast.makeText(getContext(), "El nombre de la tienda ya existe.", Toast.LENGTH_LONG).show();
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                        final EditText edittext = new EditText(getContext());
+                        alert.setMessage("La tienda \"" + nombre_tienda + "\" ya existe");
+                        alert.setTitle("Escribe otro nombre...");
 
-                        AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                        View p = getActivity().getLayoutInflater().inflate(R.layout.nombre_tienda, null);
-                        builderChange.setView(p);
-                        AlertDialog dialogTienda = builderChange.create();
-                        dialogTienda.show();
+                        alert.setView(edittext);
+
+                        alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int whichButton)
+                            {
+                                String editStore = edittext.getText().toString().trim();
+                                if (editStore.isEmpty())
+                                {
+                                    edittext.setError("Debes colocar un nombre");
+                                }
+                                else
+                                {
+                                    if (editStore.length() >= 4)
+                                    {
+                                        RegistrarTienda(isContinuado, editStore);
+
+                                        progress = new ProgressDialog(getContext());
+                                        progress.setMessage("Registrando tienda...");
+                                        progress.setCanceledOnTouchOutside(false);
+                                        progress.show();
+                                    }
+                                    else
+                                    {
+                                        edittext.setError("El nombre de la tienda debe ser mayor o igual a cuatro caracteres");
+                                    }
+                                }
+                            }
+                        });
+
+                        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton)
+                            {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        alert.show();
                     }
                     else if (jsonResult.getString("Resultado").equals("Error"))
                     {
