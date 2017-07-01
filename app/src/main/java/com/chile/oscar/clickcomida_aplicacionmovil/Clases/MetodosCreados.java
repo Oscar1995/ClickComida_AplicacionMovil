@@ -134,6 +134,20 @@ public class MetodosCreados
         roundedDrawable.setCornerRadius(bitmapOriginal.getWidth());
         return roundedDrawable;
     }
+    public RoundedBitmapDrawable EncuadrarBitmap (Bitmap bitmapOriginal, Resources resources)
+    {
+        if (bitmapOriginal.getWidth() > bitmapOriginal.getHeight())
+        {
+            bitmapOriginal = Bitmap.createBitmap(bitmapOriginal, 0, 0, bitmapOriginal.getHeight(), bitmapOriginal.getHeight());
+        }
+        else if (bitmapOriginal.getWidth() < bitmapOriginal.getHeight())
+        {
+            bitmapOriginal = Bitmap.createBitmap(bitmapOriginal, 0, 0, bitmapOriginal.getWidth(), bitmapOriginal.getWidth());
+        }
+
+        RoundedBitmapDrawable roundedDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapOriginal);
+        return roundedDrawable;
+    }
     public String formatearFecha (String fecha)
     {
         SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -182,6 +196,23 @@ public class MetodosCreados
             e.printStackTrace();
         }
         dateParser.applyPattern("EEEE, dd 'de' MMMM 'de' yyyy");
+        String dateformat = dateParser.format(date);
+        return dateformat;
+    }
+    public String formatearFechaConSlash (String fecha)
+    {
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date date = null;
+        try
+        {
+            date = dateParser.parse(fecha);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        dateParser.applyPattern("dd/MM/yyyy");
         String dateformat = dateParser.format(date);
         return dateformat;
     }

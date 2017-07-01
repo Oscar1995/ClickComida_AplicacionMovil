@@ -5,6 +5,7 @@
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.Tracking">
 
     <!-- TODO: Update blank fragment layout -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

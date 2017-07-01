@@ -358,8 +358,8 @@ public class BusquedaAvanzada extends Fragment {
             if (aBooleanProdOrStore)
             {
                 imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
-                textViewProducto.setText(busquedaAvanzadaProductosList.get(position).getNameProd().toString());
-                textViewTienda.setText(busquedaAvanzadaProductosList.get(position).getNameStore().toString());
+                textViewProducto.setText(Html.fromHtml("<b>Producto: </b>" + busquedaAvanzadaProductosList.get(position).getNameProd().toString()));
+                textViewTienda.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaProductosList.get(position).getNameStore().toString()));
                 textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
             }
             else

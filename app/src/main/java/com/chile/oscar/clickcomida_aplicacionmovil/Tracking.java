@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,20 +22,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos_Proceso;
@@ -65,6 +72,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,7 +90,8 @@ import java.util.TimerTask;
  * Use the {@link Tracking#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Tracking extends Fragment implements DatePickerDialog.OnDateSetListener {
+public class Tracking extends Fragment
+{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -93,12 +103,20 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
     private String mParam2;
     ListView listViewPedidos;
     List<Pedidos_Proceso> pedidos_procesoList;
+    List<Bitmap> bitmapList = new ArrayList<>();
+    List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
     ProgressDialog progress;
     String tipoLoad = "";
     View pMap;
     AlertDialog mapUpdate;
     Boolean sonidoRep =false;
     SupportMapFragment map;
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-d");
+    Date dateEsp, dateEntre1, dateEntre2;
+
+    String dateEsps, dateEntre1s, dateEntre2s;
+
     Boolean viewCreated = false;
     String[] formatoFechas = new String[2];
 
@@ -197,7 +215,7 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
-                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        dateEsps = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEspecifico.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
@@ -214,7 +232,7 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
-                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        dateEntre1s = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEntre1.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
@@ -230,7 +248,7 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
-                        String newFormat = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
+                        dateEntre2s = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEntre2.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
@@ -244,6 +262,24 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
             {
                 if (!textViewEspecifico.getText().toString().equals("Pincha aqui para definir fecha"))
                 {
+                    try
+                    {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Cargando pedidos por una fecha en especifico...");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        tipoLoad = "Fechas";
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("user_id", Coordenadas.id);
+                        jsonObject.put("tipo", "Especifico");
+                        jsonObject.put("fecha1", dateEsps);
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario_fecha.php", jsonObject.toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
 
                 }
                 else
@@ -264,6 +300,26 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                 else
                 {
 
+                    try
+                    {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Cargando pedidos entre dos fechas...");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        tipoLoad = "Fechas";
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("user_id", Coordenadas.id);
+                        jsonObject.put("tipo", "Entre");
+                        jsonObject.put("fecha1", dateEntre1s);
+                        jsonObject.put("fecha2", dateEntre2s);
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario_fecha.php", jsonObject.toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
                 }
             }
         });
@@ -280,98 +336,6 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
         {
             e.printStackTrace();
         }
-
-        listViewPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
-            {
-                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-                if (googleMapGlobal != null)
-                {
-                    googleMapGlobal.clear();
-                }
-                if (pMap == null)
-                {
-                    pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
-                }
-                if (pMap.getParent() != null)
-                {
-                    ((ViewGroup)pMap.getParent()).removeView(pMap);
-                }
-
-                final Boolean[] swPos = {false};
-                map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                builderMapa.setView(pMap);
-                mapUpdate = builderMapa.create();
-                mapUpdate.show();
-                map.getMapAsync(new OnMapReadyCallback()
-                {
-                    @Override
-                    public void onMapReady(final GoogleMap googleMap)
-                    {
-                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-
-                            return;
-                        }
-
-                        Timer timer = new Timer();
-                        timer.scheduleAtFixedRate(new TimerTask()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                try
-                                {
-                                    JSONObject object = new JSONObject();
-                                    object.put("user_id", Coordenadas.id);
-                                    object.put("order_id", pedidos_procesoList.get(position).getOrden_id());
-                                    tipoLoad = "Repartidor";
-                                    googleMapGlobal = googleMap;
-                                    new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ubicacionRepartidor.php", object.toString());
-
-                                }
-                                catch (JSONException e)
-                                {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }, 0, 5000);
-                        googleMap.setMyLocationEnabled(true);
-                        googleMap.getUiSettings().setZoomControlsEnabled(true);
-                        if (googleMap != null)
-                        {
-                            Location location = getMyLocation();
-                            if (location != null)
-                            {
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-                                //googleMap.animateCamera(miUbicacion);
-                            }
-
-                        }
-
-                    }
-                });
-                botonTomarCoor.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        getFragmentManager().beginTransaction().remove(map).commit();
-                        mapUpdate.dismiss();
-                    }
-                });
-
-            }
-        });
 
         return v;
     }
@@ -431,12 +395,6 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
         super.onDetach();
     }
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
-    {
-
-    }
-
     class PedidosAdapter extends BaseAdapter
     {
 
@@ -463,11 +421,140 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
             TextView textViewEstado = (TextView)convertView.findViewById(R.id.txtEstado);
             TextView textViewNombreTienda = (TextView)convertView.findViewById(R.id.txtNombreTienda);
             TextView textViewFecha= (TextView)convertView.findViewById(R.id.txtFecha);
+            ImageView imageViewOjo = (ImageView)convertView.findViewById(R.id.ivOjo);
+            ImageView imageViewMap = (ImageView)convertView.findViewById(R.id.ivMap);
+
+            imageViewOjo.setId(position);
+            imageViewMap.setId(position);
 
             textViewIdPedido.setText(pedidos_procesoList.get(position).getOrden_id() + "");
             textViewEstado.setText(pedidos_procesoList.get(position).getEstado() + "");
             textViewNombreTienda.setText("Tienda: " + pedidos_procesoList.get(position).getNombreTienda() + "");
-            textViewFecha.setText(pedidos_procesoList.get(position).getOrden_fecha() + "");
+            textViewFecha.setText(new MetodosCreados().formatearFechaConSlash(pedidos_procesoList.get(position).getOrden_fecha()));
+
+            if (pedidos_procesoList.get(position).getEstado().equals("Entregado"))
+            {
+                imageViewMap.setVisibility(View.GONE);
+            }
+            else
+            {
+                imageViewMap.setVisibility(View.VISIBLE);
+            }
+
+            imageViewMap.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(final View v)
+                {
+                    final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                    if (googleMapGlobal != null)
+                    {
+                        googleMapGlobal.clear();
+                    }
+                    if (pMap == null)
+                    {
+                        pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                    }
+                    if (pMap.getParent() != null)
+                    {
+                        ((ViewGroup)pMap.getParent()).removeView(pMap);
+                    }
+                    map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+                    Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                    builderMapa.setView(pMap);
+                    mapUpdate = builderMapa.create();
+                    mapUpdate.show();
+                    map.getMapAsync(new OnMapReadyCallback()
+                    {
+                        @Override
+                        public void onMapReady(final GoogleMap googleMap)
+                        {
+                            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                // TODO: Consider calling
+                                //    ActivityCompat#requestPermissions
+                                // here to request the missing permissions, and then overriding
+                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                //                                          int[] grantResults)
+                                // to handle the case where the user grants the permission. See the documentation
+                                // for ActivityCompat#requestPermissions for more details.
+
+                                return;
+                            }
+
+                            Timer timer = new Timer();
+                            timer.scheduleAtFixedRate(new TimerTask()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    try
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        object.put("user_id", Coordenadas.id);
+                                        object.put("order_id", pedidos_procesoList.get(v.getId()).getOrden_id());
+                                        tipoLoad = "Repartidor";
+                                        googleMapGlobal = googleMap;
+                                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ubicacionRepartidor.php", object.toString());
+
+                                    }
+                                    catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }, 0, 5000);
+                            googleMap.setMyLocationEnabled(true);
+                            googleMap.getUiSettings().setZoomControlsEnabled(true);
+                            if (googleMap != null)
+                            {
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                                    //googleMap.animateCamera(miUbicacion);
+                                }
+
+                            }
+
+                        }
+                    });
+                    botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            getFragmentManager().beginTransaction().remove(map).commit();
+                            mapUpdate.dismiss();
+                        }
+                    });
+                }
+            });
+            imageViewOjo.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    try
+                    {
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Cargando productos de la orden...");
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        tipoLoad = "Productos";
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("orderId", pedidos_procesoList.get(v.getId()).getOrden_id());
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarProductoPedido_porOrden.php", jsonObject.toString());
+
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
 
 
             return convertView;
@@ -553,6 +640,13 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
             {
                 if (tipoLoad.equals("Pedidos"))
                 {
+                    if (pedidos_procesoList != null)
+                    {
+                        if (!pedidos_procesoList.isEmpty())
+                        {
+                            pedidos_procesoList.clear();
+                        }
+                    }
                     if (!s.equals("[]"))
                     {
                         JSONArray jsonArray = new JSONArray(s);
@@ -608,8 +702,6 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                             }
                             Log.d("Distancia: " , MetrosDistancia + " metros.");
                         }
-
-
                     }
                     else
                     {
@@ -619,7 +711,131 @@ public class Tracking extends Fragment implements DatePickerDialog.OnDateSetList
                         }
                     }
                 }
+                else if (tipoLoad.equals("Fechas"))
+                {
+                    if (!s.equals("[]"))
+                    {
+                        if (pedidos_procesoList != null)
+                        {
+                            if (!pedidos_procesoList.isEmpty())
+                            {
+                                pedidos_procesoList.clear();
+                            }
+                        }
+                        JSONArray jsonArray = new JSONArray(s);
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            Pedidos_Proceso pedidos_proceso = new Pedidos_Proceso();
+                            pedidos_proceso.setOrden_id(object.getInt("id"));
+                            pedidos_proceso.setOrden_fecha(object.getString("date"));
+                            pedidos_proceso.setEstado(object.getString("description"));
+                            pedidos_proceso.setNombreTienda(object.getString("name"));
+                            pedidos_procesoList.add(pedidos_proceso);
+                        }
+                        progress.dismiss();
+                        listViewPedidos.setAdapter(new PedidosAdapter());
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "No se han encontrado pedidos con la fecha que colocaste...", Toast.LENGTH_LONG).show();
+                        progress.dismiss();
+                    }
 
+                }
+                else if (tipoLoad.equals("Productos"))
+                {
+                    if (!s.equals("[]"))
+                    {
+                        if (busquedaAvanzadaProductosList != null)
+                        {
+                            if (!busquedaAvanzadaProductosList.isEmpty())
+                            {
+                                busquedaAvanzadaProductosList.clear();
+                                bitmapList.clear();
+                            }
+                        }
+
+                        JSONArray jsonArray = new JSONArray(s);
+                        int nMitad = jsonArray.length() / 2; // 1:Informacion, 2:Fotos
+                        int cLocal = 0;
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            if (i >= nMitad)
+                            {
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                bitmapList.add(Codificacion.decodeBase64(object.getString("photo_"+cLocal)));
+                                cLocal++;
+                            }
+                            else
+                            {
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                BusquedaAvanzadaProductos busquedaAvanzadaProductos = new BusquedaAvanzadaProductos();
+                                busquedaAvanzadaProductos.setIdProd(object.getInt("" + 0));
+                                busquedaAvanzadaProductos.setIdStore(object.getInt("id"));
+                                busquedaAvanzadaProductos.setNameProd(object.getString("" + 2));
+                                busquedaAvanzadaProductos.setNameStore(object.getString("name"));
+                                busquedaAvanzadaProductos.setDesProd(object.getString("description"));
+                                busquedaAvanzadaProductos.setpProd(object.getInt("price"));
+                                busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
+                            }
+                        }
+                        progress.dismiss();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Productos de esta orden");
+                        ListView listViewProducts = new ListView(getContext());
+
+                        BaseAdapter baseAdapter = new BaseAdapter()
+                        {
+                            @Override
+                            public int getCount() {
+                                return bitmapList.size();
+                            }
+
+                            @Override
+                            public Object getItem(int position) {
+                                return null;
+                            }
+
+                            @Override
+                            public long getItemId(int position) {
+                                return 0;
+                            }
+
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent)
+                            {
+                                convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_busqueda_avanzada, null);
+                                ImageView imageViewProducto = (ImageView)convertView.findViewById(R.id.ivProducto);
+                                TextView textViewProducto = (TextView)convertView.findViewById(R.id.tvNombreProd);
+                                TextView textViewTienda = (TextView)convertView.findViewById(R.id.tvNombreTienda);
+                                TextView textViewPrecio = (TextView)convertView.findViewById(R.id.tvPrecio);
+
+
+                                imageViewProducto.setImageDrawable(new MetodosCreados().EncuadrarBitmap(bitmapList.get(position), getResources()));
+                                imageViewProducto.getLayoutParams().width = 160;
+                                imageViewProducto.getLayoutParams().height = 160;
+                                textViewProducto.setText(Html.fromHtml("<b>Producto: </b>" + busquedaAvanzadaProductosList.get(position).getNameProd().toString()));
+                                textViewTienda.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaProductosList.get(position).getNameStore().toString()));
+                                textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
+                                return convertView;
+                            }
+                        };
+
+                        listViewProducts.setAdapter(baseAdapter);
+                        builder.setView(listViewProducts);
+                        builder.setPositiveButton("Cerrar", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.show();
+                    }
+                }
 
             }
             catch (JSONException e)
