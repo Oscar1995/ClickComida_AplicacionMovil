@@ -157,7 +157,9 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
         args.putString("lunch_open_hour", params[9]);
         args.putString("lunch_after_hour", params[10]);
         args.putString("tienda_id", params[11]);
-        args.putString("user_id", params[12]);
+        args.putString("latitud", params[12]);
+        args.putString("longitud", params[13]);
+        args.putString("user_id", params[14]);
         fragment.setArguments(args);
         return fragment;
     }
@@ -505,7 +507,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                 else if (tipoConsulta.equals("Otra Tienda"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId()), Coordenadas.id));
+                    trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId()),getDataMaps.get(pos).getLatitude() + "", getDataMaps.get(pos).getLongitude() + "", Coordenadas.id));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();

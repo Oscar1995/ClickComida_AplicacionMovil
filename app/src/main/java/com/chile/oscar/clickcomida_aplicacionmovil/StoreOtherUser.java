@@ -1,13 +1,20 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.Rating;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +31,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,6 +69,9 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     Bitmap imagenTienda;
     Boolean userCal = false, sw = false;
 
+    int countLike = 0;
+    String nameStore = "a tienda";
+
     List<String> storesNicknames;
     List<String> storesComments;
     List<String> storesDatecomments;
@@ -70,11 +81,8 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     Boolean favorite = false;
     ImageView imageViewFavoritos;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     RatingBar ratingBarUsuario, ratingTienda;
-    TextView textViewCal;
+    TextView textViewCal, textViewLikeStore;
     ProgressDialog progress;
 
     private OnFragmentInteractionListener mListener;
@@ -157,6 +165,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         TextView textViewHorario = (TextView)view.findViewById(R.id.tvHorarioOther);
         editTextComentario  = (EditText)view.findViewById(R.id.etComentarioOther);
         imageViewFavoritos = (ImageView)view.findViewById(R.id.ivFavoritos);
+        textViewLikeStore = (TextView)view.findViewById(R.id.tvLikeStore);
 
         Button buttonComentar = (Button)view.findViewById(R.id.btnComentar);
         Button buttonProducto = (Button)view.findViewById(R.id.btnProductOther);
@@ -166,6 +175,18 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         imageViewOther.setImageBitmap(imagenTienda);
         textViewNombre.setText(nombre);
         textViewDireccion.setText(getResources().getString(R.string.calle_tienda) + ": " + calle + ", " + getResources().getString(R.string.numero_tienda) + ": " + numero);
+
+
+        Location location = getMyLocation();
+        if (location != null)
+        {
+            textViewKilometros.setVisibility(View.VISIBLE);
+            textViewKilometros.setText("A " + new MetodosCreados().CalculationByDistanceKilometers(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud))) + " " + "kilometros de ti");
+        }
+        else
+        {
+            textViewKilometros.setVisibility(View.GONE);
+        }
 
 
         String openupdate = new MetodosCreados().HoraNormal(open_hour);
@@ -456,6 +477,20 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             return convertView;
         }
     }
+    private Location getMyLocation()
+    {
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (myLocation == null) {
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            String provider = lm.getBestProvider(criteria, true);
+            myLocation = lm.getLastKnownLocation(provider);
+        }
+        return myLocation;
+    }
     public class EjecutarConsulta extends AsyncTask<String, Void, String> {
         @Override
         public String doInBackground(String... params) {
@@ -505,6 +540,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         @Override
         protected void onPostExecute(String s)
         {
+            //Cargar valor - cargar favorito - cargar comentarios
             try
             {
                 if (tipoReg.equals("Insertar calificacion"))
@@ -541,6 +577,19 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         ratingTienda.setRating(0);
                         textViewCal.setText("Califica esta tienda");
                     }
+                    countLike = object.getInt("Favoritos");
+                    if (countLike == 0)
+                    {
+                        textViewLikeStore.setText(getResources().getString(R.string.none_person));
+                    }
+                    else if (countLike == 1)
+                    {
+                        textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_one) + nameStore);
+                    }
+                    else
+                    {
+                        textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_more) + nameStore);
+                    }
                     progress.setMessage("Cargando...");
                     cargarFavorito();
                 }
@@ -570,6 +619,19 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         imageViewFavoritos.setImageResource(R.drawable.heart_active);
                         progress.dismiss();
                         Toast.makeText(getContext(), "Has agregado la tienda " + nombre +" a tus favoritos.", Toast.LENGTH_SHORT).show();
+                        countLike++;
+                        if (countLike == 0)
+                        {
+                            textViewLikeStore.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (countLike == 1)
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_one) + nameStore);
+                        }
+                        else
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_more) + nameStore);
+                        }
                     }
                 }
                 else if (tipoReg.equals("Eliminar favoritos"))
@@ -582,6 +644,19 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         imageViewFavoritos.setImageResource(R.drawable.heart_desactive);
                         progress.dismiss();
                         Toast.makeText(getContext(), "La tienda " + nombre +" ya no pertenece a tus favoritos.", Toast.LENGTH_SHORT).show();
+                        countLike--;
+                        if (countLike == 0)
+                        {
+                            textViewLikeStore.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (countLike == 1)
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_one) + nameStore);
+                        }
+                        else
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_more) + nameStore);
+                        }
                     }
                 }
                 else if (tipoReg.equals("Cargar favorito"))

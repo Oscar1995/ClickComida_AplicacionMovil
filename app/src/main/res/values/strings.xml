@@ -262,4 +262,8 @@
     <string name="buscar_fecha_esp">Buscar por fecha en especifico</string>
     <string name="buscar_fecha_entre">Buscar por fechas entre...</string>
     <string name="pincha_aqui">Pincha aqui para definir fecha</string>
+    <string name="like_person">persona le gusta esta tiendapersona le gusta esta tienda</string>
+    <string name="none_person">Se el primero en agregar esta tienda a tus favoritos</string>
+    <string name="none_person_one">persona le gusta est</string>
+    <string name="none_person_more">personas le gusta est</string>
 </resources>

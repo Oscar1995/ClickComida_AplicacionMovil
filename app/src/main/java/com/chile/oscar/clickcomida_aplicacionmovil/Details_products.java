@@ -65,7 +65,7 @@ public class Details_products extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    Boolean prodFav = false, prodCal = false, sw = true;
+    Boolean prodFav = false, prodCal = false, sw = true, loadCommentary;
     RatingBar ratingBarGlobal, ratingBarUser;
     Bitmap imagenProducto;
     ImageView imageViewFavProd;
@@ -74,6 +74,9 @@ public class Details_products extends Fragment {
     ListView listViewComentariosProd;
     EditText editTextComentario;
     List<Comentarios> comentariosProd;
+    TextView textViewLikeProd;
+    String nameProd = "e producto";
+    int likeGlobal = 0;
 
     ProgressDialog progress;
 
@@ -132,6 +135,7 @@ public class Details_products extends Fragment {
         TextView textViewDescripcion = (TextView)v.findViewById(R.id.tvDesProductoOther);
         TextView textViewPrecio = (TextView)v.findViewById(R.id.tvPrecioProductoOther);
         TextView textViewTituloTienda = (TextView)v.findViewById(R.id.txtTituloTienda);
+        textViewLikeProd = (TextView)v.findViewById(R.id.tvLikeProducts);
         editTextComentario = (EditText)v.findViewById(R.id.etComentarioOtherProd);
         final NumberPicker numberPickerCantidad = (NumberPicker)v.findViewById(R.id.numberPickerCantidad);
         numberPickerCantidad.setMinValue(1);
@@ -176,6 +180,7 @@ public class Details_products extends Fragment {
                         object.put("product_id", product_id);
 
                         tipoReg = "Agregar comentario";
+                        loadCommentary = true;
                         new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertarComentarioProducto.php", object.toString());
                     }
                     else
@@ -510,6 +515,7 @@ public class Details_products extends Fragment {
         @Override
         protected void onPostExecute(String s)
         {
+            //Cargar favoritos - cargar calificacion - cargar comentarios -
             try
             {
                 if (tipoReg.equals("Insertar favoritos"))
@@ -522,6 +528,21 @@ public class Details_products extends Fragment {
                         imageViewFavProd.setImageResource(R.drawable.heart_active);
                         progress.dismiss();
                         Toast.makeText(getContext(), "Este producto ha sido agregado a tus favoritos", Toast.LENGTH_SHORT).show();
+
+                        likeGlobal = likeGlobal + 1;
+                        if (likeGlobal == 0)
+                        {
+                            textViewLikeProd.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (likeGlobal == 1)
+                        {
+                            textViewLikeProd.setText(likeGlobal + " " + getResources().getString(R.string.none_person_one) + nameProd);
+                        }
+                        else
+                        {
+                            textViewLikeProd.setText(likeGlobal + " " + getResources().getString(R.string.none_person_more) + nameProd);
+                        }
+
                     }
                 }
                 else if (tipoReg.equals("Eliminar favoritos"))
@@ -534,6 +555,19 @@ public class Details_products extends Fragment {
                         imageViewFavProd.setImageResource(R.drawable.heart_desactive);
                         progress.dismiss();
                         Toast.makeText(getContext(), "El producto ya no pertenece a tus favoritos", Toast.LENGTH_SHORT).show();
+                        likeGlobal = likeGlobal - 1;
+                        if (likeGlobal == 0)
+                        {
+                            textViewLikeProd.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (likeGlobal == 1)
+                        {
+                            textViewLikeProd.setText(likeGlobal + " " + getResources().getString(R.string.none_person_one) + nameProd);
+                        }
+                        else
+                        {
+                            textViewLikeProd.setText(likeGlobal + " " + getResources().getString(R.string.none_person_more) + nameProd);
+                        }
                     }
                 }
                 else if (tipoReg.equals("Cargar favorito"))
@@ -544,6 +578,20 @@ public class Details_products extends Fragment {
                     {
                         prodFav = true;
                         imageViewFavProd.setImageResource(R.drawable.heart_active);
+                        if (object.getInt("Cuenta") == 0)
+                        {
+                            textViewLikeProd.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (object.getInt("Cuenta") == 1)
+                        {
+                            textViewLikeProd.setText(object.getInt("Cuenta") + " " + getResources().getString(R.string.none_person_one) + nameProd);
+                        }
+                        else
+                        {
+                            textViewLikeProd.setText(object.getInt("Cuenta") + " " + getResources().getString(R.string.none_person_more) + nameProd);
+                        }
+                        likeGlobal = object.getInt("Cuenta");
+
                     }
                     else
                     {
@@ -615,6 +663,7 @@ public class Details_products extends Fragment {
                     {
                         Toast.makeText(getContext(), "Comentario agregado", Toast.LENGTH_SHORT).show();
                         editTextComentario.setText("");
+                        if (loadCommentary) progress.dismiss(); loadCommentary = false;
                         cargarComentarios();
                     }
                 }
