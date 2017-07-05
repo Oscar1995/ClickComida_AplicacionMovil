@@ -1,8 +1,10 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,12 +25,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -88,6 +92,10 @@ public class StoreFragmentSelected extends Fragment {
     GoogleMap googleMapGlobal;
     View vMod;
     AlertDialog mapUpdate;
+    ProgressDialog progress;
+    String dInicio = "";
+    String dFin = "";
+    String[] dayWeek = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
 
 
     private OnFragmentInteractionListener mListener;
@@ -180,8 +188,62 @@ public class StoreFragmentSelected extends Fragment {
         });
         buttonModificarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
+            public void onClick(View v)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                final CharSequence[] items = new CharSequence[3];
+                items[0] = "Camara";
+                items[1] = "Galeria";
+                items[2] = "Cancelar";
+                builder.setTitle("Elije una opción")
+                        .setItems(items, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                if (items[which].equals("Camara"))
+                                {
+                                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                        {
+                                            //Aqui pregunta primero cuando los permidos no estan activados
+                                            //requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Päsa aqui cuando los permisos estan activados
+                                        dispatchTakePictureIntent();
+                                    }
+                                }
+                                else if (items[which].equals("Galeria"))
+                                {
+                                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                        {
+                                            //Aqui pregunta primero cuando los permidos no estan activados
+                                            //requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Päsa aqui cuando los permisos estan activados
+                                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        intent.setType("image/*");
+                                        startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                    }
+                                }
+                                else if (items[which].equals("Cancelar"))
+                                {
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+                builder.show();
+
+                /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
                 View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
                 builderChange.setView(p);
 
@@ -195,19 +257,24 @@ public class StoreFragmentSelected extends Fragment {
                 listViewPhoto_Gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
+                        if (position == 0)
+                        {
                             dialogAlert.dismiss();
                             dispatchTakePictureIntent();
-                        } else if (position == 1) {
+                        }
+                        else if (position == 1)
+                        {
                             dialogAlert.dismiss();
                             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                             intent.setType("image/*");
                             startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                        } else if (position == 2) {
+                        }
+                        else if (position == 2)
+                        {
                             dialogAlert.dismiss();
                         }
                     }
-                });
+                });*/
             }
         });
         buttonModificarDatos.setOnClickListener(new View.OnClickListener() {
@@ -240,10 +307,16 @@ public class StoreFragmentSelected extends Fragment {
                 final TextView textViewHora2 = (TextView) vMod.findViewById(R.id.tvHora2);
                 final TextView textViewHora3 = (TextView) vMod.findViewById(R.id.tvHora3);
                 final TextView textViewHora4 = (TextView) vMod.findViewById(R.id.tvHora4);
+
+                Spinner spinnerInicio = (Spinner)vMod.findViewById(R.id.spnInicio);
+                Spinner spinnerFin = (Spinner)vMod.findViewById(R.id.spnFin);
+
+                ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, dayWeek);
+                spinnerInicio.setAdapter(arrayAdapter);
+                spinnerFin.setAdapter(arrayAdapter);
+
                 //MapView mapViewTienda = (MapView)vMod.findViewById(R.id.mpTienda);
                 Button buttonModTienda = (Button) vMod.findViewById(R.id.btnModTienda);
-
-
 
                 SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mpTienda);
 
@@ -271,6 +344,35 @@ public class StoreFragmentSelected extends Fragment {
                     textViewHora3.setText(new MetodosCreados().HoraNormal(lunch_hour));
                     textViewHora4.setText(new MetodosCreados().HoraNormal(lunch_after_hour));
                 }
+
+                spinnerInicio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+                {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        dInicio = dayWeek[position];
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent)
+                    {
+
+                    }
+                });
+                spinnerFin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+                {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        dFin = dayWeek[position];
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent)
+                    {
+
+                    }
+                });
                 map.getMapAsync(new OnMapReadyCallback()
                 {
                     @Override
@@ -370,8 +472,23 @@ public class StoreFragmentSelected extends Fragment {
                             object.put("close_hour", textViewHora2.getText().toString());
                             object.put("lunch_hour", textViewHora3.getText().toString());
                             object.put("lunch_after_hour", textViewHora4.getText().toString());
+                            object.put("dayI", dInicio);
+                            object.put("dayE", dFin);
                             object.put("latitud", Coordenadas.latitud);
                             object.put("longitud", Coordenadas.longitud);
+
+                            /*nombre = editTextNombreTienda.getText().toString();
+                            des =editTextDesTienda.getText().toString();
+                            calle = editTextCalle.getText().toString();
+                            numero = editTextNum.getText().toString();
+                            open_hour = textViewHora1.getText().toString();
+                            close_hour = textViewHora2.getText().toString();
+                            lunch_hour = textViewHora3.getText().toString();
+                            lunch_after_hour = textViewHora4.getText().toString();
+                            //start_day;
+                            //end_day;
+                            latitud = String.valueOf(Coordenadas.latitud);
+                            longitud = String.valueOf(Coordenadas.longitud);*/
 
                         }
                         catch (JSONException e)
@@ -485,6 +602,10 @@ public class StoreFragmentSelected extends Fragment {
             {
                 e.printStackTrace();
             }
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Modificado imagen...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
             new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarImagenTienda.php", object.toString());
         }
         else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK)
@@ -508,6 +629,10 @@ public class StoreFragmentSelected extends Fragment {
                 {
                     e.printStackTrace();
                 }
+                progress = new ProgressDialog(getContext());
+                progress.setMessage("Modificado imagen...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
                 new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarImagenTienda.php", object.toString());
                 //imagenGeneral = Codificacion.encodeToBase64(rotado, Bitmap.CompressFormat.PNG, 100);
             }
@@ -630,6 +755,7 @@ public class StoreFragmentSelected extends Fragment {
             else
             {
                 Toast.makeText(getContext(), "Imagen modificada.", Toast.LENGTH_SHORT).show();
+                progress.dismiss();
             }
         }
     }

@@ -6,8 +6,19 @@ package com.chile.oscar.clickcomida_aplicacionmovil.Clases;
 
 public class BusquedaAvanzadaProductos
 {
-    int idProd, idStore, pProd;
+    int idProd;
+    int idStore;
+    int pProd;
+    int userId;
     String nameProd;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     public int getIdProd() {
         return idProd;

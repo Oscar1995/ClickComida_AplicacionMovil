@@ -319,13 +319,10 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 //dispatchTakePictureIntent();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
                 final CharSequence[] items = new CharSequence[3];
-
                 items[0] = "Camara";
                 items[1] = "Galeria";
                 items[2] = "Cancelar";
-
                 builder.setTitle("Elije una opción")
                         .setItems(items, new DialogInterface.OnClickListener()
                         {
@@ -374,51 +371,6 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                         });
                 builder.show();
 
-                /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
-                builderChange.setView(p);
-
-                ListView listViewPhoto_Gallery = (ListView)p.findViewById(R.id.lvPhoto_Gallery);
-
-                CustomAdapter customAdapter = new CustomAdapter();
-                listViewPhoto_Gallery.setAdapter(customAdapter);
-                final AlertDialog dialogAlert = builderChange.create();
-                dialogAlert.show();
-
-                listViewPhoto_Gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                    {
-                        if (position == 0)
-                        {
-                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
-                                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
-                                {
-                                    Toast.makeText(getContext(), "0", Toast.LENGTH_SHORT).show();
-                                    dispatchTakePictureIntent();
-                                }
-                                else
-                                {
-                                    Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
-                                    requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
-                                }
-                            }
-                            dialogAlert.dismiss();
-                        }
-                        else if(position == 1)
-                        {
-                            dialogAlert.dismiss();
-                            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            intent.setType("image/*");
-                            startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                        }
-                        else if (position ==2)
-                        {
-                            dialogAlert.dismiss();
-                        }
-                    }
-                });*/
                 break;
         }
     }

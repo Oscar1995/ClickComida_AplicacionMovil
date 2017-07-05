@@ -64,6 +64,17 @@
                 android:text="$0"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorVerde"
+                android:gravity="center"
+                android:text="@string/mi_tienda"
+                android:textColor="@color/textoBlanco"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

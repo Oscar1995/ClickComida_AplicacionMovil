@@ -266,4 +266,6 @@
     <string name="none_person">Se el primero en agregar esta tienda a tus favoritos</string>
     <string name="none_person_one">persona le gusta est</string>
     <string name="none_person_more">personas le gusta est</string>
+    <string name="mi_tienda">Esta tienda es tuya</string>
+    <string name="mi_producto">Este producto es tuyo</string>
 </resources>
