@@ -216,6 +216,24 @@ public class MetodosCreados
         String dateformat = dateParser.format(date);
         return dateformat;
     }
+    public int CompararFechas (String fecha1, String fecha2)
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-d");
+        int resNum = 0;
+
+        try
+        {
+            Date dateEntre1 = formatter.parse(fecha1);
+            Date dateEntre2 = formatter.parse(fecha2);
+            resNum = dateEntre1.compareTo(dateEntre2);
+
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return resNum;
+    }
     public Bitmap resizeMapIcons(Bitmap iconName, int width, int height)
     {
 

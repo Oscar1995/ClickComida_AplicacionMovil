@@ -106,19 +106,15 @@ public class Tracking extends Fragment
     List<Bitmap> bitmapList = new ArrayList<>();
     List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
     ProgressDialog progress;
-    String tipoLoad = "";
+    String tipoLoad = "", resErrorDate;
     View pMap;
     AlertDialog mapUpdate;
     Boolean sonidoRep =false;
     SupportMapFragment map;
+    Boolean isDateCorrect = false;
 
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-d");
-    Date dateEsp, dateEntre1, dateEntre2;
+    String dateEsps, dateEntre1s = "", dateEntre2s = "";
 
-    String dateEsps, dateEntre1s, dateEntre2s;
-
-    Boolean viewCreated = false;
-    String[] formatoFechas = new String[2];
 
     GoogleMap googleMapGlobal;
     LatLng latLngLocal;
@@ -234,6 +230,31 @@ public class Tracking extends Fragment
                     {
                         dateEntre1s = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEntre1.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
+                        textViewEntre1.setTextColor(getResources().getColor(R.color.colorCeleste));
+
+                        if (!dateEntre2s.isEmpty())
+                        {
+                            int resNum = new MetodosCreados().CompararFechas(dateEntre1s, dateEntre2s);
+                            if (resNum < 0) //date1 < date2
+                            {
+                                textViewEntre1.setTextColor(getResources().getColor(R.color.colorCeleste));
+                                textViewEntre2.setTextColor(getResources().getColor(R.color.colorCeleste));
+                                isDateCorrect = true;
+                            }
+                            else if (resNum > 0) //date2 > date1
+                            {
+                                textViewEntre1.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                isDateCorrect = false;
+                                resErrorDate = "La fecha debe ser menor a " + textViewEntre2.getText().toString();
+                            }
+                            else if (resNum  == 0) //date1 = date3
+                            {
+                                textViewEntre1.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                textViewEntre2.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                isDateCorrect = false;
+                                resErrorDate = "Las fechas no deben ser iguales";
+                            }
+                        }
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
@@ -250,6 +271,31 @@ public class Tracking extends Fragment
                     {
                         dateEntre2s = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEntre2.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
+                        textViewEntre2.setTextColor(getResources().getColor(R.color.colorCeleste));
+
+                        if (!dateEntre1s.isEmpty())
+                        {
+                            int resNum = new MetodosCreados().CompararFechas(dateEntre1s, dateEntre2s);
+                            if (resNum < 0) //date1 < date2
+                            {
+                                textViewEntre1.setTextColor(getResources().getColor(R.color.colorCeleste));
+                                textViewEntre2.setTextColor(getResources().getColor(R.color.colorCeleste));
+                                isDateCorrect = true;
+                            }
+                            else if (resNum > 0) //date2 > date1
+                            {
+                                textViewEntre2.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                isDateCorrect = false;
+                                resErrorDate = "La fecha debe ser mayor a " + textViewEntre1.getText().toString();
+                            }
+                            else if (resNum == 0) //date1 = date3
+                            {
+                                textViewEntre1.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                textViewEntre2.setTextColor(getResources().getColor(R.color.colorRojoClaro));
+                                isDateCorrect = false;
+                                resErrorDate = "Las fechas no deben ser iguales";
+                            }
+                        }
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
@@ -299,21 +345,43 @@ public class Tracking extends Fragment
                 }
                 else
                 {
-
                     try
                     {
-                        progress = new ProgressDialog(getContext());
-                        progress.setMessage("Cargando pedidos entre dos fechas...");
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
+                        if (isDateCorrect)
+                        {
+                            progress = new ProgressDialog(getContext());
+                            progress.setMessage("Cargando pedidos entre dos fechas...");
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
 
-                        tipoLoad = "Fechas";
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("user_id", Coordenadas.id);
-                        jsonObject.put("tipo", "Entre");
-                        jsonObject.put("fecha1", dateEntre1s);
-                        jsonObject.put("fecha2", dateEntre2s);
-                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario_fecha.php", jsonObject.toString());
+                            tipoLoad = "Fechas";
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("user_id", Coordenadas.id);
+                            jsonObject.put("tipo", "Entre");
+                            jsonObject.put("fecha1", dateEntre1s);
+                            jsonObject.put("fecha2", dateEntre2s);
+                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarPedidos_usuario_fecha.php", jsonObject.toString());
+                        }
+                        else
+                        {
+                            if (!dateEntre1s.isEmpty() && !dateEntre2s.isEmpty())
+                            {
+                                Toast.makeText(getContext(), resErrorDate, Toast.LENGTH_LONG).show();
+                            }
+                            else
+                            {
+                                if (dateEntre1s.isEmpty())
+                                {
+                                    Toast.makeText(getContext(), "Declara una fecha para la fecha antecesora", Toast.LENGTH_SHORT).show();
+                                }
+                                else if (dateEntre2s.isEmpty())
+                                {
+                                    Toast.makeText(getContext(), "Declara una fecha para la fecha sucesora", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        }
+
                     }
                     catch (JSONException e)
                     {
@@ -418,7 +486,7 @@ public class Tracking extends Fragment
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_tracking, null);
             TextView textViewIdPedido = (TextView)convertView.findViewById(R.id.txtIdPedido);
-            TextView textViewEstado = (TextView)convertView.findViewById(R.id.txtEstado);
+            final TextView textViewEstado = (TextView)convertView.findViewById(R.id.txtEstado);
             TextView textViewNombreTienda = (TextView)convertView.findViewById(R.id.txtNombreTienda);
             TextView textViewFecha= (TextView)convertView.findViewById(R.id.txtFecha);
             ImageView imageViewOjo = (ImageView)convertView.findViewById(R.id.ivOjo);
@@ -481,7 +549,7 @@ public class Tracking extends Fragment
                                 return;
                             }
 
-                            Timer timer = new Timer();
+                            final Timer timer = new Timer();
                             timer.scheduleAtFixedRate(new TimerTask()
                             {
                                 @Override
@@ -489,12 +557,23 @@ public class Tracking extends Fragment
                                 {
                                     try
                                     {
-                                        JSONObject object = new JSONObject();
-                                        object.put("user_id", Coordenadas.id);
-                                        object.put("order_id", pedidos_procesoList.get(v.getId()).getOrden_id());
-                                        tipoLoad = "Repartidor";
-                                        googleMapGlobal = googleMap;
-                                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ubicacionRepartidor.php", object.toString());
+                                        if (mapUpdate.isShowing()) //Cuando el mastra se muestra empieza el conteo cada 5 segundos
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            object.put("user_id", Coordenadas.id);
+                                            object.put("order_id", pedidos_procesoList.get(v.getId()).getOrden_id());
+                                            tipoLoad = "Repartidor";
+                                            googleMapGlobal = googleMap;
+                                            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/ubicacionRepartidor.php", object.toString());
+                                            Log.w("Muestra", "Se ha iniciado el temporizador");
+                                        }
+                                        else //Cuando el mapa ya no se esta mostrando, el contro de los 5 segundos es parado
+                                        {
+                                            timer.cancel();
+                                            timer.purge();
+                                            Log.e("Muestra", "Ha parado el temporizador");
+                                        }
+
 
                                     }
                                     catch (JSONException e)
