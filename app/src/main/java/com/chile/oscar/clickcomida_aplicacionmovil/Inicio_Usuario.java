@@ -1,14 +1,18 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -79,6 +83,8 @@ public class Inicio_Usuario extends AppCompatActivity
         myFrag.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
 
+        //Inicia la clase de seguimiento en segundo plano preguntando cada 2 minutos si hay algun pedido, si hay... monitoreara....
+        //startService(new Intent(Inicio_Usuario.this, ServiceTracking.class));
 
     }
 

@@ -248,6 +248,8 @@ public class fragmentTiendaDos extends Fragment
                                 if (new Validadores().isNetDisponible(getContext()))
                                 {
                                     isContinuado = false;
+                                    diaInicio = sStart.getItemAtPosition(posInicio).toString();
+                                    diaFin = sEnd.getItemAtPosition(posInicio).toString();
                                     Hora1 = textViewHoraUno.getText().toString() + ":00";
                                     Hora2 = textViewHoraDos.getText().toString() + ":00";
                                     Hora3 = textViewHoraTres.getText().toString() + ":00";
@@ -337,7 +339,6 @@ public class fragmentTiendaDos extends Fragment
             object.put("ID_USUARIO", params[13]);
             object.put("LATITUD", params[14]);
             object.put("LONGITUD", params[15]);
-
         }
         catch (JSONException e)
         {

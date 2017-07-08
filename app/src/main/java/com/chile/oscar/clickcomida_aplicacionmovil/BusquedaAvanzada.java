@@ -175,7 +175,7 @@ public class BusquedaAvanzada extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_busqueda_avanzada, container, false);
 
-        final String[] nomFiltros = {"Nombre", "Menor precio", "Mayor precio"};
+        final String[] nomFiltros = {"Menor precio", "Mayor precio"};
         editTextCampo = (EditText)v.findViewById(R.id.etProducto);
         imageViewLupa = (ImageView)v.findViewById(R.id.ivLupa);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
@@ -228,14 +228,15 @@ public class BusquedaAvanzada extends Fragment {
 
 
                         JSONObject object = new JSONObject();
-                        object.put("producto", editTextCampo.getText().toString());
+                        object.put("producto", editTextCampo.getText().toString().trim());
                         object.put("tipo", nomFiltros[posFiltro]);
+
 
                         //Cuando aBooleanProdOrStore es true se activa el producto, de lo contrario es la tienda
                         if (aBooleanProdOrStore)
                         {
                             //Producto
-                            progress.setMessage("Buscando producto con el termino \"" + editTextCampo.getText().toString() + "\"");
+                            progress.setMessage("Buscando producto con el termino \"" + editTextCampo.getText().toString().trim() + "\"");
                             progress.setCanceledOnTouchOutside(false);
                             progress.show();
                             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzada.php", object.toString());
@@ -243,7 +244,7 @@ public class BusquedaAvanzada extends Fragment {
                         else
                         {
                             //Tienda
-                            progress.setMessage("Buscando tienda con el termino \"" + editTextCampo.getText().toString() + "\"");
+                            progress.setMessage("Buscando tienda con el termino \"" + editTextCampo.getText().toString().trim() + "\"");
                             progress.setCanceledOnTouchOutside(false);
                             progress.show();
                             new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultaAvanzadaTienda.php", object.toString());

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class WorksActivity extends AppCompatActivity {
 
@@ -38,6 +39,7 @@ public class WorksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_works);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         sectionPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         viewPager = (ViewPager)findViewById(R.id.container);
         setupViewPager(viewPager);
@@ -53,4 +55,10 @@ public class WorksActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
+    @Override
+    public boolean onSupportNavigateUp()
+    {
+        finish();
+        return super.onSupportNavigateUp();
+    }
 }

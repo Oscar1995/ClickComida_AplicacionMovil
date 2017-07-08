@@ -159,7 +159,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                         if (checkBoxReparto.isChecked())
                         {
                             FragmentTransaction trans = getFragmentManager().beginTransaction();
-                            trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), id_usuario, String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
+                            trans.replace(R.id.content_general, newInstance(imagenGeneral, txtNombreTienda.getText().toString().trim(), txtDescripcion.getText().toString().trim(), txtCalleTienda.getText().toString().trim(), txtNumeroTienda.getText().toString().trim(), id_usuario, String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
                             trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                             trans.addToBackStack(null);
                             trans.commit();
@@ -167,7 +167,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                         else
                         {
                             FragmentTransaction trans = getFragmentManager().beginTransaction();
-                            trans.replace(R.id.content_general, fragTiendaDos(id_usuario, imagenGeneral, txtNombreTienda.getText().toString(), txtDescripcion.getText().toString(), txtCalleTienda.getText().toString(), txtNumeroTienda.getText().toString(), String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
+                            trans.replace(R.id.content_general, fragTiendaDos(id_usuario, imagenGeneral, txtNombreTienda.getText().toString().trim(), txtDescripcion.getText().toString().trim(), txtCalleTienda.getText().toString().trim(), txtNumeroTienda.getText().toString().trim(), String.valueOf(Coordenadas.longitud), String.valueOf(Coordenadas.latitud)));
                             trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                             trans.addToBackStack(null);
                             trans.commit();

@@ -336,4 +336,9 @@ public class MetodosCreados
         datePickerDialog.show();
         return formatDate[0];
     }
+    public String quitarEspacios (String vVariable)
+    {
+        String nuevoFormato = vVariable.trim();
+        return nuevoFormato;
+    }
 }

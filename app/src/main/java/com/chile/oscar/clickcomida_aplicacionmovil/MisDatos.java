@@ -490,7 +490,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                     if (!vTelefonos.contains(editTextTelefonoNuevo.getText().toString()))
                                     {
                                         object.put("Id", id);
-                                        object.put("Nuevo", editTextTelefonoNuevo.getText().toString());
+                                        object.put("Nuevo", editTextTelefonoNuevo.getText().toString().trim());
                                         tipoReg = "Agregar Telefono";
                                         new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_datos_usuario.php", object.toString());
                                     }
@@ -777,8 +777,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 if (!vTelefonos.contains(editTextTelefono.getText().toString()))
                                 {
                                     object.put("Id", id);
-                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString()));
-                                    object.put("Nuevo", editTextTelefono.getText().toString());
+                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel1.getText().toString().trim()));
+                                    object.put("Nuevo", editTextTelefono.getText().toString().trim());
                                     tipoReg = "Modificar Telefono";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
                                 }
@@ -831,8 +831,8 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 if (!vTelefonos.contains(editTextTelefono2.getText().toString()))
                                 {
                                     object.put("Id", id);
-                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString()));
-                                    object.put("Nuevo", editTextTelefono2.getText().toString());
+                                    object.put("Antiguo", new MetodosCreados().quitarDosPuntos(eTel2.getText().toString().trim()));
+                                    object.put("Nuevo", editTextTelefono2.getText().toString().trim());
                                     tipoReg = "Modificar Telefono 2";
                                     new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/actualizar_telefono_usuario.php", object.toString());
                                 }
@@ -983,9 +983,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 try
                                 {
 
-                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calle.getText().toString().trim()));
                                     object.put("Calle", editTextCalle1.getText().toString().trim());
-                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString().trim()));
                                     object.put("Numero", editTextNumero1.getText().toString().trim());
                                     object.put("Latitud", Coordenadas.latitud);
                                     object.put("Longitud", Coordenadas.longitud);
@@ -1143,9 +1143,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 JSONObject object = new JSONObject();
                                 try
                                 {
-                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString().trim()));
                                     object.put("Calle", editTextCalle2.getText().toString().trim());
-                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString().trim()));
                                     object.put("Numero", editTextNumero2.getText().toString().trim());
                                     object.put("Latitud", Coordenadas.latitud);
                                     object.put("Longitud", Coordenadas.longitud);
@@ -1302,9 +1302,9 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 JSONObject object = new JSONObject();
                                 try
                                 {
-                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
+                                    object.put("CalleAntigua", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString().trim()));
                                     object.put("Calle", editTextCalle3.getText().toString().trim());
-                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
+                                    object.put("NumeroAntiguo", new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString().trim()));
                                     object.put("Numero", editTextNumero3.getText().toString().trim());
                                     object.put("Latitud", Coordenadas.latitud);
                                     object.put("Longitud", Coordenadas.longitud);

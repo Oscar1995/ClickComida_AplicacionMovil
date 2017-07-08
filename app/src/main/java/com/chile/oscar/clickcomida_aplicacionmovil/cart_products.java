@@ -741,7 +741,11 @@ public class cart_products extends Fragment {
                             @Override
                             public void onClick(View v)
                             {
-                                Toast.makeText(getContext(), "Tienda: " +v.getId(), Toast.LENGTH_SHORT).show();
+                                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                                trans.replace(R.id.content_general, new BusquedaAvanzada());
+                                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                                trans.addToBackStack(null);
+                                trans.commit();
                             }
                         });
                     }
