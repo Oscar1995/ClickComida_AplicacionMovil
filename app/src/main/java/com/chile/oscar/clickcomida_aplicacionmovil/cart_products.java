@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.CarroBorrarLista;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Productos_Memory;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Tienda;
@@ -74,6 +75,10 @@ public class cart_products extends Fragment {
     List<Productos_Memory> productosMemoryListCache;
     List<List<Productos_Memory>> productosMemoryListCacheObject = new ArrayList<>();
 
+    int[] isActivedArray;
+
+    int totalArr = 0;
+
     List<Integer> integerListIdProducto = new ArrayList<>();
     List<Integer> integerListIdStore = new ArrayList<>();
     List<Integer> integerListCantidad= new ArrayList<>();
@@ -83,11 +88,11 @@ public class cart_products extends Fragment {
     List<Integer> integerListCantidadProdOrden = new ArrayList<>();
     List<Integer> integerListTotal = new ArrayList<>();
 
-    int posTienda;
+    int posTienda, idList;
     List<Integer> cantidadPorTienda = new ArrayList<>();
 
     View v;
-    Boolean prodCart = false;
+    Boolean prodCart = false, isProdSelected = false;
     int posGlobalDelete;
     ProgressDialog progress;
 
@@ -411,9 +416,10 @@ public class cart_products extends Fragment {
                             }
                         }
 
+                        isActivedArray = new int[integerListIdStore.size()];
                         for (int i=0; i<integerListIdStore.size(); i++)
                         {
-
+                            isActivedArray[i] = 0;
                             final int posActual = integerListIdStore.get(i);
                             LinearLayout linearLayoutProd = new LinearLayout(getContext());
                             TextView textViewNombreTienda = new TextView(getContext());
@@ -612,30 +618,42 @@ public class cart_products extends Fragment {
                             //Este siempre debe ir abajo
                             linearLayoutContenedor.addView(linearLayoutProd);
 
-
                             buttonQuitarProductos.setOnClickListener(new View.OnClickListener()
                             {
                                 @Override
                                 public void onClick(View v)
                                 {
-                                    List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(v.getId()));
-                                    //int store_id = integerListIdStore.get(v.getId());
-                                    int id = productos_memories.get(posGlobalDelete).getId();
-                                    //int cantidad = productos_memories.get(posGlobalDelete).getCantidad();
+                                    if (isActivedArray[v.getId()] == 1)
+                                    {
+                                        List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(v.getId()));
+                                        //int store_id = integerListIdStore.get(v.getId());
+                                        int id = productos_memories.get(posGlobalDelete).getId();
+                                        //int cantidad = productos_memories.get(posGlobalDelete).getCantidad();
 
-                                    //String formato = id + "-" + store_id + "-" + cantidad; //id_product + "-" + store_id + "-" + sumTotal;
-                                    String formato = "prod_id_"+id;
-                                    SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedpreferences.edit();
-                                    editor.remove(formato);
-                                    editor.commit();
+                                        //String formato = id + "-" + store_id + "-" + cantidad; //id_product + "-" + store_id + "-" + sumTotal;
+                                        String formato = "prod_id_"+id;
+                                        SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                                        editor.remove(formato);
+                                        editor.commit();
 
-                                    tipoReg = "Carro";
-                                    Toast.makeText(getContext(), "Producto quitado", Toast.LENGTH_SHORT).show();
-                                    Fragment currentFragment = new cart_products();
-                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
+                                        tipoReg = "Carro";
+                                        Toast.makeText(getContext(), "Producto quitado", Toast.LENGTH_SHORT).show();
+                                        Fragment currentFragment = new cart_products();
+                                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getContext(), "Debe seleccionar un producto para quitarlo del carro", Toast.LENGTH_SHORT).show();
+                                    }
+                                    /*if (isProdSelected)
+                                    {
 
+                                    }
+                                    else
+                                    {
 
+                                    }*/
                                 }
                             });
                             buttonFinalizarCompra.setOnClickListener(new View.OnClickListener() {
@@ -706,11 +724,14 @@ public class cart_products extends Fragment {
                                 }
                             });
 
-                            listViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            listViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                            {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                                 {
-                                    //List<Productos_Memory> productos_memories = (productosMemoryListCacheObject.get(parent.getId()));
+                                    isActivedArray[parent.getId()] = 1;
+                                    isProdSelected = true;
+                                    idList = view.getId();
                                     posGlobalDelete = position;
                                 }
                             });
@@ -734,16 +755,6 @@ public class cart_products extends Fragment {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

@@ -560,7 +560,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                 {
                     JSONObject object = new JSONObject(s);
                     String valor = object.getString("Valor");
-                    if (!valor.equals("null"))
+                    if (!valor.equals("null")) //Aqui llega cuando el usuario ya califica la tienda
                     {
                         String promedio = object.getString("Promedio");
                         userCal = true;
@@ -570,26 +570,42 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         ratingBarUsuario.setRating(Float.parseFloat(valor));
                         textViewCal.setText("Has calificado esta tienda");
                     }
-                    else
+                    else //Aqui llega cuando el usuario aun no califica la tienda
                     {
-                        sw = false;
-                        userCal = false;
-                        ratingTienda.setRating(0);
-                        textViewCal.setText("Califica esta tienda");
+                        if (!object.getString("Promedio").equals("null"))
+                        {
+                            sw = false;
+                            userCal = false;
+                            ratingTienda.setRating(Float.parseFloat(object.getString("Promedio")));
+                            textViewCal.setText("Califica esta tienda");
+                        }
+                        else
+                        {
+                            ratingTienda.setRating(0);
+                        }
+
                     }
-                    countLike = object.getInt("Favoritos");
-                    if (countLike == 0)
+                    if (!object.getString("Favoritos").equals("null"))
+                    {
+                        countLike = object.getInt("Favoritos");
+                        if (countLike == 0)
+                        {
+                            textViewLikeStore.setText(getResources().getString(R.string.none_person));
+                        }
+                        else if (countLike == 1)
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_one) + nameStore);
+                        }
+                        else
+                        {
+                            textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_more) + nameStore);
+                        }
+                    }
+                    else
                     {
                         textViewLikeStore.setText(getResources().getString(R.string.none_person));
                     }
-                    else if (countLike == 1)
-                    {
-                        textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_one) + nameStore);
-                    }
-                    else
-                    {
-                        textViewLikeStore.setText(countLike + " " + getResources().getString(R.string.none_person_more) + nameStore);
-                    }
+
                     progress.setMessage("Cargando...");
                     cargarFavorito();
                 }

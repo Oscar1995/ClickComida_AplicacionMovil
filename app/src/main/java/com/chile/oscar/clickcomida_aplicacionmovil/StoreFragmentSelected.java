@@ -38,6 +38,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Comentarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.google.android.gms.maps.CameraUpdate;
@@ -64,6 +65,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -82,6 +85,7 @@ public class StoreFragmentSelected extends Fragment {
 
     // TODO: Rename and change types of parameters
     String nombre, des, calle, numero, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, store_id, latitud, longitud;
+    ListView listViewComentarios;
     Bitmap imagenTienda;
     String tipo;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -96,6 +100,7 @@ public class StoreFragmentSelected extends Fragment {
     String dInicio = "";
     String dFin = "";
     String[] dayWeek = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
+    List<Comentarios> comentariosList = new ArrayList<>();
 
 
     private OnFragmentInteractionListener mListener;
@@ -143,7 +148,7 @@ public class StoreFragmentSelected extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_store_fragment_selected, container, false);
-
+        CargarComentarios();
         Button buttonMostrarProductos = (Button) view.findViewById(R.id.btnMostrarProductosTienda);
         Button buttonModificarFoto = (Button) view.findViewById(R.id.btnModificarFoto);
         Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
@@ -154,6 +159,7 @@ public class StoreFragmentSelected extends Fragment {
         TextView textViewNumero = (TextView) view.findViewById(R.id.tvNumeroSelected);
         TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
         imageViewTienda = (ImageView) view.findViewById(R.id.ivTiendaSelected);
+        listViewComentarios = (ListView)view.findViewById(R.id.lvComentarios);
 
         textViewNombrePrincipal.setText(getResources().getString(R.string.titulo_tienda_seleccionada) + " " + nombre);
         textViewNombre.setText(getResources().getString(R.string.nombre_tienda) + ": " + nombre);
@@ -556,6 +562,25 @@ public class StoreFragmentSelected extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    public void CargarComentarios()
+    {
+        try
+        {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando Comentarios...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
+            tipo = "Cargar comentarios";
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("store_id", store_id);
+            new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/listaComentarios.php", jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
@@ -751,6 +776,77 @@ public class StoreFragmentSelected extends Fragment {
                 {
                     e.printStackTrace();
                 }
+            }
+            else if (tipo.equals("Cargar comentarios"))
+            {
+                if (!s.equals("[]"))
+                {
+                    try
+                    {
+                        JSONArray jsonArray = new JSONArray(s);
+                        progress.dismiss();
+                        if (comentariosList != null)
+                        {
+                            if (!comentariosList.isEmpty())
+                            {
+                                comentariosList.clear();
+                            }
+                        }
+                        for (int i=0; i<jsonArray.length(); i++)
+                        {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            Comentarios comentarios = new Comentarios();
+                            comentarios.setuNickname(jsonObject.getString("nickname"));
+                            comentarios.setuComentario(jsonObject.getString("commentary"));
+                            comentarios.setFechaCreacion(jsonObject.getString("date"));
+                            comentariosList.add(comentarios);
+                        }
+                        BaseAdapter baseAdapter = new BaseAdapter() {
+                            @Override
+                            public int getCount() {
+                                return comentariosList.size();
+                            }
+
+                            @Override
+                            public Object getItem(int position) {
+                                return null;
+                            }
+
+                            @Override
+                            public long getItemId(int position) {
+                                return 0;
+                            }
+
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent)
+                            {
+                                convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_lista_comentarios, null);
+
+                                TextView textViewNickname = (TextView)convertView.findViewById(R.id.tvNickname);
+                                TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFechaCreacion);
+                                TextView textViewComentario = (TextView)convertView.findViewById(R.id.tvComentario);
+
+                                textViewNickname.setText(comentariosList.get(position).getuNickname());
+                                textViewFecha.setText(comentariosList.get(position).getFechaCreacion());
+                                textViewComentario.setText(comentariosList.get(position).getuComentario());
+
+                                return convertView;
+                            }
+                        };
+                        listViewComentarios.setAdapter(baseAdapter);
+
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+                else
+                {
+                    progress.dismiss();
+                }
+
             }
             else
             {

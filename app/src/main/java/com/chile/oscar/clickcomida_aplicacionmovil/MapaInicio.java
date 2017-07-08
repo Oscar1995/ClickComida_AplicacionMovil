@@ -5,6 +5,7 @@ import android.app.Activity;
 
 import java.lang.Object;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -77,7 +78,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
     LatLng miPosicion;
 
     String tipoConsulta;
-
+    ProgressDialog progress;
 
     List<Mapa> getDataMaps;
     List<String> nombreTienda;
@@ -202,6 +203,12 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         e.printStackTrace();
                     }
                     tipoConsulta = "Mi Tienda";
+
+                    progress = new ProgressDialog(getContext());
+                    progress.setMessage("Cargando información acerca de tu tienda "+ "\"" + marker.getTitle() + "\"");
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
+
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                     //Toast.makeText(getContext(), "Es tu tienda", Toast.LENGTH_SHORT).show();
@@ -218,6 +225,12 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         e.printStackTrace();
                     }
                     tipoConsulta = "Otra Tienda";
+
+                    progress = new ProgressDialog(getContext());
+                    progress.setMessage("Cargando información acerca de la tienda "+ "\"" + marker.getTitle() + "\"");
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
+
                     new cargarImagen().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargar_una_imagen_tienda.php", object.toString());
 
                 }
@@ -498,22 +511,24 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                 {
                     if (object != null)
                     {
+                        progress.dismiss();
                         FragmentTransaction trans = getFragmentManager().beginTransaction();
                         trans.replace(R.id.content_general, newInstance(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId()), getDataMaps.get(pos).getLatitude() + "", getDataMaps.get(pos).getLongitude() + ""));
                         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                         trans.addToBackStack(null);
                         trans.commit();
+
                     }
                 }
                 else if (tipoConsulta.equals("Otra Tienda"))
                 {
+                    progress.dismiss();
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
                     trans.replace(R.id.content_general, otherStore(object.getString("Imagen"), getDataMaps.get(pos).getNombre(), getDataMaps.get(pos).getDescripcion(), getDataMaps.get(pos).getCalle(), getDataMaps.get(pos).getNumero(), getDataMaps.get(pos).getStar_Day(), getDataMaps.get(pos).getEnd_Day(), getDataMaps.get(pos).getOpen_Hour(), getDataMaps.get(pos).getClose_Hour(), getDataMaps.get(pos).getLunch_Hour(), getDataMaps.get(pos).getLunch_After_Hour(), String.valueOf(getDataMaps.get(pos).getId()),getDataMaps.get(pos).getLatitude() + "", getDataMaps.get(pos).getLongitude() + "", Coordenadas.id));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
                 }
-
             }
             catch (JSONException e)
             {
