@@ -27,6 +27,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Actividades.BusquedaAvanzadaActivity;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
@@ -145,7 +146,8 @@ public class Inicio_Usuario extends AppCompatActivity
         {
             fragment = new BusquedaAvanzada();
             fragmentoSeleccionado = true;
-            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+            getSupportActionBar().setTitle(getResources().getString(R.string.busqueda_avanzada));
+            //startActivity(new Intent(this, BusquedaAvanzadaActivity.class));
         }
         else if (id == R.id.nav_gallery)
         {

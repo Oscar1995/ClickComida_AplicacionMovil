@@ -268,4 +268,5 @@
     <string name="none_person_more">personas le gusta est</string>
     <string name="mi_tienda">Esta tienda es tuya</string>
     <string name="mi_producto">Este producto es tuyo</string>
+    <string name="cambiarPos">Cambiar posicion en el mapa</string>
 </resources>

@@ -55,7 +55,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_PICTURE = 2;
     private final static int REQUEST_ACCESS_CAMERA = 123;
-    private final static int WRITE_EXTERNAL_STORAGE = 124;
+    private final static int WRITE_EXTERNAL_STORAGE = 643;
 
     String imagenGeneral = "";
 
@@ -134,6 +134,9 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         txtNumeroTienda = (EditText)v.findViewById(R.id.etNumero);
         txtDescripcion = (EditText)v.findViewById(R.id.etDesTiendaGeneral);
         tImagen_principal.setOnClickListener(this);
+
+        Coordenadas.latitud = 0.0;
+        Coordenadas.longitud = 0.0;
 
         botonContinuar.setOnClickListener(new View.OnClickListener()
         {
@@ -349,7 +352,7 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                                 {
                                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                        if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))
                                         {
                                             //Aqui pregunta primero cuando los permidos no estan activados
                                             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
@@ -415,74 +418,31 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         }
     }
 
-    class CustomAdapter extends BaseAdapter
-    {
-
-        @Override
-        public int getCount() {
-            return images.length; //Indico las veces que debe recorrer
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_photo_galley_cancel, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
-            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
-
-            imageView.setImageResource(images[position]);
-            textViewNombre.setText(des[position]);
-
-            return convertView;
-        }
-    }
-
     public interface OnFragmentInteractionListener
     {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    private void dispatchTakePictureIntent()
-    {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-        {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null)
-            {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-        else
-        {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA))
-            {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                // Mostrar diálogo explicativo
-            }
-            else
-            {
-                // Solicitar permiso
-                //ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-            }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
         {
+            int HeightButton = tImagen_principal.getHeight();
+            int WidthButton = tImagen_principal.getWidth();
+
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            tImagen_principal.setImageBitmap(imageBitmap);
+
+            Bitmap bitmapRes = Codificacion.bajarResolucion(imageBitmap, WidthButton, HeightButton);
+
+            tImagen_principal.setImageBitmap(bitmapRes);
             imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.PNG, 100);
         }
         else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK)
@@ -494,9 +454,10 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 int WidthButton = tImagen_principal.getWidth();
 
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                Bitmap rotado = Codificacion.RotarBitmap(Codificacion.bajarResolucion(bitmap, WidthButton, HeightButton), 90);
-                tImagen_principal.setImageBitmap(rotado);
-                imagenGeneral = Codificacion.encodeToBase64(rotado, Bitmap.CompressFormat.PNG, 100);
+                //Bitmap rotado = Codificacion.RotarBitmap(Codificacion.bajarResolucion(bitmap, WidthButton, HeightButton), 90);
+                Bitmap bitmapRes = Codificacion.bajarResolucion(bitmap, WidthButton, HeightButton);
+                tImagen_principal.setImageBitmap(bitmapRes);
+                imagenGeneral = Codificacion.encodeToBase64(bitmapRes, Bitmap.CompressFormat.PNG, 100);
             }
             catch (IOException e)
             {

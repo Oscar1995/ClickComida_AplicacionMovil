@@ -82,6 +82,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
 
     List<Mapa> getDataMaps;
     List<String> nombreTienda;
+    SupportMapFragment mapFragment;
 
     GoogleMap googlemapsGlobal;
     View view;
@@ -91,23 +92,26 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
             view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    //Aqui pregunta primero cuando los permidos no estan activados
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE);
+                }
+            } else {
+                //Päsa aqui cuando los permisos estan activados
+                cargarCoordenadas();
+                mapFragment.getMapAsync(this);
             }
-            mapFragment.getMapAsync(this);
         } catch (InflateException ex) {
 
         }
 
+        return view;
+    }
+
+    public void cargarCoordenadas() {
         if (new Validadores().isNetDisponible(getContext())) {
             JSONObject object = new JSONObject();
             try {
@@ -119,8 +123,6 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
         } else {
             Toast.makeText(getContext(), "Debes estar conectado a una red para ver las tiendas.", Toast.LENGTH_SHORT).show();
         }
-
-        return view;
     }
 
     public static StoreFragmentSelected newInstance(String... params) {
@@ -167,25 +169,32 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
+    public void onMapReady(GoogleMap googleMap) {
         googlemapsGlobal = googleMap;
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
-            {
-
-            }
-            else
-            {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE);
-            }
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
         googlemapsGlobal.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
         mMap = googleMap;
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+        if (getMyLocation() != null)
+        {
+            Location location = getMyLocation();
+            LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+            float zoomLevel = 14.0f; //This goes up to 21
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLocal, zoomLevel));
+        }
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+        {
             @Override
             public void onInfoWindowClick(Marker marker)
             {
@@ -265,10 +274,10 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_ACCESS_FINE: {
+            case REQUEST_ACCESS_FINE:
+                {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    googlemapsGlobal.getUiSettings().setZoomControlsEnabled(true);
                     if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
@@ -279,13 +288,16 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         // for ActivityCompat#requestPermissions for more details.
                         return;
                     }
-                    googlemapsGlobal.setMyLocationEnabled(true);
-                    Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
+                    mapFragment.getMapAsync(this);
+                    //googlemapsGlobal.getUiSettings().setZoomControlsEnabled(true);
+                    //googlemapsGlobal.setMyLocationEnabled(true);
+                    cargarCoordenadas();
+                    //Toast.makeText(getContext(), "Aceptado", Toast.LENGTH_SHORT).show();
 
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "Negado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Debes otorgar permisos de ubicacion.", Toast.LENGTH_SHORT).show();
                 }
             }
 

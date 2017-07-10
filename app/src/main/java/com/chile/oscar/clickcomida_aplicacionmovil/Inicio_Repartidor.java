@@ -138,6 +138,8 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
 
             Intent intent = new Intent (Inicio_Repartidor.this, Login.class);
             startActivity(intent);
+
+            //stopService(new Intent(this, ServicioRepartidor.class));
             this.finish();
         }
         if (fragmentoSeleccionado == true)

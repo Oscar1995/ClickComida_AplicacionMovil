@@ -415,7 +415,7 @@ public class BusquedaAvanzada extends Fragment {
                     textViewProducto.setText("De " + busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ ", horario continuado desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
                 }
 
-                textViewTienda.setText(busquedaAvanzadaTiendasList.get(position).getNameStore().toString());
+                textViewTienda.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaTiendasList.get(position).getNameStore().toString()));
                 textViewPrecio.setText("Pasaje: " + busquedaAvanzadaTiendasList.get(position).getStreetStore() + " #" + busquedaAvanzadaTiendasList.get(position).getNumberStore());
             }
 

@@ -99,6 +99,7 @@ public class StoreFragmentSelected extends Fragment {
     ProgressDialog progress;
     String dInicio = "";
     String dFin = "";
+    View pMap;
     String[] dayWeek = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
     List<Comentarios> comentariosList = new ArrayList<>();
 
@@ -152,12 +153,12 @@ public class StoreFragmentSelected extends Fragment {
         Button buttonMostrarProductos = (Button) view.findViewById(R.id.btnMostrarProductosTienda);
         Button buttonModificarFoto = (Button) view.findViewById(R.id.btnModificarFoto);
         Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
-        TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
-        TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
-        TextView textViewDes = (TextView) view.findViewById(R.id.tvDesSelected);
+        final TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
+        final TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
+        final TextView textViewDes = (TextView) view.findViewById(R.id.tvDesSelected);
         final TextView textViewCalle = (TextView) view.findViewById(R.id.tvCalleSelected);
-        TextView textViewNumero = (TextView) view.findViewById(R.id.tvNumeroSelected);
-        TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
+        final TextView textViewNumero = (TextView) view.findViewById(R.id.tvNumeroSelected);
+        final TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
         imageViewTienda = (ImageView) view.findViewById(R.id.ivTiendaSelected);
         listViewComentarios = (ListView)view.findViewById(R.id.lvComentarios);
 
@@ -167,8 +168,11 @@ public class StoreFragmentSelected extends Fragment {
         textViewCalle.setText(getResources().getString(R.string.calle_tienda) + ": " + calle);
         textViewNumero.setText(getResources().getString(R.string.titulo_calle_numero_usuario) + ": " + numero);
 
-        String openupdate = new MetodosCreados().HoraNormal(open_hour);
-        String closeupdate = new MetodosCreados().HoraNormal(close_hour);
+        Coordenadas.latitud = Double.parseDouble(latitud);
+        Coordenadas.longitud = Double.parseDouble(longitud);
+
+        final String openupdate = new MetodosCreados().HoraNormal(open_hour);
+        final String closeupdate = new MetodosCreados().HoraNormal(close_hour);
 
         if (lunch_hour.equals("00:00:00") && lunch_after_hour.equals("00:00:00"))
         {
@@ -313,6 +317,7 @@ public class StoreFragmentSelected extends Fragment {
                 final TextView textViewHora2 = (TextView) vMod.findViewById(R.id.tvHora2);
                 final TextView textViewHora3 = (TextView) vMod.findViewById(R.id.tvHora3);
                 final TextView textViewHora4 = (TextView) vMod.findViewById(R.id.tvHora4);
+                Button buttonMapa = (Button)vMod.findViewById(R.id.btnModCoor);
 
                 Spinner spinnerInicio = (Spinner)vMod.findViewById(R.id.spnInicio);
                 Spinner spinnerFin = (Spinner)vMod.findViewById(R.id.spnFin);
@@ -324,7 +329,7 @@ public class StoreFragmentSelected extends Fragment {
                 //MapView mapViewTienda = (MapView)vMod.findViewById(R.id.mpTienda);
                 Button buttonModTienda = (Button) vMod.findViewById(R.id.btnModTienda);
 
-                SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mpTienda);
+
 
                 linearLayoutUno.setVisibility(View.GONE);
                 linearLayoutDos.setVisibility(View.GONE);
@@ -379,58 +384,85 @@ public class StoreFragmentSelected extends Fragment {
 
                     }
                 });
-                map.getMapAsync(new OnMapReadyCallback()
-                {
+                buttonMapa.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onMapReady(final GoogleMap googleMap)
+                    public void onClick(View v)
                     {
-                        googleMapGlobal = googleMap;
-                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        googleMap.setMyLocationEnabled(true);
-                        googleMap.getUiSettings().setZoomControlsEnabled(true);
-                        googleMap.getUiSettings().setMapToolbarEnabled(false);
-                        Location location = getMyLocation();
-                        if (location != null)
+                        Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
+                        if (googleMapGlobal != null)
                         {
-                            LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
-                            CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
-                            googleMap.animateCamera(miUbicacion);
+                            googleMapGlobal.clear();
                         }
+                        if (pMap == null)
+                        {
+                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                        }
+                        if (pMap.getParent() != null)
+                        {
+                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                        }
+                        final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
-                        googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                        final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        botonTomarCoor.setVisibility(View.VISIBLE);
+                        builderMapa.setView(pMap);
+                        final AlertDialog mapUpdate = builderMapa.create();
+                        mapUpdate.show();
+
+
+                        map.getMapAsync(new OnMapReadyCallback() {
                             @Override
-                            public void onCameraMove()
+                            public void onMapReady(final GoogleMap googleMap)
                             {
-                                if (googleMap != null)
-                                {
-                                    googleMap.clear();
+                                googleMapGlobal = googleMap;
+                                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
                                 }
-                                LatLng latlngLocal = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                googleMap.addMarker(new MarkerOptions().position(latlngLocal).title(nombre));
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                                LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                    googleMap.animateCamera(miUbicacion);
+                                }
+                                googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                    @Override
+                                    public void onCameraMove()
+                                    {
+                                        if (googleMap != null)
+                                        {
+                                            googleMap.clear();
+                                        }
+                                        LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                        googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
 
-                                Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
-                                Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                        Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                        Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                    }
+                                });
                             }
                         });
-
-                        LatLng latLng = new LatLng(Float.parseFloat(latitud), Float.parseFloat(longitud));
-                        googleMap.addMarker(new MarkerOptions().position(latLng).title(nombre));
-
-                        Coordenadas.latitud = Double.parseDouble(latitud);
-                        Coordenadas.longitud = Double.parseDouble(longitud);
-
-                        CameraUpdate LocationStore = CameraUpdateFactory.newLatLngZoom(latLng, 5);
-                        googleMap.animateCamera(LocationStore);
-
+                        botonTomarCoor.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                //getFragmentManager().beginTransaction().remove(map).commit();
+                                mapUpdate.dismiss();
+                            }
+                        });
                     }
                 });
                 textViewHora1.setOnClickListener(new View.OnClickListener() {
@@ -470,10 +502,10 @@ public class StoreFragmentSelected extends Fragment {
                         try
                         {
                             object.put("Id", store_id);
-                            object.put("Nombre", editTextNombreTienda.getText().toString());
-                            object.put("Descripcion", editTextDesTienda.getText().toString());
-                            object.put("Calle", editTextCalle.getText().toString());
-                            object.put("Numero", editTextNum.getText().toString());
+                            object.put("Nombre", editTextNombreTienda.getText().toString().trim());
+                            object.put("Descripcion", editTextDesTienda.getText().toString().trim());
+                            object.put("Calle", editTextCalle.getText().toString().trim());
+                            object.put("Numero", editTextNum.getText().toString().trim());
                             object.put("open_hour", textViewHora1.getText().toString());
                             object.put("close_hour", textViewHora2.getText().toString());
                             object.put("lunch_hour", textViewHora3.getText().toString());
@@ -483,19 +515,24 @@ public class StoreFragmentSelected extends Fragment {
                             object.put("latitud", Coordenadas.latitud);
                             object.put("longitud", Coordenadas.longitud);
 
-                            /*nombre = editTextNombreTienda.getText().toString();
-                            des =editTextDesTienda.getText().toString();
-                            calle = editTextCalle.getText().toString();
-                            numero = editTextNum.getText().toString();
-                            open_hour = textViewHora1.getText().toString();
-                            close_hour = textViewHora2.getText().toString();
-                            lunch_hour = textViewHora3.getText().toString();
-                            lunch_after_hour = textViewHora4.getText().toString();
-                            //start_day;
-                            //end_day;
-                            latitud = String.valueOf(Coordenadas.latitud);
-                            longitud = String.valueOf(Coordenadas.longitud);*/
+                            String openupdate = new MetodosCreados().HoraNormal(textViewHora1.getText().toString());
+                            String closeupdate = new MetodosCreados().HoraNormal(textViewHora2.getText().toString());
 
+                            textViewNombre.setText(getResources().getString(R.string.nombre_tienda) + ": " + editTextNombreTienda.getText().toString().trim());
+                            textViewDes.setText(getResources().getString(R.string.titulo_descripcion) + ": " + editTextDesTienda.getText().toString().trim());
+                            textViewCalle.setText(getResources().getString(R.string.calle_tienda) + ": " + editTextCalle.getText().toString().trim());
+                            textViewNumero.setText(getResources().getString(R.string.titulo_calle_numero_usuario) + ": " + editTextNum.getText().toString().trim());
+
+                            if (textViewHora3.getText().equals("00:00:00") && textViewHora4.getText().equals("00:00:00"))
+                            {
+                                textViewHorario.setText("De " + dInicio + " a " + dFin + ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+                            }
+                            else
+                            {
+                                String openupdatelunch = new MetodosCreados().HoraNormal(textViewHora3.getText().toString());
+                                String closeupdatelunch = new MetodosCreados().HoraNormal(textViewHora4.getText().toString());
+                                textViewHorario.setText("De " + dInicio + " a " + dFin + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+                            }
                         }
                         catch (JSONException e)
                         {

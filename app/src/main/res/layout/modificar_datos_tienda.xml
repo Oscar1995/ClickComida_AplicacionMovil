@@ -95,22 +95,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView68"
+        <Button
+            android:id="@+id/btnModCoor"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/titulo_mover_marcador"
-            android:textColor="@color/colorNegro"
-            android:textStyle="bold" />
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/mpTienda"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="10dp"
+            android:background="@drawable/colorbuttonamarillo"
+            android:text="@string/cambiarPos" />
 
         <TextView
             android:id="@+id/textView61"

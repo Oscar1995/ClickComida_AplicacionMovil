@@ -75,6 +75,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                 i.putExtra("correo_usuario", uCorreo);
                 i.putExtra("nombre_usuario", uNombre);
                 startActivity(i);
+                //startService(new Intent(this, ServicioRepartidor.class));
                 this.finish();
             }
         }

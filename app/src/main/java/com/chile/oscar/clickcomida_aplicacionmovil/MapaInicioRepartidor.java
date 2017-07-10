@@ -191,7 +191,6 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         final Timer timer = new Timer();
         if (mMap != null)
         {
-
             timer.scheduleAtFixedRate(new TimerTask()
             {
                 @Override
@@ -201,6 +200,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                     {
                         if (getActivity() != null)
                         {
+                            Log.w("Timer:", "Iniciado");
                             Location location = getMyLocation();
                             if (location != null)
                             {
@@ -209,14 +209,14 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                                 object.put("longitud", location.getLongitude());
                                 object.put("id", Coordenadas.id);
                                 Log.d("Respuesta", "Enviado");
-
-
-                            /*LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
-                            CameraUpdate miUbicacion = CameraUpdateFactory.newLatLng(latLngLocal);
-                            mMap.animateCamera(miUbicacion);*/
-
                                 new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
                             }
+                        }
+                        else
+                        {
+                            Log.e("Timer:", "Detenido");
+                            timer.cancel();
+                            timer.purge();
                         }
                     }
                     catch (JSONException e)
@@ -225,7 +225,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                     }
 
                 }
-            }, 0, 2000);
+            }, 0, 5000);
 
         }
     }
@@ -235,7 +235,8 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
         Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (myLocation == null) {
+        if (myLocation == null)
+        {
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
             String provider = lm.getBestProvider(criteria, true);
@@ -324,14 +325,6 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
             {
                 try
                 {
-                    /*if (mapaRepartidorCoordenadasList == null) //Comprueba si el objeto es creado
-                    {
-                        mapaRepartidorCoordenadasList = new ArrayList<>();
-                    }
-                    if (mapaRepartidorCoordenadasList.isEmpty() == false)
-                    {
-                        mapaRepartidorCoordenadasList.clear();
-                    }*/
                     mapaRepartidorCoordenadasList = new ArrayList<>();
                     JSONArray jsonArray = new JSONArray(s);
                     for (int i=0; i<jsonArray.length(); i++)

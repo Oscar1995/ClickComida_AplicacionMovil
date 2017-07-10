@@ -2,12 +2,16 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +20,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +67,7 @@ public class ProductsOtherUser extends Fragment
     List<String> nombreProd, desProd, precioProd;
     List<Bitmap> imagesProd;
     int posProd;
+    boolean isProdSelected = false;
 
     ProgressDialog progress;
 
@@ -127,19 +134,67 @@ public class ProductsOtherUser extends Fragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 posProd = position;
+                isProdSelected = true;
             }
         });
 
+        buttonAgregarCarro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if (isProdSelected)
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    final NumberPicker numberPicker = new NumberPicker(getContext());
+                    alert.setMessage("Elige una cantidad...");
+                    alert.setTitle(nombreProd.get(posProd));
+
+                    numberPicker.setMinValue(1);
+                    numberPicker.setMaxValue(20);
+                    alert.setView(numberPicker);
+
+                    alert.setPositiveButton("Agregar al carro", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int whichButton)
+                        {
+                            guardarPreferencias(Integer.parseInt(idProd.get(posProd)), numberPicker.getValue(), Integer.parseInt(store_id));
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton)
+                        {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    alert.show();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Debes seleccionar un producto...", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
         buttonDetalles.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), nombreTienda, store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
-                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                trans.addToBackStack(null);
-                trans.commit();
+                if (isProdSelected)
+                {
+                    FragmentTransaction trans = getFragmentManager().beginTransaction();
+                    trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), nombreTienda, store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
+                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    trans.addToBackStack(null);
+                    trans.commit();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Debes seleccionar un producto...", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
         spinnerFiltro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -200,6 +255,37 @@ public class ProductsOtherUser extends Fragment
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+    public void guardarPreferencias(int id_product, int cantidad, int store_id)
+    {
+        SharedPreferences sharedpreferences =  getActivity().getSharedPreferences("carro", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = null;
+
+        //int cantTotal = sharedpreferences.getAll().size();
+        String xProd = (String) sharedpreferences.getAll().get("prod_id_"+id_product+"_storeid_"+store_id);
+        if (xProd != null) //Existe el producto, es decir suma la cantidad que existe
+        {
+            String[] splitProd = xProd.split("-");
+            int idProd = Integer.parseInt(splitProd[0]);
+            int idCantidad = Integer.parseInt(splitProd[1]);
+            if (id_product == idProd)
+            {
+                editor = sharedpreferences.edit();
+                int sumTotal = idCantidad + cantidad;
+                String modProd = id_product + "-" + store_id + "-" + sumTotal;
+                editor.putString("prod_id_"+id_product, modProd);
+                editor.commit();
+            }
+        }
+        else
+        {
+            editor = sharedpreferences.edit();
+            String modProd = id_product + "-" + store_id + "-" + cantidad;
+            editor.putString("prod_id_"+id_product, modProd);
+            editor.commit();
+        }
+
+        Toast.makeText(getContext(), "Has agregado este producto a tu carrito de compras.", Toast.LENGTH_SHORT).show();
     }
 
     /**

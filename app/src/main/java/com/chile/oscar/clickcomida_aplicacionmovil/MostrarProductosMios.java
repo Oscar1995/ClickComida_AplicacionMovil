@@ -62,11 +62,11 @@ public class MostrarProductosMios extends Fragment
     public static final int REQUEST_IMAGE_CAPTURE = 1;
     String store_id, store_name, tipoReg, imagenCod;
 
-    ArrayList<Bitmap> imagesProducts = new ArrayList<>();
-    ArrayList<Integer> idProducts = new ArrayList<>();
-    ArrayList<String> nameProducts = new ArrayList<>();
-    ArrayList<String> desProducts = new ArrayList<>();
-    ArrayList<String> priceProducts = new ArrayList<>();
+    ArrayList<Bitmap> imagesProducts;
+    ArrayList<Integer> idProducts;
+    ArrayList<String> nameProducts;
+    ArrayList<String> desProducts;
+    ArrayList<String> priceProducts;
     ImageButton buttonPhotoProduct;
     AlertDialog dialogMod;
     Boolean fotoCambiada = false;
@@ -169,7 +169,6 @@ public class MostrarProductosMios extends Fragment
 
         Button buttonBuscar = (Button)view.findViewById(R.id.btnBuscarProd);
         Button buttonMod = (Button)view.findViewById(R.id.btnModificarProductos_me);
-        Button buttonDel = (Button)view.findViewById(R.id.btnEliminarProductos_me);
 
         autoCompleteTextViewProd = (AutoCompleteTextView)view.findViewById(R.id.acProductosMios);
         TextView textView = (TextView)view.findViewById(R.id.txtTitulo_me);
@@ -212,18 +211,17 @@ public class MostrarProductosMios extends Fragment
             {
                 if (nameProducts.contains(autoCompleteTextViewProd.getText().toString()))
                 {
-                    nameProducts.add("Mostrar todos");
-                    String[] prod = new String[1];
                     posProd = nameProducts.indexOf(autoCompleteTextViewProd.getText().toString());
-                    prod[0] = nameProducts.get(nameProducts.indexOf(autoCompleteTextViewProd.getText().toString()));
-                    if (prod[0].equals("Mostrar todos"))
+                    if (autoCompleteTextViewProd.getText().toString().equals("Mostrar todos"))
                     {
                         unProd = false;
-                        nameProducts.remove(nameProducts.indexOf("Mostrar todos"));
+                        int posM = nameProducts.indexOf("Mostrar todos");
+                        nameProducts.remove(posM);
                     }
                     else
                     {
                         unProd = true;
+                        nameProducts.add("Mostrar todos");
                         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nameProducts);
                         autoCompleteTextViewProd.setAdapter(arrayAdapter);
                         Toast.makeText(getContext(), "Para volver a mostrar todos tus productos escribe, Mostrar todos.", Toast.LENGTH_LONG).show();
@@ -487,6 +485,12 @@ public class MostrarProductosMios extends Fragment
                     }
                     else
                     {
+                        imagesProducts = new ArrayList<>();
+                        idProducts = new ArrayList<>();;
+                        nameProducts = new ArrayList<>();;
+                        desProducts = new ArrayList<>();;
+                        priceProducts = new ArrayList<>();;
+
                         JSONArray jsonArray = new JSONArray(s);
                         int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
                         JSONObject jsonObject = null;
