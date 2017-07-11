@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -667,10 +669,15 @@ public class cart_products extends Fragment {
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                                     if (aBooleanDir)
                                     {
+                                        final EditText editTextCommentary = new EditText(getContext());
+                                        editTextCommentary.setHint("Escriba su comentario (Opcional)");
                                         builder.setTitle("Confirmación de la compra")
-                                                .setMessage("El monto total es de $" + total + " pesos, y tu direccion es " + calle +" #" + numero + ", si esta es tu direccion pincha en ACEPTAR de lo contrario CANCELAR.")
+                                                .setMessage(Html.fromHtml("El monto total es de $" + total + " pesos <br>" +
+                                                        "<b>Tu direccion es: </b> " + calle +" #" + numero + " </b>" +
+                                                        "si esta es tu direccion pincha en <font color=\"blue\">ACEPTAR</font> de lo contrario <font color=\"red\">CANCELAR</font>."))
                                                 .setPositiveButton("Aceptar",
-                                                        new DialogInterface.OnClickListener() {
+                                                        new DialogInterface.OnClickListener()
+                                                        {
                                                             @Override
                                                             public void onClick(DialogInterface dialog, int which)
                                                             {
@@ -685,6 +692,14 @@ public class cart_products extends Fragment {
                                                                     object.put("cantidad_total", cantidadTotal);
                                                                     object.put("calle", calle);
                                                                     object.put("numero", numero);
+                                                                    if (editTextCommentary.getText().toString().trim().isEmpty())
+                                                                    {
+                                                                        object.put("commentary", null);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        object.put("commentary", editTextCommentary.getText().toString().trim());
+                                                                    }
 
                                                                     for (int i=0; i<productosMemoryListCacheObject.get(v.getId()).size(); i++)
                                                                     {
@@ -714,6 +729,7 @@ public class cart_products extends Fragment {
                                                                 dialog.dismiss();
                                                             }
                                                         });
+                                        builder.setView(editTextCommentary);
                                         builder.show();
                                     }
                                     else
