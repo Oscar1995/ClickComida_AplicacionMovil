@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,6 +54,12 @@ public class ServicioRepartidor extends Service
 {
 
     Timer timer = new Timer();
+    private static final String TAG = "BOOMBOOMTESTGPS";
+    private LocationManager mLocationManager = null;
+    private static final int LOCATION_INTERVAL = 5000;
+    private static final float LOCATION_DISTANCE = 10f;
+    Location mLastLocation;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -63,6 +70,32 @@ public class ServicioRepartidor extends Service
     public void onCreate()
     {
         Log.e("Servicio", "Creado");
+        Log.e(TAG, "onCreate");
+        initializeLocationManager();
+        try
+        {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[1]);
+        }
+        catch (java.lang.SecurityException ex)
+        {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try
+        {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[0]);
+        }
+        catch (java.lang.SecurityException ex)
+        {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
     }
 
     @Override
@@ -76,16 +109,18 @@ public class ServicioRepartidor extends Service
             {
                 try
                 {
-                    Location location = getMyLocation();
+                    Location location = mLastLocation;
                     if (location != null)
                     {
+
                         JSONObject object = new JSONObject();
-                        object.put("latitud", location.getLatitude());
+                        object.put("latitud",location.getLatitude());
                         object.put("longitud", location.getLongitude());
-                        object.put("id", Coordenadas.id);
+                        object.put("id", cargarPreferencias());
                         Log.d("Respuesta", "Enviado");
                         new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
                     }
+
                 }
                 catch (JSONException e)
                 {
@@ -96,29 +131,65 @@ public class ServicioRepartidor extends Service
 
         return START_STICKY;
     }
-
+    private void initializeLocationManager()
+    {
+        Log.e(TAG, "initializeLocationManager");
+        if (mLocationManager == null)
+        {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+    }
+    public String cargarPreferencias()
+    {
+        SharedPreferences sharedpreferences = getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+        String uId = sharedpreferences.getString("id_usuario_shared", "");
+        return uId;
+    }
     @Override
     public void onDestroy()
     {
         timer.cancel();
         timer.purge();
+        mLocationManager.removeUpdates(mLocationListeners[0]);
+        mLocationManager.removeUpdates(mLocationListeners[1]);
+        mLocationManager = null;
         Log.e("Servicio", "Detenido");
     }
-    private Location getMyLocation()
+    private class LocationListener implements android.location.LocationListener
     {
-        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (myLocation == null)
+        public LocationListener(String provider)
         {
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-            String provider = lm.getBestProvider(criteria, true);
-            myLocation = lm.getLastKnownLocation(provider);
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
         }
-        return myLocation;
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            Log.e(TAG, "onLocationChanged: " + location);
+            mLastLocation.set(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
+        {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
     }
+
+    LocationListener[] mLocationListeners = new LocationListener[]{new LocationListener(LocationManager.GPS_PROVIDER), new LocationListener(LocationManager.NETWORK_PROVIDER)};
 
     public class EjecutarSentencia extends AsyncTask<String, Void, String>
     {

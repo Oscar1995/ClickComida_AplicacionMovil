@@ -66,8 +66,9 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_ID = null;
+    public static int ARG_ID = 0;
     private final int REQUEST_ACCESS_FINE = 0;
+    Timer timer = new Timer();
 
     // TODO: Rename and change types of parameters
     private String mParamId;
@@ -188,7 +189,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        final Timer timer = new Timer();
+
         if (mMap != null)
         {
             timer.scheduleAtFixedRate(new TimerTask()
@@ -229,6 +230,34 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
 
         }
     }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        Log.e("onStart", "App abierta");
+        getActivity().stopService(new Intent(getActivity(), ServicioRepartidor.class));
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (ARG_ID == 0)
+        {
+            Log.e("onDestroy", "App cerrada");
+            timer.cancel();
+            timer.purge();
+            getActivity().startService(new Intent(getActivity(), ServicioRepartidor.class));
+        }
+        else
+        {
+            timer.cancel();
+            timer.purge();
+            getActivity().stopService(new Intent(getActivity(), ServicioRepartidor.class));
+        }
+    }
+
     private Location getMyLocation()
     {
         LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);

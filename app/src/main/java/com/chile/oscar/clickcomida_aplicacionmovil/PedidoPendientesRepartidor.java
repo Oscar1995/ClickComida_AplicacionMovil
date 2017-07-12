@@ -178,10 +178,12 @@ public class PedidoPendientesRepartidor extends Fragment
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_lista_repartidor, null);
+            TextView textViewOrdenId = (TextView)convertView.findViewById(R.id.tvIdOrden);
             TextView textViewCalle = (TextView)convertView.findViewById(R.id.tvCalle);
             TextView textViewUsuario = (TextView)convertView.findViewById(R.id.tvUsuario);
             TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFecha);
 
+            textViewOrdenId.setText(Html.fromHtml("<b>Numero de orden:</b> " + pedidosRepartidorList.get(position).getIdOrden()));
             textViewCalle.setText(Html.fromHtml("<b>Calle:</b> " + pedidosRepartidorList.get(position).getpCalle().toString() + " #" + pedidosRepartidorList.get(position).getpNumero().toString()));
             textViewUsuario.setText(Html.fromHtml("<b>Nombre cliente:</b> " + pedidosRepartidorList.get(position).getuNombre().toString() + " " + pedidosRepartidorList.get(position).getuApellido().toString()));
             textViewFecha.setText(pedidosRepartidorList.get(position).getFecha_Pedido().toString());
@@ -194,13 +196,13 @@ public class PedidoPendientesRepartidor extends Fragment
             buttonComenzar.setText("Comenzar");
             buttonEntregar.setText("Entregar");
 
-            if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("En Preparación"))
+            if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Recepcionado"))
             {
                 buttonComenzar.setEnabled(true);
                 buttonEntregar.setTextColor(Color.LTGRAY);
                 buttonEntregar.setEnabled(false);
             }
-            else if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("En Reparto"))
+            else if (pedidosRepartidorList.get(position).getEstado_Descripcion().equals("Repartiendo"))
             {
                 buttonComenzar.setEnabled(false);
                 buttonEntregar.setTextColor(Color.RED);

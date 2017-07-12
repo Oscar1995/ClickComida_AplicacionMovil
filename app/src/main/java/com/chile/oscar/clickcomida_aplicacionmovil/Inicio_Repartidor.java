@@ -136,10 +136,11 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
             editor.clear();
             editor.commit();
 
+            MapaInicioRepartidor.ARG_ID = 1;
+
             Intent intent = new Intent (Inicio_Repartidor.this, Login.class);
             startActivity(intent);
 
-            //stopService(new Intent(this, ServicioRepartidor.class));
             this.finish();
         }
         if (fragmentoSeleccionado == true)

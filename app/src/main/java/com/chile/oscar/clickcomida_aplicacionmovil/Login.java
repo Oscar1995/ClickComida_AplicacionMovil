@@ -158,8 +158,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                             JSONObject jsonObject = new JSONObject();
                             try
                             {
-                                jsonObject.put("correo", txtCorreo.getText().toString());
-                                jsonObject.put("nickname", null);
+                                jsonObject.put("value", txtCorreo.getText().toString());
+                                jsonObject.put("type", "email");
                                 jsonObject.put("clave", txtClave.getText().toString());
                             }
                             catch (JSONException e)
@@ -195,8 +195,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                             JSONObject jsonObject = new JSONObject();
                             try
                             {
-                                jsonObject.put("correo", null);
-                                jsonObject.put("nickname", txtCorreo.getText().toString());
+                                jsonObject.put("value", txtCorreo.getText().toString());
+                                jsonObject.put("type", "nickname");
                                 jsonObject.put("clave", txtClave.getText().toString());
                             }
                             catch (JSONException e)
