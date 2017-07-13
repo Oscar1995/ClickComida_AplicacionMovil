@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -48,9 +49,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
 {
     String uId, uCorreo, uNombre, uRol;
     Button btnIniciar, btnRegistro, btnOlvidado;
-    LoginButton botonFacebook;
     EditText txtCorreo, txtClave;
-    CallbackManager callbackManager = CallbackManager.Factory.create();
     Intent i = null;
     ProgressDialog progress;
     Boolean itsEmail = false;
@@ -84,7 +83,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
         setContentView(R.layout.activity_login);
         btnIniciar = (Button)findViewById(R.id.btnIniciarSesion);
         btnRegistro = (Button)findViewById(R.id.btnRegistrate);
-        botonFacebook = (LoginButton)findViewById(R.id.btnFacebook);
         btnOlvidado = (Button)findViewById(R.id.btnClaveOlvidada);
         txtCorreo = (EditText)findViewById(R.id.etCorreoLogin);
         txtClave = (EditText)findViewById(R.id.etClaveLogin);
@@ -94,41 +92,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
         btnIniciar.setOnClickListener(this);
         btnRegistro.setOnClickListener(this);
         btnOlvidado.setOnClickListener(this);
-        botonFacebook.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-
-                try
-                {
-                    botonFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>()
-                    {
-                        @Override
-                        public void onSuccess(LoginResult loginResult)
-                        {
-                            Toast.makeText(getApplicationContext(), loginResult.toString(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCancel()
-                        {
-                            // App code
-                        }
-
-                        @Override
-                        public void onError(FacebookException exception)
-                        {
-                            // App code
-                        }
-                    });
-                }
-                catch (Exception x)
-                {
-                    Toast.makeText(getApplicationContext(), x.toString(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
     }
 
@@ -256,7 +219,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                 break;
 
             case R.id.btnClaveOlvidada:
-                startActivity(new Intent(Login.this, Passwword_forgot.class));
+                //startActivity(new Intent(Login.this, Passwword_forgot.class));
+                String link = "http://clickcomidaoficial.esy.es/password/reset";
+                Intent intent = null;
+                intent = new Intent(intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(intent);
                 break;
 
         }
@@ -386,7 +353,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                     else
                     {
                         progress.dismiss();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat));
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat_Light_Dialog));
                         builder.setTitle("Usuario no identificado")
                                 .setMessage("El nickname y/o contraseña son incorrectos.")
                                 .setPositiveButton("Aceptar",

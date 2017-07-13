@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +26,8 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 public class Inicio_Repartidor extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapaInicioRepartidor.OnFragmentInteractionListener, PedidoPendientesRepartidor.OnFragmentInteractionListener
 {
     String idUsuario;
+    public static int SRepart = 0;
+    int SLogout = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +103,39 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
         }
 
         return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        Log.e("Pedidos pendientes", "La app vuelve...");
+        stopService(new Intent(this, ServicioRepartidor.class));
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        Log.w("Pedidos pendientes", "Servicio iniciado por dejar la app sin cerrar");
+        startService(new Intent(this, ServicioRepartidor.class));
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (SLogout == 0)
+        {
+            Log.w("Pedidos pendientes", "Servicio iniciado por cerrar la app desde pedidos pendientes");
+            startService(new Intent(this, ServicioRepartidor.class));
+        }
+        else
+        {
+            Log.e("Pedidos pendientes", "Servicio detenido por cerrar la session");
+            stopService(new Intent(this, ServicioRepartidor.class));
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -112,12 +148,15 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
         if (id == R.id.nav_start)
         {
             fragment = new MapaInicioRepartidor();
+            SRepart = 0;
+            SLogout = 0;
             fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.Inicio));
         }
         else if (id == R.id.nav_pedidos)
         {
             fragment = new PedidoPendientesRepartidor();
+            SRepart = 1;
             Bundle args = new Bundle();
             args.putString("user_id", idUsuario);
             fragment.setArguments(args);
@@ -136,6 +175,7 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
             editor.clear();
             editor.commit();
 
+            SLogout = 1;
             MapaInicioRepartidor.ARG_ID = 1;
 
             Intent intent = new Intent (Inicio_Repartidor.this, Login.class);

@@ -365,40 +365,6 @@ public class tab_map_work extends Fragment implements OnMapReadyCallback
                         e.printStackTrace();
                     }
                 }
-                /*else if (tipoLoad.equals("Postular"))
-                {
-                    try
-                    {
-                        JSONObject jsonObject = new JSONObject(s);
-                        String res = jsonObject.getString("Insertado");
-                        if (res.equals("Si"))
-                        {
-                            progress.dismiss();
-                            Toast.makeText(getActivity(), "Ahora estas postulando a este aviso", Toast.LENGTH_LONG);
-                        }
-                    }
-                    catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                else if (tipoLoad.equals("Eliminar"))
-                {
-                    try
-                    {
-                        JSONObject jsonObject = new JSONObject(s);
-                        String res = jsonObject.getString("Eliminado");
-                        if (res.equals("Si"))
-                        {
-                            progress.dismiss();
-                            Toast.makeText(getActivity(), "Has dejado de postulador al aviso", Toast.LENGTH_LONG);
-                        }
-                    }
-                    catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }*/
             }
             else
             {

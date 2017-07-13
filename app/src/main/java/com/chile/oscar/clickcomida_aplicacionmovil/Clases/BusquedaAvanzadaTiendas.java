@@ -113,6 +113,16 @@ public class BusquedaAvanzadaTiendas
     }
 
     int storeId, numberStore, userId;
+
+    public float getRatingStore() {
+        return ratingStore;
+    }
+
+    public void setRatingStore(float ratingStore) {
+        this.ratingStore = ratingStore;
+    }
+
+    float ratingStore;
     String nameStore, descriptionStore, streetStore, startDay, endDay, openHour, closeHour, lunchHour, lunchAfterHour;
     LatLng latLngStore;
 }

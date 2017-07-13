@@ -10,6 +10,16 @@ public class BusquedaAvanzadaProductos
     int idStore;
     int pProd;
     int userId;
+
+    public float getRatingProduct() {
+        return ratingProduct;
+    }
+
+    public void setRatingProduct(float ratingProduct) {
+        this.ratingProduct = ratingProduct;
+    }
+
+    float ratingProduct;
     String nameProd;
 
     public int getUserId() {

@@ -630,6 +630,10 @@ public class Details_products extends Fragment {
                     }
                     else
                     {
+                        if (!object.getString("Promedio").equals("null"))
+                        {
+                            ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+                        }
                         sw = false;
                         prodCal = false;
                     }

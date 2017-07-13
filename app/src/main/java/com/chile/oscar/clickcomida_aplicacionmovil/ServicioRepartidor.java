@@ -1,6 +1,7 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.os.IBinder;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,6 +61,7 @@ public class ServicioRepartidor extends Service
     private static final int LOCATION_INTERVAL = 5000;
     private static final float LOCATION_DISTANCE = 10f;
     Location mLastLocation;
+    Context context = null;
 
     @Nullable
     @Override
@@ -69,6 +72,19 @@ public class ServicioRepartidor extends Service
     @Override
     public void onCreate()
     {
+        context = this;
+        /*NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentTitle("Estas compartiendo tu ubicación")
+                .setContentText("Compartiendo...");
+        builder.addAction(android.R.drawable.ic_menu_delete, "Dejar de compartir", );
+
+        Intent notificationIntent = new Intent(this, ServicioRepartidor.class);
+
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, notificationIntent, 0);
+        builder.setContentIntent(pendingIntent);
+
+        startForeground(1, builder.build());*/
         Log.e("Servicio", "Creado");
         Log.e(TAG, "onCreate");
         initializeLocationManager();

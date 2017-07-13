@@ -420,6 +420,7 @@ public class tab_list_work extends Fragment
             else
             {
                 Toast.makeText(getContext(), "No hay avisos de trabajos", Toast.LENGTH_SHORT).show();
+                progress.dismiss();
             }
         }
     }

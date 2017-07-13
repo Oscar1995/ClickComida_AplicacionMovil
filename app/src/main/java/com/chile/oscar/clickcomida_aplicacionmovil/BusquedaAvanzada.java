@@ -14,6 +14,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -175,7 +177,7 @@ public class BusquedaAvanzada extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_busqueda_avanzada, container, false);
 
-        final String[] nomFiltros = {"Menor precio", "Mayor precio"};
+        final String[] nomFiltros = {"Menor precio", "Mayor precio", "Mayor calificacion"};
         editTextCampo = (EditText)v.findViewById(R.id.etProducto);
         imageViewLupa = (ImageView)v.findViewById(R.id.ivLupa);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
@@ -224,9 +226,9 @@ public class BusquedaAvanzada extends Fragment {
                 {
                     if (!editTextCampo.getText().toString().isEmpty())
                     {
+                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         progress = new ProgressDialog(getContext());
-
-
                         JSONObject object = new JSONObject();
                         object.put("producto", editTextCampo.getText().toString().trim());
                         object.put("tipo", nomFiltros[posFiltro]);
@@ -377,6 +379,7 @@ public class BusquedaAvanzada extends Fragment {
             TextView textViewTienda = (TextView)convertView.findViewById(R.id.tvNombreTienda);
             TextView textViewPrecio = (TextView)convertView.findViewById(R.id.tvPrecio);
             TextView textViewMiTienda = (TextView)convertView.findViewById(R.id.tvMia);
+            RatingBar ratingBarProd = (RatingBar)convertView.findViewById(R.id.rbProd);
 
             //Cuando es true es producto, de lo contrario false es tienda
             if (aBooleanProdOrStore)
@@ -385,6 +388,7 @@ public class BusquedaAvanzada extends Fragment {
                 textViewProducto.setText(Html.fromHtml("<b>Producto: </b>" + busquedaAvanzadaProductosList.get(position).getNameProd().toString()));
                 textViewTienda.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaProductosList.get(position).getNameStore().toString()));
                 textViewPrecio.setText("$" + busquedaAvanzadaProductosList.get(position).getpProd() + "");
+                ratingBarProd.setRating(busquedaAvanzadaProductosList.get(position).getRatingProduct());
 
                 if (busquedaAvanzadaProductosList.get(position).getUserId() == Integer.parseInt(Coordenadas.id))
                 {
@@ -402,6 +406,7 @@ public class BusquedaAvanzada extends Fragment {
                 imageViewProducto.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
                 String openupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getOpenHour());
                 String closeupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getCloseHour());
+                ratingBarProd.setRating(busquedaAvanzadaTiendasList.get(position).getRatingStore());
 
                 if (busquedaAvanzadaTiendasList.get(position).getUserId() == Integer.parseInt(Coordenadas.id))textViewMiTienda.setVisibility(View.VISIBLE); else textViewMiTienda.setVisibility(View.GONE);
                 if (busquedaAvanzadaTiendasList.get(position).getLunchHour().equals("00:00:00") && busquedaAvanzadaTiendasList.get(position).getLunchAfterHour().equals("00:00:00"))
@@ -522,6 +527,14 @@ public class BusquedaAvanzada extends Fragment {
                                 busquedaAvanzadaProductos.setDesProd(object.getString("description"));
                                 busquedaAvanzadaProductos.setpProd(object.getInt("price"));
                                 busquedaAvanzadaProductos.setUserId(object.getInt("user_id"));
+                                if (object.getString("calification_average").equals("null"))
+                                {
+                                    busquedaAvanzadaProductos.setRatingProduct(0.0f);
+                                }
+                                else
+                                {
+                                    busquedaAvanzadaProductos.setRatingProduct(Float.parseFloat(object.getString("calification_average")));
+                                }
                                 busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
                             }
                         }
@@ -564,6 +577,14 @@ public class BusquedaAvanzada extends Fragment {
                                 busquedaAvanzadaTiendas.setLunchAfterHour(object.getString("lunch_after_hour"));
                                 busquedaAvanzadaTiendas.setLatLngStore(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
                                 busquedaAvanzadaTiendas.setUserId(object.getInt("user_id"));
+                                if (object.getString("calification_average").equals("null"))
+                                {
+                                    busquedaAvanzadaTiendas.setRatingStore(0.0f);
+                                }
+                                else
+                                {
+                                    busquedaAvanzadaTiendas.setRatingStore(Float.parseFloat(object.getString("calification_average")));
+                                }
                                 busquedaAvanzadaTiendasList.add(busquedaAvanzadaTiendas);
                             }
                         }

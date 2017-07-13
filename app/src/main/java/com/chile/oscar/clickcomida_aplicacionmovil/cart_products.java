@@ -338,7 +338,7 @@ public class cart_products extends Fragment {
                         editor.commit();
                     }
                     tipoReg = "Carro";
-                    Toast.makeText(getContext(), "Los productos llegaran pronto a tu domicilio, consulta en la pestaña seguimmiento para el donde viene tu pedido.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Los productos llegaran pronto a tu domicilio, consulta en la pestaña seguimiento para el donde viene tu pedido.", Toast.LENGTH_LONG).show();
                     Fragment currentFragment = new cart_products();
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_general, currentFragment).commit();
                 }

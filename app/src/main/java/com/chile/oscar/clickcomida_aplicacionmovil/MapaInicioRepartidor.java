@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapaRepartidorCoordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.PedidosRepartidor;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -210,6 +211,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                                 object.put("longitud", location.getLongitude());
                                 object.put("id", Coordenadas.id);
                                 Log.d("Respuesta", "Enviado");
+                                Log.e("Coordenadas", "Latitud: " + location.getLatitude() + " Longitud: " + location.getLongitude());
                                 new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());
                             }
                         }
@@ -239,16 +241,35 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         getActivity().stopService(new Intent(getActivity(), ServicioRepartidor.class));
     }
 
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.e("onPause", "Para el servicio y solo envia las coordenadas en pantalla bloqueada...");
+        getActivity().stopService(new Intent(getActivity(), ServicioRepartidor.class));
+    }
+
     @Override
     public void onDestroy()
     {
         super.onDestroy();
         if (ARG_ID == 0)
         {
-            Log.e("onDestroy", "App cerrada");
-            timer.cancel();
-            timer.purge();
-            getActivity().startService(new Intent(getActivity(), ServicioRepartidor.class));
+            if (Inicio_Repartidor.SRepart == 1)
+            {
+                Log.e("onDestroy", "App cerrada por Pedidos pendientes");
+                timer.cancel();
+                timer.purge();
+                getActivity().stopService(new Intent(getActivity(), ServicioRepartidor.class));
+            }
+            else
+            {
+                Log.e("onDestroy", "App cerrada");
+                timer.cancel();
+                timer.purge();
+                getActivity().startService(new Intent(getActivity(), ServicioRepartidor.class));
+            }
+
         }
         else
         {

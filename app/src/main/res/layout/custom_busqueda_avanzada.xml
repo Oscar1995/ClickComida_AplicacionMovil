@@ -75,6 +75,15 @@
                 android:textColor="@color/textoBlanco"
                 android:textStyle="bold"
                 android:visibility="gone" />
+
+            <RatingBar
+                android:id="@+id/rbProd"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:isIndicator="true"
+                android:stepSize="1.0" />
         </LinearLayout>
 
     </LinearLayout>
