@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,16 +173,24 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
         textViewCal = (TextView)view.findViewById(R.id.tvInfoCal);
 
-        imageViewOther.setImageBitmap(imagenTienda);
-        textViewNombre.setText(nombre);
-        textViewDireccion.setText(getResources().getString(R.string.calle_tienda) + ": " + calle + ", " + getResources().getString(R.string.numero_tienda) + ": " + numero);
+        imageViewOther.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenTienda, getResources()));
+        textViewNombre.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Tienda) + ": </b>" + nombre));
+        textViewDireccion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Direccion) + ": </b>" + calle + " #" + numero));
 
 
         Location location = getMyLocation();
         if (location != null)
         {
             textViewKilometros.setVisibility(View.VISIBLE);
-            textViewKilometros.setText("A " + new MetodosCreados().CalculationByDistanceKilometers(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud))) + " " + "kilometros de ti");
+            if (new MetodosCreados().CalculationByDistanceKilometers(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud))) == 0)
+            {
+                textViewKilometros.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Ubicacion) + ": </b>" + "Esta cerca de ti"));
+            }
+            else
+            {
+                textViewKilometros.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Ubicacion) + ": </b>" + new MetodosCreados().CalculationByDistanceKilometers(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud))) + " kilometros de ti"));
+            }
+
         }
         else
         {
@@ -194,13 +203,16 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
         if (lunch_hour.equals("00:00:00") && lunch_after_hour.equals("00:00:00"))
         {
-            textViewHorario.setText("De " + start_day + " a " + end_day + ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+            textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+start_day + " a " + end_day+ "</font> <br>"+
+                    "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
         }
         else
         {
             String openupdatelunch = new MetodosCreados().HoraNormal(lunch_hour);
             String closeupdatelunch = new MetodosCreados().HoraNormal(lunch_after_hour);
-            textViewHorario.setText("De " + start_day + " a " + end_day + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+            textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+start_day + " a " + end_day+ "</font> <br>"+
+                    "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                    + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
         }
 
         cargarCalificacion();

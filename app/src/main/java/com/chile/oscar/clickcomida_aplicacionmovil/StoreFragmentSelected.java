@@ -21,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,19 +156,16 @@ public class StoreFragmentSelected extends Fragment {
         Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
         final TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
         final TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
-        final TextView textViewDes = (TextView) view.findViewById(R.id.tvDesSelected);
-        final TextView textViewCalle = (TextView) view.findViewById(R.id.tvCalleSelected);
-        final TextView textViewNumero = (TextView) view.findViewById(R.id.tvNumeroSelected);
+        final TextView textViewDireccion = (TextView)view.findViewById(R.id.tvDireccion);
+        final TextView textViewDescripcion = (TextView)view.findViewById(R.id.tvDesSelected);
         final TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
         imageViewTienda = (ImageView) view.findViewById(R.id.ivTiendaSelected);
         listViewComentarios = (ListView)view.findViewById(R.id.lvComentarios);
 
         textViewNombrePrincipal.setText(getResources().getString(R.string.titulo_tienda_seleccionada) + " " + nombre);
-        textViewNombre.setText(getResources().getString(R.string.nombre_tienda) + ": " + nombre);
-        textViewDes.setText(getResources().getString(R.string.titulo_descripcion) + ": " + des);
-        textViewCalle.setText(getResources().getString(R.string.calle_tienda) + ": " + calle);
-        textViewNumero.setText(getResources().getString(R.string.titulo_calle_numero_usuario) + ": " + numero);
-
+        textViewNombre.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Tienda) + ": </b>" + nombre));
+        textViewDescripcion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.titulo_descripcion)+ ": </b>" + des));
+        textViewDireccion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Direccion) + ": </b>" + calle + " #" + numero));
         Coordenadas.latitud = Double.parseDouble(latitud);
         Coordenadas.longitud = Double.parseDouble(longitud);
 
@@ -176,15 +174,27 @@ public class StoreFragmentSelected extends Fragment {
 
         if (lunch_hour.equals("00:00:00") && lunch_after_hour.equals("00:00:00"))
         {
-            textViewHorario.setText("De " + start_day + " a " + end_day + ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+            textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+start_day + " a " + end_day+ "</font> <br>"+
+                    "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
         }
         else
             {
             String openupdatelunch = new MetodosCreados().HoraNormal(lunch_hour);
             String closeupdatelunch = new MetodosCreados().HoraNormal(lunch_after_hour);
-            textViewHorario.setText("De " + start_day + " a " + end_day + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+
+                textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+start_day + " a " + end_day+ "</font> <br>"+
+                        "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
+            //textViewHorario.setText("De " + start_day + " a " + end_day + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
         }
-        imageViewTienda.setImageBitmap(imagenTienda);
+        imageViewTienda.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenTienda, getResources()));
+
+        //Obtengo el ancho de la imagen...
+        //int nWidth = imageViewTienda.getDrawable().getIntrinsicWidth();
+        //int nHeight = imageViewTienda.getDrawable().getIntrinsicHeight();
+
+        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(nWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //buttonModificarFoto.setLayoutParams(params);
 
         buttonMostrarProductos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,6 +234,7 @@ public class StoreFragmentSelected extends Fragment {
                                     else
                                     {
                                         //Päsa aqui cuando los permisos estan activados
+                                        tipo = "Imagen";
                                         dispatchTakePictureIntent();
                                     }
                                 }
@@ -243,6 +254,7 @@ public class StoreFragmentSelected extends Fragment {
                                         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                                         intent.setType("image/*");
                                         startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                                        tipo = "Imagen";
                                     }
                                 }
                                 else if (items[which].equals("Cancelar"))
@@ -518,20 +530,23 @@ public class StoreFragmentSelected extends Fragment {
                             String openupdate = new MetodosCreados().HoraNormal(textViewHora1.getText().toString());
                             String closeupdate = new MetodosCreados().HoraNormal(textViewHora2.getText().toString());
 
-                            textViewNombre.setText(getResources().getString(R.string.nombre_tienda) + ": " + editTextNombreTienda.getText().toString().trim());
-                            textViewDes.setText(getResources().getString(R.string.titulo_descripcion) + ": " + editTextDesTienda.getText().toString().trim());
-                            textViewCalle.setText(getResources().getString(R.string.calle_tienda) + ": " + editTextCalle.getText().toString().trim());
-                            textViewNumero.setText(getResources().getString(R.string.titulo_calle_numero_usuario) + ": " + editTextNum.getText().toString().trim());
+                            textViewNombre.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Tienda) + ": </b>" + editTextNombreTienda.getText().toString().trim()));
+                            textViewDireccion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Direccion) + ": </b>" + editTextCalle.getText().toString().trim() + " #" + editTextNum.getText().toString().trim()));
+                            textViewDescripcion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.titulo_descripcion)+ ": </b>" + editTextDesTienda.getText().toString().trim()));
+
 
                             if (textViewHora3.getText().equals("00:00:00") && textViewHora4.getText().equals("00:00:00"))
                             {
-                                textViewHorario.setText("De " + dInicio + " a " + dFin + ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+                                textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
+                                        "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
                             }
                             else
                             {
                                 String openupdatelunch = new MetodosCreados().HoraNormal(textViewHora3.getText().toString());
                                 String closeupdatelunch = new MetodosCreados().HoraNormal(textViewHora4.getText().toString());
-                                textViewHorario.setText("De " + dInicio + " a " + dFin + ", horario mañana desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+                                textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
+                                        "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                                        + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
                             }
                         }
                         catch (JSONException e)
@@ -652,20 +667,21 @@ public class StoreFragmentSelected extends Fragment {
         {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageViewTienda.setImageBitmap(imageBitmap);
+            imageViewTienda.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imageBitmap, getResources()));
             String imagenGeneral = Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.PNG, 100);
             JSONObject object = new JSONObject();
             try
             {
                 object.put("Nombre", nombre);
                 object.put("Imagen", imagenGeneral);
+                tipo = "Imagen";
             }
             catch (JSONException e)
             {
                 e.printStackTrace();
             }
             progress = new ProgressDialog(getContext());
-            progress.setMessage("Modificado imagen...");
+            progress.setMessage("Modificando imagen...");
             progress.setCanceledOnTouchOutside(false);
             progress.show();
             new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarImagenTienda.php", object.toString());
@@ -686,13 +702,14 @@ public class StoreFragmentSelected extends Fragment {
                 {
                     object.put("Nombre", nombre);
                     object.put("Imagen", imagenCod);
+                    tipo = "Imagen";
                 }
                 catch (JSONException e)
                 {
                     e.printStackTrace();
                 }
                 progress = new ProgressDialog(getContext());
-                progress.setMessage("Modificado imagen...");
+                progress.setMessage("Modificando imagen...");
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
                 new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/modificarImagenTienda.php", object.toString());
@@ -885,7 +902,7 @@ public class StoreFragmentSelected extends Fragment {
                 }
 
             }
-            else
+            else if (tipo.equals("Imagen"))
             {
                 Toast.makeText(getContext(), "Imagen modificada.", Toast.LENGTH_SHORT).show();
                 progress.dismiss();

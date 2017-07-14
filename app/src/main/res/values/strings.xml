@@ -269,4 +269,7 @@
     <string name="mi_tienda">Esta tienda es tuya</string>
     <string name="mi_producto">Este producto es tuyo</string>
     <string name="cambiarPos">Cambiar posicion en el mapa</string>
+    <string name="Direccion">Dirección</string>
+    <string name="Tienda">Tienda</string>
+    <string name="Ubicacion">Ubicación</string>
 </resources>

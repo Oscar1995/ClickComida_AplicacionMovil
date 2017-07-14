@@ -10,164 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <TextView
+                android:id="@+id/textView56"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@color/colorCeleste"
+                android:gravity="center"
+                android:text="Nombre Tienda"
+                android:textColor="@color/textoBlanco"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/textView56"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorCeleste"
-                    android:gravity="center"
-                    android:text="Nombre Tienda"
-                    android:textColor="@color/textoBlanco"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/ivTiendaOther"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:layout_weight="1"
-                            app:srcCompat="@color/colorNegro" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvNombreOther"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Nombre Tienda"
-                            android:textColor="@color/colorNegro" />
-
-                        <TextView
-                            android:id="@+id/tvDireccionOther"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Calle #123"
-                            android:textColor="@color/colorNegro" />
-
-                        <TextView
-                            android:id="@+id/tvKilometrosOther"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="A: x kilometros de ti"
-                            android:textColor="@color/colorNegro" />
-
-                        <TextView
-                            android:id="@+id/tvHorarioOther"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Horario de atencion"
-                            android:textColor="@color/colorNegro" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <RatingBar
-                            android:id="@+id/rbTienda"
-                            style="?android:attr/ratingBarStyleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginLeft="19dp"
-                            android:layout_weight="1"
-                            android:numStars="5"
-                            android:stepSize="1.0" />
-
-                        <TextView
-                            android:id="@+id/textView58"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="7dp"
-                            android:layout_weight="1"
-                            android:text="Calificación global"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/colorNegro" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginRight="20dp"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/ivFavoritos"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            app:srcCompat="@drawable/heart_desactive" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="15dp"
-                    android:gravity="right|center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/imageView8"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="5dp"
-                        app:srcCompat="@drawable/people_icon" />
-
-                    <TextView
-                        android:id="@+id/tvLikeStore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="1 persona le gusta esta tienda"
-                        android:textColor="@color/colorNegro" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -176,113 +41,273 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvInfoCal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                    <ImageView
+                        android:id="@+id/ivTiendaOther"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
                         android:layout_weight="1"
-                        android:text="Califica esta tienda"
-                        android:textAllCaps="false"
+                        app:srcCompat="@color/colorNegro" />
+
+                    <TextView
+                        android:id="@+id/textView58"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Calificación global"
+                        android:textAlignment="center"
                         android:textColor="@color/colorNegro"
                         android:textStyle="bold" />
 
                     <RatingBar
-                        android:id="@+id/ratingBarU"
+                        android:id="@+id/rbTienda"
+                        style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="false"
                         android:numStars="5"
-                        android:stepSize="1.0"
-                        android:theme="@style/RatingBar" />
+                        android:stepSize="1.0" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textView55"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textView67"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingLeft="20dp"
-                        android:text="@string/titulo_comentarios"
-                        android:textAlignment="center"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:text="@string/titulo_detalles"
                         android:textColor="@color/colorNegro"
-                        android:textSize="11sp" />
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/imageView7"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_weight="1"
-                        android:paddingRight="30dp"
-                        app:srcCompat="@drawable/comentarios" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <ListView
-                        android:id="@+id/lvComentarios"
+                    <TextView
+                        android:id="@+id/tvNombreOther"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="Tienda"
+                        android:textColor="@color/colorNegro" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvDireccionOther"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="2dp"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="Dirección"
+                        android:textColor="@color/colorNegro" />
 
-                        <EditText
-                            android:id="@+id/etComentarioOther"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:inputType="textPersonName" />
-
-                        <Button
-                            android:id="@+id/btnComentar"
-                            style="@style/Widget.AppCompat.Button.Colored"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/colorbuttonred"
-                            android:text="@string/titulo_comentar" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvKilometrosOther"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="Ubicación"
+                        android:textColor="@color/colorNegro" />
 
                     <Button
-                        android:id="@+id/btnProductOther"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:id="@+id/btnVerMapa"
+                        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginRight="50dp"
-                        android:background="@drawable/colorbuttonceleste"
-                        android:text="@string/titulo_productos" />
+                        android:text="@string/ver_mapa" />
+
                 </LinearLayout>
 
             </LinearLayout>
 
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView50"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/titulo_horario_atencion_selected"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvHorarioOther"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:text="Horario de atencion"
+                    android:textColor="@color/colorPrimary" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ivFavoritos"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:srcCompat="@drawable/heart_desactive" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:gravity="right|center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView8"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="5dp"
+                    app:srcCompat="@drawable/people_icon" />
+
+                <TextView
+                    android:id="@+id/tvLikeStore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1 persona le gusta esta tienda"
+                    android:textColor="@color/colorNegro" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvInfoCal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Califica esta tienda"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <RatingBar
+                    android:id="@+id/ratingBarU"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:theme="@style/RatingBar" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView55"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:text="@string/titulo_comentarios"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorNegro"
+                    android:textSize="11sp" />
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:paddingRight="30dp"
+                    app:srcCompat="@drawable/comentarios" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ListView
+                    android:id="@+id/lvComentarios"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/etComentarioOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
+
+                    <Button
+                        android:id="@+id/btnComentar"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/colorbuttonred"
+                        android:text="@string/titulo_comentar" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnProductOther"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginRight="50dp"
+                    android:background="@drawable/colorbuttonceleste"
+                    android:text="@string/titulo_productos" />
+            </LinearLayout>
+
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>
