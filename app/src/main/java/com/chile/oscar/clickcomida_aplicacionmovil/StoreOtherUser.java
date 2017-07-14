@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +33,16 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +88,9 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     List<String> storesDatecomments;
     ListView listaComentarios;
     EditText editTextComentario;
+    TextView textViewDes;
+    GoogleMap googleMapGlobal;
+    Boolean mapLoad = false;
 
     Boolean favorite = false;
     ImageView imageViewFavoritos;
@@ -164,12 +177,14 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
         final TextView textViewDireccion =(TextView)view.findViewById(R.id.tvDireccionOther);
         TextView textViewKilometros =(TextView)view.findViewById(R.id.tvKilometrosOther);
         TextView textViewHorario = (TextView)view.findViewById(R.id.tvHorarioOther);
+        textViewDes = (TextView)view.findViewById(R.id.tvDesStore);
         editTextComentario  = (EditText)view.findViewById(R.id.etComentarioOther);
         imageViewFavoritos = (ImageView)view.findViewById(R.id.ivFavoritos);
         textViewLikeStore = (TextView)view.findViewById(R.id.tvLikeStore);
 
         Button buttonComentar = (Button)view.findViewById(R.id.btnComentar);
         Button buttonProducto = (Button)view.findViewById(R.id.btnProductOther);
+        Button buttonMapa = (Button)view.findViewById(R.id.btnVerMapa);
 
         textViewCal = (TextView)view.findViewById(R.id.tvInfoCal);
 
@@ -277,6 +292,52 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
                 }
                 sw = false;
+            }
+        });
+        buttonMapa.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (MapStatic.pMap == null)
+                {
+                    MapStatic.pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                }
+                if (MapStatic.pMap.getParent() != null)
+                {
+                    ((ViewGroup)MapStatic.pMap.getParent()).removeView(MapStatic.pMap);
+                }
+                final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
+                final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+
+                builderMapa.setView(MapStatic.pMap);
+                final AlertDialog mapUpdate = builderMapa.create();
+                mapUpdate.show();
+
+                map.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(final GoogleMap googleMap)
+                    {
+                        googleMap.clear();
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setZoomControlsEnabled(true);
+                        LatLng latlng = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud));
+                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.store_icon);
+                        googleMap.addMarker(new MarkerOptions().position(latlng).title(nombre).snippet(calle + " #" + numero)).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latlng, 15);
+                        googleMap.animateCamera(miUbicacion);
+                    }
+                });
             }
         });
         buttonComentar.setOnClickListener(new View.OnClickListener() {
@@ -617,7 +678,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                     {
                         textViewLikeStore.setText(getResources().getString(R.string.none_person));
                     }
-
+                    textViewDes.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Descripcion) + " </b>" + object.getString("Descripcion")));
                     progress.setMessage("Cargando...");
                     cargarFavorito();
                 }
