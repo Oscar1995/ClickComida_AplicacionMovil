@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -146,11 +147,11 @@ public class Details_products extends Fragment {
         Button buttonCarro = (Button)v.findViewById(R.id.btnAgregarProdCarro);
         Button buttonAgregarComentario = (Button)v.findViewById(R.id.btnComentarProducto);
 
-        imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenProducto, getResources()));
-        textViewNombre.setText(nombreProd);
-        textViewDescripcion.setText(desProd);
+        imageViewProd.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenProducto, getResources()));
+        textViewNombre.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Producto) + ": </b>" + nombreProd));
+        textViewDescripcion.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Descripcion) + " </b>" + desProd));
         textViewTituloTienda.setText("Producto de la tienda " + nombreTienda);
-        textViewPrecio.setText("$" + precioProd);
+        textViewPrecio.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Precio) + "</b> $" + precioProd));
 
         cargarFavorito();
 

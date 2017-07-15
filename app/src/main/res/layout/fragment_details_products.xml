@@ -26,19 +26,101 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/ivProductoOther"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                app:srcCompat="@drawable/products" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivProductoOther"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:srcCompat="@drawable/products" />
+
+                <TextView
+                    android:id="@+id/textView33"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Calificación global"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <RatingBar
+                    android:id="@+id/rbProdGlobal"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="1.0" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView63"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
+                    android:text="@string/titulo_detalles_producto"
+                    android:textColor="@color/colorNegro"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvNombreProdOther"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/titulo_nombre_prod"
+                    android:textColor="@color/colorNegro"
+                    tools:text="@string/Producto" />
+
+                <TextView
+                    android:id="@+id/tvPrecioProductoOther"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Precio"
+                    android:textColor="@color/colorNegro"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDesProductoOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/Descripcion"
+                android:textColor="@color/colorNegro" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -47,18 +129,11 @@
                     android:layout_height="30dp"
                     app:srcCompat="@drawable/heart_desactive" />
 
-                <TextView
-                    android:id="@+id/textView24"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/titulo_agregar_fav_prod"
-                    android:textColor="@color/colorNegro" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
+                android:layout_height="match_parent"
                 android:gravity="right|center"
                 android:orientation="horizontal">
 
@@ -66,7 +141,7 @@
                     android:id="@+id/imageView8"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginRight="3dp"
                     app:srcCompat="@drawable/people_icon" />
 
                 <TextView
@@ -78,42 +153,13 @@
                     android:textColor="@color/colorNegro" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView33"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/titulo_cal_users_prod" />
-
-                    <RatingBar
-                        android:id="@+id/rbProdGlobal"
-                        style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:stepSize="1.0" />
-                </LinearLayout>
-
-            </LinearLayout>
-
             <TextView
                 android:id="@+id/textView25"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@color/colorNegro"
-                android:text="@string/titulo_califica_producto" />
+                android:text="@string/titulo_califica_producto"
+                android:textColor="@color/colorNegro" />
 
             <RatingBar
                 android:id="@+id/rbProdUsuario"
@@ -128,34 +174,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvNombreProdOther"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/titulo_nombre_prod"
-                    android:textColor="@color/colorNegro" />
-
-                <TextView
-                    android:id="@+id/tvDesProductoOther"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/Descripcion"
-                    android:textColor="@color/colorNegro" />
-
-                <TextView
-                    android:id="@+id/tvPrecioProductoOther"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:gravity="center"
-                    android:text="@string/Precio"
-                    android:textColor="@color/colorNegro"
-                    android:textSize="18sp" />
             </LinearLayout>
 
         </LinearLayout>

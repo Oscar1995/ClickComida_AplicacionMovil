@@ -151,7 +151,6 @@ public class MetodosCreados
     public String formatearFecha (String fecha)
     {
         SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
         Date date = null;
         try
         {
@@ -162,6 +161,22 @@ public class MetodosCreados
             e.printStackTrace();
         }
         dateParser.applyPattern("EEEE, dd 'de' MMMM 'de' yyyy");
+        String dateformat = dateParser.format(date);
+        return dateformat;
+    }
+    public String formatearFechaSimple (String fecha)
+    {
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date date = null;
+        try
+        {
+            date = dateParser.parse(fecha);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        dateParser.applyPattern("dd 'de' MMMM 'de' yyyy");
         String dateformat = dateParser.format(date);
         return dateformat;
     }

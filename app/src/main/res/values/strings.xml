@@ -272,4 +272,10 @@
     <string name="Direccion">Dirección</string>
     <string name="Tienda">Tienda</string>
     <string name="Ubicacion">Ubicación</string>
+    <string name="Esta_Tienda_Cuenta">Esta tienda tiene</string>
+    <string name="Esta_Tienda_No_Tiene_Productos">Esta tienda aun no tiene productos.</string>
+    <string name="titulo_detalles_producto">Detalles del producto</string>
+    <string name="Producto">Producto</string>
+    <string name="Fecha_Creacion">Fecha de creación</string>
+    <string name="Anadido">Añadido</string>
 </resources>

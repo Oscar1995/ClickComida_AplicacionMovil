@@ -11,6 +11,16 @@ public class BusquedaAvanzadaProductos
     int pProd;
     int userId;
 
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    String dateCreated;
+
     public float getRatingProduct() {
         return ratingProduct;
     }

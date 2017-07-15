@@ -411,17 +411,20 @@ public class BusquedaAvanzada extends Fragment {
                 if (busquedaAvanzadaTiendasList.get(position).getUserId() == Integer.parseInt(Coordenadas.id))textViewMiTienda.setVisibility(View.VISIBLE); else textViewMiTienda.setVisibility(View.GONE);
                 if (busquedaAvanzadaTiendasList.get(position).getLunchHour().equals("00:00:00") && busquedaAvanzadaTiendasList.get(position).getLunchAfterHour().equals("00:00:00"))
                 {
-                    textViewProducto.setText("De " + busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ ", horario continuado desde las " + openupdate + " hasta las " + closeupdate);
+                    textViewTienda.setText(Html.fromHtml("<b> <font color=\"blue\">"+busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ "</font> <br>"+
+                            "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
                 }
                 else
                 {
                     String openupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchHour());
                     String closeupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchAfterHour());
-                    textViewProducto.setText("De " + busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ ", horario continuado desde las " + openupdate + " hasta las " + closeupdate + ", horario tarde desde las " + openupdatelunch + " hasta las " + closeupdatelunch);
+                    textViewTienda.setText(Html.fromHtml("<b> <font color=\"blue\">"+busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ "</font> <br>"+
+                            "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                            + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
                 }
 
-                textViewTienda.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaTiendasList.get(position).getNameStore().toString()));
-                textViewPrecio.setText("Pasaje: " + busquedaAvanzadaTiendasList.get(position).getStreetStore() + " #" + busquedaAvanzadaTiendasList.get(position).getNumberStore());
+                textViewProducto.setText(Html.fromHtml("<b>Tienda: </b>" + busquedaAvanzadaTiendasList.get(position).getNameStore().toString()));
+                textViewPrecio.setText("Dirección: " + busquedaAvanzadaTiendasList.get(position).getStreetStore() + " #" + busquedaAvanzadaTiendasList.get(position).getNumberStore());
             }
 
             return convertView;

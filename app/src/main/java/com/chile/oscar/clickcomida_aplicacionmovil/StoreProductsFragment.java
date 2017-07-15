@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,7 +67,6 @@ public class StoreProductsFragment extends Fragment
     List<BusquedaAvanzadaTiendas> busquedaAvanzadaTiendasList = new ArrayList<>();
     List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
 
-    List<String> stringListFechas = new ArrayList<>();
     ListView listViewProducts_Stores;
     ProgressDialog progress;
 
@@ -169,7 +170,7 @@ public class StoreProductsFragment extends Fragment
                 if (mTipo.equals("Productos"))
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
+                    trans.replace(R.id.content_general, newInstance(bitmapList.get(position), busquedaAvanzadaProductosList.get(position).getNameStore(), busquedaAvanzadaProductosList.get(position).getIdStore(), busquedaAvanzadaProductosList.get(position).getIdProd(), busquedaAvanzadaProductosList.get(position).getNameProd(), busquedaAvanzadaProductosList.get(position).getDesProd(), busquedaAvanzadaProductosList.get(position).getpProd()));
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
@@ -255,17 +256,24 @@ public class StoreProductsFragment extends Fragment
                 ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
                 TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
+                RatingBar ratingBar = (RatingBar)convertView.findViewById(R.id.rbStore);
+
+                TextView dateFavorite = (TextView)convertView.findViewById(R.id.tvCreated);
 
                 imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(bitmapList.get(position), getResources()));
                 if (mTipo.equals("Productos"))
                 {
-                    textViewNombre.setText(busquedaAvanzadaProductosList.get(position).getNameProd());
-                    textViewDesStore.setText("Agregado el: " + new MetodosCreados().formatearFecha(stringListFechas.get(position)));
+                    textViewNombre.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Producto) + ": </b>" + busquedaAvanzadaProductosList.get(position).getNameProd()));
+                    textViewDesStore.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Tienda) + ": </b>" + busquedaAvanzadaProductosList.get(position).getNameStore()));
+                    dateFavorite.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Anadido) + ": </b>" + new MetodosCreados().formatearFecha(busquedaAvanzadaProductosList.get(position).getDateCreated())));
+                    ratingBar.setRating(busquedaAvanzadaProductosList.get(position).getRatingProduct());
                 }
                 else
                 {
-                    textViewNombre.setText(busquedaAvanzadaTiendasList.get(position).getNameStore());
-                    textViewDesStore.setText("Agregado el: " + new MetodosCreados().formatearFecha(stringListFechas.get(position)));
+                    textViewDesStore.setVisibility(View.GONE);
+                    textViewNombre.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Tienda) + ": </b>" + busquedaAvanzadaTiendasList.get(position).getNameStore()));
+                    dateFavorite.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Anadido) + ": </b>" + new MetodosCreados().formatearFecha(busquedaAvanzadaTiendasList.get(position).getDateCreated())));
+                    ratingBar.setRating(busquedaAvanzadaTiendasList.get(position).getRatingStore());
                 }
 
             }
@@ -366,7 +374,6 @@ public class StoreProductsFragment extends Fragment
                         if (!busquedaAvanzadaTiendasList.isEmpty())
                         {
                             busquedaAvanzadaTiendasList.clear();
-                            stringListFechas.clear();
                             bitmapList.clear();
                         }
                     }
@@ -375,7 +382,6 @@ public class StoreProductsFragment extends Fragment
                         if (!busquedaAvanzadaProductosList.isEmpty())
                         {
                             busquedaAvanzadaProductosList.clear();
-                            stringListFechas.clear();
                             bitmapList.clear();
                         }
                     }
@@ -406,7 +412,15 @@ public class StoreProductsFragment extends Fragment
                                 busquedaAvanzadaProductos.setNameStore(object.getString("name"));
                                 busquedaAvanzadaProductos.setDesProd(object.getString("description"));
                                 busquedaAvanzadaProductos.setpProd(object.getInt("price"));
-                                stringListFechas.add(object.getString("created_at"));
+                                busquedaAvanzadaProductos.setDateCreated(object.getString("created_at"));
+                                if (object.getString("calification_average").equals("null"))
+                                {
+                                    busquedaAvanzadaProductos.setRatingProduct(0.0f);
+                                }
+                                else
+                                {
+                                    busquedaAvanzadaProductos.setRatingProduct(Float.parseFloat(object.getString("calification_average")));
+                                }
                                 busquedaAvanzadaProductosList.add(busquedaAvanzadaProductos);
                             }
                             else if (mTipo.equals("Tiendas"))
@@ -426,7 +440,16 @@ public class StoreProductsFragment extends Fragment
                                 busquedaAvanzadaTiendas.setLunchAfterHour(object.getString("lunch_after_hour"));
                                 busquedaAvanzadaTiendas.setLatLngStore(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
                                 busquedaAvanzadaTiendas.setUserId(0);
-                                stringListFechas.add(object.getString("created_at"));
+                                busquedaAvanzadaTiendas.setDateCreated(object.getString("created_at"));
+                                if (object.getString("calification_average").equals("null"))
+                                {
+                                    busquedaAvanzadaTiendas.setRatingStore(0.0f);
+                                }
+                                else
+                                {
+                                    busquedaAvanzadaTiendas.setRatingStore(Float.parseFloat(object.getString("calification_average")));
+                                }
+
                                 busquedaAvanzadaTiendasList.add(busquedaAvanzadaTiendas);
                             }
                         }

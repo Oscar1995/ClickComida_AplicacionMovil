@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class ProductsOtherUser extends Fragment
     AutoCompleteTextView autoCompleteTextViewProducto;
     Spinner spinnerFiltro;
     GridView gridViewProductos;
+    TextView textViewCuentaProd;
 
     List<String> idProd;
     List<String> nombreProd, desProd, precioProd;
@@ -115,9 +117,11 @@ public class ProductsOtherUser extends Fragment
         autoCompleteTextViewProducto = (AutoCompleteTextView)v.findViewById(R.id.actvProductos);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
         gridViewProductos = (GridView)v.findViewById(R.id.gvProductos);
+        textViewCuentaProd = (TextView)v.findViewById(R.id.tvCount);
 
         ImageView imageViewTienda = (ImageView)v.findViewById(R.id.ivTiendaOther);
         TextView textViewTituloTienda = (TextView)v.findViewById(R.id.tvTituloTienda);
+        TextView textViewNombreTienda = (TextView)v.findViewById(R.id.tvTienda);
         Button buttonAgregarCarro = (Button)v.findViewById(R.id.btnAgregarCarro);
         Button buttonDetalles = (Button)v.findViewById(R.id.btnDetalles);
 
@@ -125,7 +129,8 @@ public class ProductsOtherUser extends Fragment
         ArrayAdapter arrayAdapterFiltro = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, tOption);
         spinnerFiltro.setAdapter(arrayAdapterFiltro);
 
-        imageViewTienda.setImageDrawable(new MetodosCreados().RedondearBitmap(imagenTienda, getResources()));
+        textViewNombreTienda.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Tienda) + ": </b>" + nombreTienda));
+        imageViewTienda.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenTienda, getResources()));
         textViewTituloTienda.setText(getResources().getString(R.string.titulo_productos_tienda) + " " + nombreTienda);
 
 
@@ -416,7 +421,6 @@ public class ProductsOtherUser extends Fragment
 
                 int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
                 JSONObject jsonObject = null;
-
                 int cLocal = 0;
 
                 idProd = new ArrayList<>();
@@ -442,6 +446,19 @@ public class ProductsOtherUser extends Fragment
                     }
                 }
                 ArrayAdapter arrayAdapterTexto = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, nombreProd);
+                if (cLocal == 1)
+                {
+                    textViewCuentaProd.setText(Html.fromHtml(getResources().getString(R.string.Esta_Tienda_Cuenta) + " " + cLocal + " producto."));
+                }
+                else if (cLocal > 1)
+                {
+                    textViewCuentaProd.setText(Html.fromHtml(getResources().getString(R.string.Esta_Tienda_Cuenta) + " " + cLocal + " productos."));
+                }
+                else
+                {
+                    textViewCuentaProd.setText(Html.fromHtml(getResources().getString(R.string.Esta_Tienda_No_Tiene_Productos)));
+                }
+
                 autoCompleteTextViewProducto.setAdapter(arrayAdapterTexto);
                 progress.dismiss();
                 gridViewProductos.setAdapter(new ProductoAdapter());

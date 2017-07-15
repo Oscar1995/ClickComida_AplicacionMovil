@@ -112,8 +112,6 @@ public class BusquedaAvanzadaTiendas
         this.latLngStore = latLngStore;
     }
 
-    int storeId, numberStore, userId;
-
     public float getRatingStore() {
         return ratingStore;
     }
@@ -122,7 +120,26 @@ public class BusquedaAvanzadaTiendas
         this.ratingStore = ratingStore;
     }
 
+    int storeId, numberStore, userId;
     float ratingStore;
-    String nameStore, descriptionStore, streetStore, startDay, endDay, openHour, closeHour, lunchHour, lunchAfterHour;
+    String nameStore;
+    String descriptionStore;
+    String streetStore;
+    String startDay;
+    String endDay;
+    String openHour;
+    String closeHour;
+    String lunchHour;
+    String lunchAfterHour;
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    String dateCreated;
     LatLng latLngStore;
 }

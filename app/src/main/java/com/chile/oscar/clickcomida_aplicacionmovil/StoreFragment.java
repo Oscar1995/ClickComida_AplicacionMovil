@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,15 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaTiendas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,14 +41,18 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class StoreFragment extends Fragment implements StoreFragmentSelected.OnFragmentInteractionListener
 {
     private OnFragmentInteractionListener mListener;
     private String id_usuario;
-    Bitmap[] images;
-    String[] id_store, name, des, street, numberStreet, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, latitud, longitud;
+
+    List<BusquedaAvanzadaTiendas> busquedaAvanzadaTiendasList = new ArrayList<>();
+    List<Bitmap> images = new ArrayList<>();
+
     ListView listViewStores;
     ProgressDialog progress;
 
@@ -95,7 +104,6 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
 
         View view = inflater.inflate(R.layout.fragment_store, container, false);
 
-
         JSONObject object = new JSONObject();
         try
         {
@@ -114,8 +122,20 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 FragmentTransaction trans = getFragmentManager().beginTransaction();
-                trans.replace(R.id.content_general, newInstance(Codificacion.encodeToBase64(images[position], Bitmap.CompressFormat.PNG, 60), name[position], des[position], street[position]
-                , numberStreet[position], start_day[position], end_day[position], open_hour[position], close_hour[position], lunch_hour[position], lunch_after_hour[position], id_store[position], latitud[position], longitud[position]));
+                trans.replace(R.id.content_general, newInstance(Codificacion.encodeToBase64(images.get(position), Bitmap.CompressFormat.PNG, 60),
+                        busquedaAvanzadaTiendasList.get(position).getNameStore(),
+                        busquedaAvanzadaTiendasList.get(position).getDescriptionStore(),
+                        busquedaAvanzadaTiendasList.get(position).getStreetStore(),
+                        busquedaAvanzadaTiendasList.get(position).getNumberStore() + "",
+                        busquedaAvanzadaTiendasList.get(position).getStartDay(),
+                        busquedaAvanzadaTiendasList.get(position).getEndDay(),
+                        busquedaAvanzadaTiendasList.get(position).getOpenHour(),
+                        busquedaAvanzadaTiendasList.get(position).getCloseHour(),
+                        busquedaAvanzadaTiendasList.get(position).getLunchHour(),
+                        busquedaAvanzadaTiendasList.get(position).getLunchAfterHour(),
+                        busquedaAvanzadaTiendasList.get(position).getStoreId() + "",
+                        busquedaAvanzadaTiendasList.get(position).getLatLngStore().latitude + "",
+                        busquedaAvanzadaTiendasList.get(position).getLatLngStore().longitude + ""));
                 trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 trans.addToBackStack(null);
                 trans.commit();
@@ -135,7 +155,7 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
         @Override
         public int getCount()
         {
-            return images.length; //Indico las veces que debe recorrer
+            return images.size(); //Indico las veces que debe recorrer
         }
 
         @Override
@@ -157,18 +177,35 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                 ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
                 TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
                 TextView textViewDesStore = (TextView)convertView.findViewById(R.id.txtDesStore);
+                RatingBar ratingBarStore = (RatingBar)convertView.findViewById(R.id.rbStore);
+                TextView textViewFechaCreacion = (TextView)convertView.findViewById(R.id.tvCreated);
 
+                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(images.get(position), getResources()));
+                textViewNombre.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Tienda) + ":</b> " + busquedaAvanzadaTiendasList.get(position).getNameStore()));
 
-                imageView.setImageDrawable(new MetodosCreados().RedondearBitmap(images[position], getResources()));
-                textViewNombre.setText(name[position]);
-                textViewDesStore.setText(des[position]);
+                String openupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getOpenHour());
+                String closeupdate = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getCloseHour());
+                if (busquedaAvanzadaTiendasList.get(position).getLunchHour().equals("00:00:00") && busquedaAvanzadaTiendasList.get(position).getLunchAfterHour().equals("00:00:00"))
+                {
+                    textViewDesStore.setText(Html.fromHtml("<b> <font color=\"blue\">"+busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ "</font> <br>"+
+                            "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
+                }
+                else
+                {
+                    String openupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchHour());
+                    String closeupdatelunch = new MetodosCreados().HoraNormal(busquedaAvanzadaTiendasList.get(position).getLunchAfterHour());
+                    textViewDesStore.setText(Html.fromHtml("<b> <font color=\"blue\">"+busquedaAvanzadaTiendasList.get(position).getStartDay() + " a " + busquedaAvanzadaTiendasList.get(position).getEndDay()+ "</font> <br>"+
+                            "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                            + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
+                }
+
+                ratingBarStore.setRating(busquedaAvanzadaTiendasList.get(position).getRatingStore());
+                textViewFechaCreacion.setText(Html.fromHtml("<b>" + getResources().getString(R.string.Fecha_Creacion) + ": </b>" + new MetodosCreados().formatearFechaSimple(busquedaAvanzadaTiendasList.get(position).getDateCreated())));
             }
             catch (Exception ex)
             {
                 Toast.makeText(getContext(), "Intentalo otra vez", Toast.LENGTH_SHORT).show();
             }
-
-
             return convertView;
         }
     }
@@ -275,47 +312,47 @@ public class StoreFragment extends Fragment implements StoreFragmentSelected.OnF
                 {
                     JSONArray jsonArray = new JSONArray(s);
                     int tomarCuenta = jsonArray.length() / 2; //Indica que la otra mitad son las fotos
-                    id_store = new String[tomarCuenta];
-                    name = new String[tomarCuenta];
-                    des = new String[tomarCuenta];
-                    street = new String[tomarCuenta];
-                    numberStreet = new String[tomarCuenta];
-                    open_hour = new String[tomarCuenta];
-                    close_hour = new String[tomarCuenta];
-                    lunch_hour = new String[tomarCuenta];
-                    lunch_after_hour = new String[tomarCuenta];
-                    start_day = new String[tomarCuenta];
-                    end_day = new String[tomarCuenta];
-                    latitud = new String[tomarCuenta];
-                    longitud = new String[tomarCuenta];
-                    images = new Bitmap[tomarCuenta];
 
-                    JSONObject jsonObject = null;
+                    if (!busquedaAvanzadaTiendasList.isEmpty())
+                    {
+                        busquedaAvanzadaTiendasList.clear();
+                        images.clear();
+                    }
                     int cLocal = 0;
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
-                        jsonObject = jsonArray.getJSONObject(i);
+                        JSONObject object = jsonArray.getJSONObject(i);
                         if (i >= tomarCuenta)
                         {
-                            Bitmap bitmap = Codificacion.decodeBase64(jsonObject.getString("photo_"+cLocal));
-                            images[cLocal] = bitmap;
+                            images.add(Codificacion.decodeBase64(object.getString("photo_" + cLocal)));
                             cLocal++;
                         }
                         else
                         {
-                            id_store[i] = jsonObject.getString("id");
-                            name[i] = jsonObject.getString("name");
-                            des[i] = jsonObject.getString("description");
-                            street[i] = jsonObject.getString("street");
-                            numberStreet[i] = jsonObject.getString("number");
-                            open_hour[i] = jsonObject.getString("open_hour");
-                            close_hour[i] = jsonObject.getString("close_hour");
-                            lunch_hour[i] = jsonObject.getString("lunch_hour");
-                            lunch_after_hour[i] = jsonObject.getString("lunch_after_hour");
-                            start_day[i] = jsonObject.getString("start_day");
-                            end_day[i] = jsonObject.getString("end_day");
-                            latitud[i] = jsonObject.getString("latitude");
-                            longitud[i] = jsonObject.getString("longitude");
+                            BusquedaAvanzadaTiendas busquedaAvanzadaTiendas = new BusquedaAvanzadaTiendas();
+                            busquedaAvanzadaTiendas.setStoreId(object.getInt("id"));
+                            busquedaAvanzadaTiendas.setNameStore(object.getString("name"));
+                            busquedaAvanzadaTiendas.setDescriptionStore(object.getString("description"));
+                            busquedaAvanzadaTiendas.setStreetStore(object.getString("street"));
+                            busquedaAvanzadaTiendas.setNumberStore(object.getInt("number"));
+                            busquedaAvanzadaTiendas.setStartDay(object.getString("start_day"));
+                            busquedaAvanzadaTiendas.setEndDay(object.getString("end_day"));
+                            busquedaAvanzadaTiendas.setOpenHour(object.getString("open_hour"));
+                            busquedaAvanzadaTiendas.setCloseHour(object.getString("close_hour"));
+                            busquedaAvanzadaTiendas.setLunchHour(object.getString("lunch_hour"));
+                            busquedaAvanzadaTiendas.setLunchAfterHour(object.getString("lunch_after_hour"));
+                            busquedaAvanzadaTiendas.setLatLngStore(new LatLng(object.getDouble("latitude"), object.getDouble("longitude")));
+                            busquedaAvanzadaTiendas.setUserId(Integer.parseInt(id_usuario));
+                            busquedaAvanzadaTiendas.setDateCreated(object.getString("created_at"));
+                            if (object.getString("calification_average").equals("null"))
+                            {
+                                busquedaAvanzadaTiendas.setRatingStore(0.0f);
+                            }
+                            else
+                            {
+                                busquedaAvanzadaTiendas.setRatingStore(Float.parseFloat(object.getString("calification_average")));
+                            }
+                            busquedaAvanzadaTiendasList.add(busquedaAvanzadaTiendas);
                         }
                     }
                     CustomAdapter customAdapter = new CustomAdapter();
