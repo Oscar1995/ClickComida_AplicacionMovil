@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -41,7 +42,9 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Comentarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Notices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,19 +91,23 @@ public class StoreFragmentSelected extends Fragment {
     String nombre, des, calle, numero, open_hour, close_hour, lunch_hour, lunch_after_hour, start_day, end_day, store_id, latitud, longitud;
     ListView listViewComentarios;
     Bitmap imagenTienda;
-    String tipo;
+    String tipo, subTipo, requerimientoGlobal;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_PICTURE = 2;
     int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
     String[] desc = {"Tomar foto", "Ir a galeria", "Cancelar"};
     ImageView imageViewTienda;
     GoogleMap googleMapGlobal;
+    Button buttonPublicarAviso;
     View vMod;
+    Notices noticesObject;
     AlertDialog mapUpdate;
     ProgressDialog progress;
     String dInicio = "";
     String dFin = "";
-    View pMap;
+    String textEnabled = "";
+    int nAvailable;
+    Notices noticesLocal = new Notices();
     String[] dayWeek = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
     List<Comentarios> comentariosList = new ArrayList<>();
 
@@ -149,11 +156,12 @@ public class StoreFragmentSelected extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_store_fragment_selected, container, false);
+        final View view = inflater.inflate(R.layout.fragment_store_fragment_selected, container, false);
         CargarComentarios();
         Button buttonMostrarProductos = (Button) view.findViewById(R.id.btnMostrarProductosTienda);
         Button buttonModificarFoto = (Button) view.findViewById(R.id.btnModificarFoto);
         Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
+        buttonPublicarAviso = (Button) view.findViewById(R.id.btnPublicarAviso);
         final TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
         final TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
         final TextView textViewDireccion = (TextView)view.findViewById(R.id.tvDireccion);
@@ -189,12 +197,191 @@ public class StoreFragmentSelected extends Fragment {
         }
         imageViewTienda.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenTienda, getResources()));
 
-        //Obtengo el ancho de la imagen...
-        //int nWidth = imageViewTienda.getDrawable().getIntrinsicWidth();
-        //int nHeight = imageViewTienda.getDrawable().getIntrinsicHeight();
+        buttonPublicarAviso.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                tipo = "Notices";
+                if (buttonPublicarAviso.getText().toString().equals(getResources().getString(R.string.Publicar_Aviso)))
+                {
+                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+                    final EditText editTextCommentary = new EditText(getContext());
+                    final NumberPicker numberPicker = new NumberPicker(getContext());
+                    numberPicker.setMinValue(1);
+                    numberPicker.setMaxValue(10);
 
-        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(nWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
-        //buttonModificarFoto.setLayoutParams(params);
+                    LinearLayout layout = new LinearLayout(getContext());
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    layout.addView(editTextCommentary);
+                    layout.addView(numberPicker);
+
+                    editTextCommentary.setHint("...");
+                    builder.setTitle("Escriba su aviso...")
+                            .setPositiveButton("Publicar aviso",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            try
+                                            {
+                                                progress = new ProgressDialog(getContext());
+                                                progress.setMessage("Agregando aviso...");
+                                                progress.setCanceledOnTouchOutside(false);
+                                                progress.show();
+
+                                                object.put("requirements", editTextCommentary.getText().toString());
+                                                object.put("vacants", numberPicker.getValue());
+                                                object.put("store_id", store_id);
+                                                object.put("type", "add");
+                                                subTipo = "add";
+
+                                                //noticesLocal.setNoticeId(noticesObject.getNoticeId());
+                                                noticesLocal.setDateNotice("00-00-0000");
+                                                noticesLocal.setRequirementsNotice(editTextCommentary.getText().toString().trim());
+                                                noticesLocal.setVacantsNotice(numberPicker.getValue());
+
+                                                new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/InUpDelNotices.php", object.toString());
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                    })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builder.setView(layout);
+                    builder.show();
+                }
+                else
+                {
+                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+                    final EditText editTextCommentary = new EditText(getContext());
+                    final NumberPicker numberPicker = new NumberPicker(getContext());
+                    numberPicker.setMinValue(1);
+                    numberPicker.setMaxValue(10);
+
+                    editTextCommentary.setText(noticesObject.getRequirementsNotice());
+
+                    LinearLayout layout = new LinearLayout(getContext());
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    layout.addView(editTextCommentary);
+                    layout.addView(numberPicker);
+
+                    editTextCommentary.setHint("...");
+                    builder.setTitle("Modifique su aviso...")
+                            .setPositiveButton("Modificar aviso",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            try
+                                            {
+                                                progress = new ProgressDialog(getContext());
+                                                progress.setMessage("Modificando aviso...");
+                                                progress.setCanceledOnTouchOutside(false);
+                                                progress.show();
+
+                                                object.put("id", noticesObject.getNoticeId());
+                                                object.put("requirements", editTextCommentary.getText().toString().trim());
+                                                object.put("vacants", numberPicker.getValue());
+                                                object.put("store_id", store_id);
+                                                object.put("type", "update");
+                                                subTipo = "update";
+
+
+                                                Notices notices = new Notices();
+                                                notices.setNoticeId(noticesObject.getNoticeId());
+                                                notices.setDateNotice(noticesObject.getDateNotice());
+                                                notices.setRequirementsNotice(editTextCommentary.getText().toString().trim());
+                                                notices.setVacantsNotice(numberPicker.getValue());
+                                                noticesObject = notices;
+
+                                                new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/InUpDelNotices.php", object.toString());
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                    })
+                            .setNeutralButton(textEnabled, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+
+                                    try
+                                    {
+                                        if (textEnabled.equals("Habilitar aviso"))
+                                        {
+                                            progress = new ProgressDialog(getContext());
+                                            progress.setMessage("Habilitando aviso...");
+                                            progress.setCanceledOnTouchOutside(false);
+                                            progress.show();
+
+                                            JSONObject object = new JSONObject();
+                                            object.put("id", noticesObject.getNoticeId());
+                                            object.put("type", "updateEnabled");
+
+                                            tipo = "Notices";
+                                            subTipo = "deleteEnabled";
+
+                                            textEnabled = "Deshabilitar aviso";
+                                            new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/InUpDelNotices.php", object.toString());
+                                        }
+                                        else
+                                        {
+                                            progress = new ProgressDialog(getContext());
+                                            progress.setMessage("Deshabilitando aviso...");
+                                            progress.setCanceledOnTouchOutside(false);
+                                            progress.show();
+
+                                            JSONObject object = new JSONObject();
+                                            object.put("id", noticesObject.getNoticeId());
+                                            object.put("type", "updateDisabled");
+
+                                            tipo = "Notices";
+                                            subTipo = "deleteDisabled";
+
+                                            textEnabled = "Habilitar aviso";
+                                            new ModificarDatos().execute(getResources().getString(R.string.direccion_web) + "Controlador/InUpDelNotices.php", object.toString());
+                                        }
+
+                                    } catch (JSONException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                    builder.setView(layout);
+                    builder.show();
+                }
+            }
+        });
 
         buttonMostrarProductos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,39 +451,6 @@ public class StoreFragmentSelected extends Fragment {
                             }
                         });
                 builder.show();
-
-                /*AlertDialog.Builder builderChange = new AlertDialog.Builder(getContext());
-                View p = getActivity().getLayoutInflater().inflate(R.layout.foto_galeria_cancelar, null);
-                builderChange.setView(p);
-
-                ListView listViewPhoto_Gallery = (ListView) p.findViewById(R.id.lvPhoto_Gallery);
-
-
-                listViewPhoto_Gallery.setAdapter(new CustomAdapter());
-                final AlertDialog dialogAlert = builderChange.create();
-                dialogAlert.show();
-
-                listViewPhoto_Gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0)
-                        {
-                            dialogAlert.dismiss();
-                            dispatchTakePictureIntent();
-                        }
-                        else if (position == 1)
-                        {
-                            dialogAlert.dismiss();
-                            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            intent.setType("image/*");
-                            startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
-                        }
-                        else if (position == 2)
-                        {
-                            dialogAlert.dismiss();
-                        }
-                    }
-                });*/
             }
         });
         buttonModificarDatos.setOnClickListener(new View.OnClickListener() {
@@ -405,21 +559,21 @@ public class StoreFragmentSelected extends Fragment {
                         {
                             googleMapGlobal.clear();
                         }
-                        if (pMap == null)
+                        if (MapStatic.pMapUpdate == null)
                         {
-                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                            MapStatic.pMapUpdate = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                         }
-                        if (pMap.getParent() != null)
+                        if (MapStatic.pMapUpdate.getParent() != null)
                         {
-                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                            ((ViewGroup)MapStatic.pMapUpdate.getParent()).removeView(MapStatic.pMapUpdate);
                         }
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                         final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
-                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                        Button botonTomarCoor = (Button) MapStatic.pMapUpdate.findViewById(R.id.btnFijarMapaTienda);
                         botonTomarCoor.setVisibility(View.VISIBLE);
-                        builderMapa.setView(pMap);
+                        builderMapa.setView(MapStatic.pMapUpdate);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
 
@@ -721,37 +875,7 @@ public class StoreFragmentSelected extends Fragment {
             }
         }
     }
-    class CustomAdapter extends BaseAdapter
-    {
 
-        @Override
-        public int getCount() {
-            return images.length; //Indico las veces que debe recorrer
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = getActivity().getLayoutInflater().inflate(R.layout.customlayout_photo_galley_cancel, null);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.ivProductoImage);
-            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtOption);
-
-            imageView.setImageResource(images[position]);
-            textViewNombre.setText(desc[position]);
-
-            return convertView;
-        }
-    }
     public class ModificarDatos extends AsyncTask<String, Void, String>
     {
         @Override
@@ -837,8 +961,12 @@ public class StoreFragmentSelected extends Fragment {
                 {
                     try
                     {
+                         //1: Comentarios, 2: Diponibilidad de la postulacion
                         JSONArray jsonArray = new JSONArray(s);
-                        progress.dismiss();
+                        boolean isCommentary = s.contains("commentary");
+                        boolean isNotice = s.contains("requirements");
+                        int ultimoDigito = jsonArray.length();
+
                         if (comentariosList != null)
                         {
                             if (!comentariosList.isEmpty())
@@ -846,16 +974,102 @@ public class StoreFragmentSelected extends Fragment {
                                 comentariosList.clear();
                             }
                         }
-                        for (int i=0; i<jsonArray.length(); i++)
+                        if (jsonArray.length() == 1)
                         {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            Comentarios comentarios = new Comentarios();
-                            comentarios.setuNickname(jsonObject.getString("nickname"));
-                            comentarios.setuComentario(jsonObject.getString("commentary"));
-                            comentarios.setFechaCreacion(jsonObject.getString("date"));
-                            comentariosList.add(comentarios);
+                            JSONObject jsonObject = jsonArray.getJSONObject(0);
+                            if (isNotice)
+                            {
+                                Notices notices = new Notices();
+                                notices.setNoticeId(jsonObject.getInt("id"));
+                                notices.setDateNotice(jsonObject.getString("date"));
+                                notices.setRequirementsNotice(jsonObject.getString("requirements"));
+                                notices.setVacantsNotice(jsonObject.getInt("available"));
+                                noticesObject = notices;
+                                buttonPublicarAviso.setText(getResources().getString(R.string.Modificar_Aviso));
+                                if (jsonObject.getInt("available") == 1)
+                                {
+                                    textEnabled = "Deshabilitar aviso";
+                                }
+                                else
+                                {
+                                    textEnabled = "Habilitar aviso";
+                                }
+                            }
+                            else if (isCommentary)
+                            {
+                                Comentarios comentarios = new Comentarios();
+                                comentarios.setuNickname(jsonObject.getString("nickname"));
+                                comentarios.setuComentario(jsonObject.getString("commentary"));
+                                comentarios.setFechaCreacion(jsonObject.getString("date"));
+                                comentariosList.add(comentarios);
+                                buttonPublicarAviso.setText(getResources().getString(R.string.Publicar_Aviso));
+                            }
                         }
-                        BaseAdapter baseAdapter = new BaseAdapter() {
+                        else
+                        {
+                            JSONObject jsonObjects = null;
+                            if (isNotice)
+                            {
+
+                                for (int i=0; i<jsonArray.length(); i++)
+                                {
+                                    jsonObjects = jsonArray.getJSONObject(i);
+                                    if ((ultimoDigito - 1) == i)
+                                    {
+                                        if (isNotice)
+                                        {
+                                            Notices notices = new Notices();
+                                            notices.setNoticeId(jsonObjects.getInt("id"));
+                                            notices.setDateNotice(jsonObjects.getString("date"));
+                                            notices.setRequirementsNotice(jsonObjects.getString("requirements"));
+                                            notices.setVacantsNotice(jsonObjects.getInt("available"));
+                                            noticesObject = notices;
+                                            buttonPublicarAviso.setText(getResources().getString(R.string.Modificar_Aviso));
+                                            if (jsonObjects.getInt("available") == 1)
+                                            {
+                                                textEnabled = "Deshabilitar aviso";
+                                            }
+                                            else
+                                            {
+                                                textEnabled = "Habilitar aviso";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            buttonPublicarAviso.setText(getResources().getString(R.string.Publicar_Aviso));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (isCommentary)
+                                        {
+                                            Comentarios comentarios = new Comentarios();
+                                            comentarios.setuNickname(jsonObjects.getString("nickname"));
+                                            comentarios.setuComentario(jsonObjects.getString("commentary"));
+                                            comentarios.setFechaCreacion(jsonObjects.getString("date"));
+                                            comentariosList.add(comentarios);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (isCommentary)
+                            {
+                                for (int i=0; i<jsonArray.length(); i++)
+                                {
+                                    jsonObjects = jsonArray.getJSONObject(i);
+                                    Comentarios comentarios = new Comentarios();
+                                    comentarios.setuNickname(jsonObjects.getString("nickname"));
+                                    comentarios.setuComentario(jsonObjects.getString("commentary"));
+                                    comentarios.setFechaCreacion(jsonObjects.getString("date"));
+                                    comentariosList.add(comentarios);
+                                }
+                            }
+
+                        }
+
+                        progress.dismiss();
+                        BaseAdapter baseAdapter = new BaseAdapter()
+                        {
                             @Override
                             public int getCount() {
                                 return comentariosList.size();
@@ -905,6 +1119,69 @@ public class StoreFragmentSelected extends Fragment {
             else if (tipo.equals("Imagen"))
             {
                 Toast.makeText(getContext(), "Imagen modificada.", Toast.LENGTH_SHORT).show();
+                progress.dismiss();
+            }
+            else if (tipo.equals("Notices"))
+            {
+                if (subTipo.equals("add"))
+                {
+                    try {
+                        JSONObject jsonObject = new JSONObject(s);
+                        noticesLocal.setNoticeId(jsonObject.getInt("Id"));
+                        noticesObject = noticesLocal;
+                        Toast.makeText(getContext(), "Aviso publicado.", Toast.LENGTH_SHORT).show();
+                        buttonPublicarAviso.setText(getResources().getString(R.string.Modificar_Aviso));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                else if (subTipo.equals("update"))
+                {
+                    try
+                    {
+                        JSONObject jsonObject = new JSONObject(s);
+                        nAvailable = jsonObject.getInt("Disponible");
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    Toast.makeText(getContext(), "Aviso actualizado.", Toast.LENGTH_SHORT).show();
+                    buttonPublicarAviso.setText(getResources().getString(R.string.Modificar_Aviso));
+                }
+                else if (subTipo.equals("deleteDisabled"))
+                {
+                    try
+                    {
+                        JSONObject jsonObject = new JSONObject(s);
+                        nAvailable = jsonObject.getInt("Disponible");
+                        Toast.makeText(getContext(), "Aviso deshabilitado.", Toast.LENGTH_SHORT).show();
+                        textEnabled = "Habilitar aviso";
+                        buttonPublicarAviso.setText(getResources().getString(R.string.Publicar_Aviso));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+                else if (subTipo.equals("deleteEnabled"))
+                {
+                    try
+                    {
+                        JSONObject jsonObject = new JSONObject(s);
+                        nAvailable = jsonObject.getInt("Disponible");
+                        Toast.makeText(getContext(), "Aviso Habilitado.", Toast.LENGTH_SHORT).show();
+                        textEnabled = "Deshabilitar aviso";
+                        buttonPublicarAviso.setText(getResources().getString(R.string.Publicar_Aviso));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
                 progress.dismiss();
             }
         }

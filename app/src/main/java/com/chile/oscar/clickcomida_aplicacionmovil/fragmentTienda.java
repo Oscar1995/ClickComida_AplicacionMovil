@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,7 +67,6 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
     CheckBox checkBoxReparto;
     ImageButton tImagen_principal;
     EditText txtNombreTienda, txtCalleTienda, txtNumeroTienda, txtDescripcion;
-    View pMap;
     GoogleMap googleMapGlobal;
 
     int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
@@ -188,21 +188,21 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                 {
                     googleMapGlobal.clear();
                 }
-                if (pMap == null)
+                if (MapStatic.pMapStore == null)
                 {
-                    pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                    MapStatic.pMapStore = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                 }
-                if (pMap.getParent() != null)
+                if (MapStatic.pMapStore.getParent() != null)
                 {
-                    ((ViewGroup)pMap.getParent()).removeView(pMap);
+                    ((ViewGroup)MapStatic.pMapStore.getParent()).removeView(MapStatic.pMapStore);
                 }
                 final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                 final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
-                Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
+                Button botonTomarCoor = (Button) MapStatic.pMapStore.findViewById(R.id.btnFijarMapaTienda);
                 botonTomarCoor.setVisibility(View.VISIBLE);
-                builderMapa.setView(pMap);
+                builderMapa.setView(MapStatic.pMapStore);
                 final AlertDialog mapUpdate = builderMapa.create();
                 mapUpdate.show();
 

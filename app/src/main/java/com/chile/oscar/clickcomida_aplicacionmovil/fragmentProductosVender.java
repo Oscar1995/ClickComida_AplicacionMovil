@@ -535,6 +535,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 if (resultado.equals("Si"))
                 {
                     Toast.makeText(getContext(), "Productos agregados con exito.", Toast.LENGTH_SHORT).show();
+                    getFragmentManager().popBackStack();
                 }
                 else
                 {

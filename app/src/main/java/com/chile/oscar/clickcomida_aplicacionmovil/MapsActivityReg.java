@@ -30,10 +30,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallback, LocationListener, View.OnClickListener
+public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener
 {
     private static final int LOCATION_REQUEST_CODE = 1;
-    GoogleMap mMap;
     Marker prevMarker;
     LatLng location;
     Location mLocation;
@@ -64,13 +63,12 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap)
+    public void onMapReady(final GoogleMap googleMap)
     {
-        mMap = googleMap;
         // Controles UI
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            mMap.setMyLocationEnabled(true);
+            googleMap.setMyLocationEnabled(true);
         }
         else
         {
@@ -84,7 +82,7 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
             }
         }
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
 
 
         //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -92,18 +90,30 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
         //LatLng miPosicion = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(miPosicion));
         //Toast.makeText(getApplicationContext(), "Hemos encontrado tu posición, toca la pantalla para que a futuro el repartidor vaya a esa dirección", Toast.LENGTH_LONG).show();
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+        googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
+        Location location = getMyLocation();
+        if (location != null)
         {
+            LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+            CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+            googleMap.animateCamera(miUbicacion);
+        }
+        googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
-            public void onMapClick(LatLng latLng)
+            public void onCameraMove()
             {
-                mMap.clear();
-                //LatLng posicionLocal = new LatLng(latLng.latitude, latLng.longitude);
-                mMap.addMarker(new MarkerOptions().position(latLng).title("Marca"));
+                if (googleMap != null)
+                {
+                    googleMap.clear();
+                }
+                LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
 
-                Coordenadas.latitud = latLng.latitude;
-                Coordenadas.longitud = latLng.longitude;
+                Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
             }
         });
         //Toast.makeText(getApplicationContext(), "Mi latitud:" + lat, Toast.LENGTH_SHORT).show();
@@ -119,7 +129,7 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                mMap.setMyLocationEnabled(true);
+                //mMap.setMyLocationEnabled(true);
             }
             else
             {
@@ -141,30 +151,6 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
             myLocation = lm.getLastKnownLocation(provider);
         }
         return myLocation;
-    }
-
-
-    @Override
-    public void onLocationChanged(Location location)
-    {
-        //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(miPosicion, 16);
-        //mMap.animateCamera(miUbicacion);
-        //Toast.makeText(getApplicationContext(), "Se ha movido", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 
     @Override

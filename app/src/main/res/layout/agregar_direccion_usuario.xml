@@ -58,13 +58,12 @@
 
         <Button
             android:id="@+id/btnAddDireccionCoor"
-            style="@style/Widget.AppCompat.Button.Colored"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/colorbuttonamarillo"
             android:text="@string/titulo_agregar_coordendas" />
 
         <LinearLayout

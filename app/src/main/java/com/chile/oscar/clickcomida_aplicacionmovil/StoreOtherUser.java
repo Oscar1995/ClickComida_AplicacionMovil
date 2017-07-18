@@ -799,6 +799,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             }
             catch (JSONException e)
             {
+                progress.dismiss();
                 e.printStackTrace();
             }
 

@@ -50,6 +50,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.google.android.gms.maps.CameraUpdate;
@@ -101,7 +102,6 @@ public class MisDatos extends Fragment implements View.OnClickListener
     EditText editTextClaveActual;
     Button buttonAgregarTelefonoNuevo, buttonAgregarDireccionNueva, buttonUsar1, buttonUsar2, buttonUsar3;
     Boolean mapReady;
-    View pMap;
     GoogleMap googleMapGlobal;
     ProgressDialog progress;
 
@@ -362,25 +362,24 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             {
                                 googleMapGlobal.clear();
                             }
-                            if (pMap == null)
+                            if (MapStatic.pMapUpdateData == null)
                             {
-                                pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                                MapStatic.pMapUpdateData = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                             }
-                            if (pMap.getParent() != null)
+                            if (MapStatic.pMapUpdateData.getParent() != null)
                             {
-                                ((ViewGroup)pMap.getParent()).removeView(pMap);
+                                ((ViewGroup)MapStatic.pMapUpdateData.getParent()).removeView(MapStatic.pMapUpdateData);
                             }
                             Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                             final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
-                            Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                            builderMapa.setView(pMap);
+                            Button botonTomarCoor = (Button) MapStatic.pMapUpdateData.findViewById(R.id.btnFijarMapaTienda);
+                            builderMapa.setView(MapStatic.pMapUpdateData);
                             final AlertDialog mapUpdate = builderMapa.create();
                             mapUpdate.show();
                             botonTomarCoor.setVisibility(View.VISIBLE);
-                            final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
                             map.getMapAsync(new OnMapReadyCallback()
                             {
@@ -420,7 +419,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                                 googleMap.clear();
                                             }
                                             LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
+                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));;
 
                                             Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
                                             Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
@@ -891,24 +890,24 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         {
                             googleMapGlobal.clear();
                         }
-                        if (pMap == null)
+                        if (MapStatic.pMapUpdateData == null)
                         {
-                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                            MapStatic.pMapUpdateData = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                         }
-                        if (pMap.getParent() != null)
+                        if (MapStatic.pMapUpdateData.getParent() != null)
                         {
-                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                            ((ViewGroup)MapStatic.pMapUpdateData.getParent()).removeView(MapStatic.pMapUpdateData);
                         }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                         final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
-                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap);
+                        Button botonTomarCoor = (Button) MapStatic.pMapUpdateData.findViewById(R.id.btnFijarMapaTienda);
+                        botonTomarCoor.setVisibility(View.VISIBLE);
+                        builderMapa.setView(MapStatic.pMapUpdateData);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
-                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
 
                         map.getMapAsync(new OnMapReadyCallback() {
@@ -931,34 +930,35 @@ public class MisDatos extends Fragment implements View.OnClickListener
 
                                 LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
                                 googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
-                                if (calleDir.size() >= 3)
+                                /*if (calleDir.size() >= 3)
                                 {
 
-                                    Location location = getMyLocation();
-                                    if (location != null)
-                                    {
-                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
-                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
-                                        googleMap.animateCamera(miUbicacion);
-                                    }
 
-                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                                        @Override
-                                        public void onCameraMove()
-                                        {
-                                            if (googleMap != null)
-                                            {
-                                                googleMap.clear();
-                                            }
-                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
-
-                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
-                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
-                                            mapReady = true;
-                                        }
-                                    });
+                                }*/
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                    googleMap.animateCamera(miUbicacion);
                                 }
+
+                                googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                    @Override
+                                    public void onCameraMove()
+                                    {
+                                        if (googleMap != null)
+                                        {
+                                            googleMap.clear();
+                                        }
+                                        LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                        googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));;
+
+                                        Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                        Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                        mapReady = true;
+                                    }
+                                });
                             }
                         });
                         botonTomarCoor.setOnClickListener(new View.OnClickListener() {
@@ -1054,22 +1054,22 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         {
                             googleMapGlobal.clear();
                         }
-                        if (pMap == null)
+                        if (MapStatic.pMapUpdateData == null)
                         {
-                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                            MapStatic.pMapUpdateData = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                         }
-                        if (pMap.getParent() != null)
+                        if (MapStatic.pMapUpdateData.getParent() != null)
                         {
-                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                            ((ViewGroup)MapStatic.pMapUpdateData.getParent()).removeView(MapStatic.pMapUpdateData);
                         }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                         final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
-                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap);
+                        Button botonTomarCoor = (Button) MapStatic.pMapUpdateData.findViewById(R.id.btnFijarMapaTienda);
+                        botonTomarCoor.setVisibility(View.VISIBLE);
+                        builderMapa.setView(MapStatic.pMapUpdateData);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
 
@@ -1090,35 +1090,34 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 googleMap.setMyLocationEnabled(true);
                                 LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
                                 googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
-                                if (calleDir.size() >= 3)
+                                /*if (calleDir.size() >= 3)
                                 {
 
-                                    Location location = getMyLocation();
-                                    if (location != null)
-                                    {
-                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
-                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
-                                        googleMap.animateCamera(miUbicacion);
-                                    }
-
-                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                                        @Override
-                                        public void onCameraMove()
-                                        {
-                                            if (googleMap != null)
-                                            {
-                                                googleMap.clear();
-                                            }
-                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
-
-                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
-                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
-                                            mapReady = true;
-                                        }
-                                    });
-
+                                }*/
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                    googleMap.animateCamera(miUbicacion);
                                 }
+
+                                googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                    @Override
+                                    public void onCameraMove()
+                                    {
+                                        if (googleMap != null)
+                                        {
+                                            googleMap.clear();
+                                        }
+                                        LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                        googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));;
+
+                                        Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                        Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                        mapReady = true;
+                                    }
+                                });
                             }
                         });
 
@@ -1213,22 +1212,22 @@ public class MisDatos extends Fragment implements View.OnClickListener
                         {
                             googleMapGlobal.clear();
                         }
-                        if (pMap == null)
+                        if (MapStatic.pMapUpdateData == null)
                         {
-                            pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                            MapStatic.pMapUpdateData = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                         }
-                        if (pMap.getParent() != null)
+                        if (MapStatic.pMapUpdateData.getParent() != null)
                         {
-                            ((ViewGroup)pMap.getParent()).removeView(pMap);
+                            ((ViewGroup)MapStatic.pMapUpdateData.getParent()).removeView(MapStatic.pMapUpdateData);
                         }
                         Toast.makeText(getContext(), "Indica tu posición en el mapa.", Toast.LENGTH_LONG).show();
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
 
                         final SupportMapFragment map2 = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-                        final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.casa_marcador);
 
-                        Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                        builderMapa.setView(pMap);
+                        Button botonTomarCoor = (Button) MapStatic.pMapUpdateData.findViewById(R.id.btnFijarMapaTienda);
+                        botonTomarCoor.setVisibility(View.VISIBLE);
+                        builderMapa.setView(MapStatic.pMapUpdateData);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
 
@@ -1250,35 +1249,34 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 googleMap.setMyLocationEnabled(true);
                                 LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
                                 googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
-                                if (calleDir.size() >= 3)
+                                /*if (calleDir.size() >= 3)
                                 {
 
-                                    Location location = getMyLocation();
-                                    if (location != null)
-                                    {
-                                        LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
-                                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
-                                        googleMap.animateCamera(miUbicacion);
-                                    }
-
-                                    googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                                        @Override
-                                        public void onCameraMove()
-                                        {
-                                            if (googleMap != null)
-                                            {
-                                                googleMap.clear();
-                                            }
-                                            LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                            googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));;
-
-                                            Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
-                                            Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
-                                            mapReady = true;
-                                        }
-                                    });
-
+                                }*/
+                                Location location = getMyLocation();
+                                if (location != null)
+                                {
+                                    LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
+                                    CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                                    googleMap.animateCamera(miUbicacion);
                                 }
+
+                                googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                                    @Override
+                                    public void onCameraMove()
+                                    {
+                                        if (googleMap != null)
+                                        {
+                                            googleMap.clear();
+                                        }
+                                        LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+                                        googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));;
+
+                                        Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
+                                        Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
+                                        mapReady = true;
+                                    }
+                                });
                             }
                         });
                         botonTomarCoor.setOnClickListener(new View.OnClickListener() {
@@ -1345,7 +1343,41 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ivDeleteDir1:
-                AlertDialog.Builder builderDeleteDir1 = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builderDir = new AlertDialog.Builder(getActivity());
+                builderDir.setTitle("Eliminar")
+                        .setMessage("¿Seguro que deseas esta dirección?")
+                        .setPositiveButton("Aceptar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                            tipoReg = "Eliminar Direccion 1";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancelar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                    }
+                                });
+                builderDir.show();
+
+                /*AlertDialog.Builder builderDeleteDir1 = new AlertDialog.Builder(getContext());
                 View pDirDelete1 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
                 builderDeleteDir1.setView(pDirDelete1);
                 dialogAlertDeleteDir1 = builderDeleteDir1.create();
@@ -1382,11 +1414,44 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         dialogAlertDeleteDir1.dismiss();
                     }
-                });
+                });*/
 
                 break;
             case R.id.ivDeleteDir2:
-                AlertDialog.Builder builderDeleteDir2 = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builderDir2 = new AlertDialog.Builder(getActivity());
+                builderDir2.setTitle("Eliminar")
+                        .setMessage("¿Seguro que deseas esta dirección?")
+                        .setPositiveButton("Aceptar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                            tipoReg = "Eliminar Direccion 1";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancelar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                    }
+                                });
+                builderDir2.show();
+                /*AlertDialog.Builder builderDeleteDir2 = new AlertDialog.Builder(getContext());
                 View pDirDelete2 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
                 builderDeleteDir2.setView(pDirDelete2);
                 dialogAlertDeleteDir2 = builderDeleteDir2.create();
@@ -1423,12 +1488,45 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         dialogAlertDeleteDir2.dismiss();
                     }
-                });
+                });*/
 
                 break;
 
             case R.id.ivDeleteDir3:
-                AlertDialog.Builder builderDeleteDir3 = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builderDir3 = new AlertDialog.Builder(getActivity());
+                builderDir3.setTitle("Eliminar")
+                        .setMessage("¿Seguro que deseas esta dirección?")
+                        .setPositiveButton("Aceptar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        JSONObject object = new JSONObject();
+                                        try
+                                        {
+                                            object.put("Id", id);
+                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                            tipoReg = "Eliminar Direccion 1";
+                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                                        }
+                                        catch (JSONException e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancelar",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                    }
+                                });
+                builderDir3.show();
+                /*AlertDialog.Builder builderDeleteDir3 = new AlertDialog.Builder(getContext());
                 View pDirDelete3 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
                 builderDeleteDir3.setView(pDirDelete3);
                 dialogAlertDeleteDir3 = builderDeleteDir3.create();
@@ -1465,7 +1563,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     {
                         dialogAlertDeleteDir3.dismiss();
                     }
-                });
+                });*/
                 break;
         }
     }
@@ -1781,7 +1879,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
-                        dialogAlertDeleteDir1.dismiss();
+                        //dialogAlertDeleteDir1.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
                     }
@@ -1792,7 +1890,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
-                        dialogAlertDeleteDir2.dismiss();
+                        //dialogAlertDeleteDir2.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
                     }
@@ -1803,7 +1901,7 @@ public class MisDatos extends Fragment implements View.OnClickListener
                     String res = jsonResult.getString("Eliminado");
                     if (res.equals("Si"))
                     {
-                        dialogAlertDeleteDir3.dismiss();
+                        //dialogAlertDeleteDir3.dismiss();
                         cargar();
                         Toast.makeText(getContext(), "Direccion eliminada", Toast.LENGTH_SHORT).show();
                     }

@@ -524,6 +524,11 @@ public class fragmentTiendaDos extends Fragment
 
                         alert.show();
                     }
+                    else if (jsonResult.getString("Resultado").equals("0"))
+                    {
+                        progress.dismiss();
+                        getFragmentManager().popBackStack();
+                    }
                     else if (jsonResult.getString("Resultado").equals("Error"))
                     {
                         Toast.makeText(getContext(), "Hay un error.", Toast.LENGTH_SHORT).show();

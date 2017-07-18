@@ -620,20 +620,55 @@ public class Details_products extends Fragment {
                 else if (tipoReg.equals("Cargar calificacion"))
                 {
                     JSONObject object = new JSONObject(s);
+                    String prom = object.getString("Promedio");
                     String res = object.getString("Valor");
                     if (!res.equals("null"))
                     {
 
                         prodCal = true;
                         sw = true;
-                        ratingBarUser.setRating(Float.parseFloat(object.getString("Valor")));
-                        ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+
+                        if (!prom.equals("null"))
+                        {
+                            ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+                        }
+                        else
+                        {
+                            ratingBarGlobal.setRating(0.0f);
+                        }
+
+                        if (!res.equals("null"))
+                        {
+                            ratingBarUser.setRating(Float.parseFloat(object.getString("Valor")));
+                        }
+                        else
+                        {
+                            ratingBarUser.setRating(0.0f);
+                        }
+
+
                     }
                     else
                     {
                         if (!object.getString("Promedio").equals("null"))
                         {
-                            ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+                            if (!prom.equals("null"))
+                            {
+                                ratingBarGlobal.setRating(Float.parseFloat(object.getString("Promedio")));
+                            }
+                            else
+                            {
+                                ratingBarGlobal.setRating(0.0f);
+                            }
+
+                            if (!res.equals("null"))
+                            {
+                                ratingBarUser.setRating(Float.parseFloat(object.getString("Valor")));
+                            }
+                            else
+                            {
+                                ratingBarUser.setRating(0.0f);
+                            }
                         }
                         sw = false;
                         prodCal = false;

@@ -82,7 +82,7 @@
 
             <Button
                 android:id="@+id/btnCambiarClave"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@+id/textView12"
@@ -91,12 +91,12 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="2dp"
                 android:layout_weight="1"
-                android:background="@drawable/colorbuttonamarillo"
-                android:text="@string/modificar_boton" />
+                android:text="@string/modificar_boton"
+                android:textColor="@color/colorAmarillo" />
 
             <Button
                 android:id="@+id/btnCancelarClave"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/btnCambiarClave"
@@ -106,8 +106,8 @@
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="20dp"
                 android:layout_weight="1"
-                android:background="@drawable/colorbuttonred"
-                android:text="@string/boton_cerrar" />
+                android:text="@string/boton_cerrar"
+                android:textColor="@color/colorRojo" />
 
         </LinearLayout>
 

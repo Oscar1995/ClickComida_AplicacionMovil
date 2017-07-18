@@ -68,6 +68,7 @@
                         android:id="@+id/textView45"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginTop="10dp"
                         android:gravity="center"
                         android:text="@string/titulo_detalles"
@@ -95,13 +96,24 @@
 
                     <Button
                         android:id="@+id/btnModificarDatosTienda"
-                        style="@style/Widget.AppCompat.Button.Colored"
+                        style="@android:style/Widget.Material.Button.Borderless.Colored"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@drawable/colorbuttonamarillo"
+                        android:layout_weight="1"
                         android:text="@string/titulo_mod_tienda" />
+
+                    <Button
+                        android:id="@+id/btnPublicarAviso"
+                        style="@android:style/Widget.Material.Button.Borderless.Colored"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:text="@string/Publicar_Aviso"
+                        android:textColor="@color/colorRojo" />
 
                 </LinearLayout>
             </LinearLayout>

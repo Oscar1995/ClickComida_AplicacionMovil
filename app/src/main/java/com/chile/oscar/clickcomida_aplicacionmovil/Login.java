@@ -336,7 +336,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                     if (itsEmail)
                     {
                         progress.dismiss();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat));
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat_Light_Dialog));
                         builder.setTitle("Usuario no identificado")
                                 .setMessage("El correo electronico y/o contraseña son incorrectos.")
                                 .setPositiveButton("Aceptar",

@@ -77,34 +77,36 @@
 
         <Button
             android:id="@+id/btnModificarDatosActual"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_marginRight="2dp"
             android:layout_weight="1"
-            android:background="@drawable/colorbuttonceleste"
-            android:text="@string/modificar_boton" />
+            android:text="@string/modificar_boton"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnCambiarClaveUser"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/colorbuttonamarillo"
-            android:text="@string/titulo_cambiar_clave" />
+            android:text="@string/titulo_cambiar_clave"
+            android:textColor="@color/colorAmarillo"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnCancelarDatos"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="2dp"
             android:layout_weight="1"
-            android:background="@drawable/colorbuttonred"
-            android:text="@string/boton_cancelar" />
+            android:text="@string/boton_cancelar"
+            android:textColor="@color/colorRojo"
+            android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>
 </ScrollView>

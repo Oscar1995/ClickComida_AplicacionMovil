@@ -62,14 +62,13 @@
 
         <Button
             android:id="@+id/btnAbrirMapa"
-            style="@style/Widget.AppCompat.Button.Colored"
+            style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_weight="1"
-            android:background="@drawable/colorbutton"
             android:text="@string/titulo_mapa" />
 
         <LinearLayout

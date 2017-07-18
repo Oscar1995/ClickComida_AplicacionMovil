@@ -504,7 +504,7 @@ public class Tracking extends Fragment
             textViewNombreTienda.setText("Tienda: " + pedidos_procesoList.get(position).getNombreTienda() + "");
             textViewFecha.setText(new MetodosCreados().formatearFechaConSlash(pedidos_procesoList.get(position).getOrden_fecha()));
 
-            if (pedidos_procesoList.get(position).getEstado().equals("Entregado"))
+            if (pedidos_procesoList.get(position).getEstado().equals("Entregado") || pedidos_procesoList.get(position).getEstado().equals("Recepcionado") )
             {
                 imageViewMap.setVisibility(View.GONE);
             }

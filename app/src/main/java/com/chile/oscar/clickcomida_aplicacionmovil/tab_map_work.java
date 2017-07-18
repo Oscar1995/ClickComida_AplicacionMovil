@@ -357,7 +357,7 @@ public class tab_map_work extends Fragment implements OnMapReadyCallback
                         }
                         for (int i=0; i<mapaWorkDataList.size(); i++)
                         {
-                            mMap.addMarker(new MarkerOptions().position(mapaWorkDataList.get(i).getLatLngCoordenadas()).title(stringListNameStore.get(i)).snippet("Vacantes: " + mapaWorkDataList.get(i).getTiendaVacantes())).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
+                            mMap.addMarker(new MarkerOptions().position(mapaWorkDataList.get(i).getLatLngCoordenadas()).title(stringListNameStore.get(i))).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
                         }
                     }
                     catch (JSONException e)
