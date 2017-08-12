@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -67,6 +68,7 @@ import static android.app.Activity.RESULT_OK;
 public class fragmentProductosVender extends Fragment implements View.OnClickListener, View.OnFocusChangeListener
 {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
+    private final static int REQUEST_ACCESS_CAMERA = 123;
 
     Button btnAgregar, btnModificar, btnEliminar, btnContinuar;
     ListView listaProductos;
@@ -242,8 +244,20 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     @Override
                     public void onClick(View v)
                     {
-                        tipo = "Agregar";
-                        dispatchTakePictureIntent();
+                        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                            if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                            {
+                                //Aqui pregunta primero cuando los permidos no estan activados
+                                requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                            }
+                        }
+                        else
+                        {
+                            //Päsa aqui cuando los permisos estan activados
+                            tipo = "Agregar";
+                            dispatchTakePictureIntent();
+                        }
                     }
                 });
                 break;
@@ -304,8 +318,20 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                         @Override
                         public void onClick(View v)
                         {
-                            tipo = "Modificar";
-                            dispatchTakePictureIntent();
+                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                {
+                                    //Aqui pregunta primero cuando los permidos no estan activados
+                                    requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                }
+                            }
+                            else
+                            {
+                                //Päsa aqui cuando los permisos estan activados
+                                tipo = "Modificar";
+                                dispatchTakePictureIntent();
+                            }
                         }
                     });
                     botonModCerrar.setOnClickListener(new View.OnClickListener() {
@@ -338,27 +364,32 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 break;
 
             case R.id.btnContinuar_prod:
-
-                for (int i=0; i<nombreProd.size(); i++)
+                if (nombreProd.isEmpty())
                 {
-                    try
-                    {
-                        JSONObject object = new JSONObject();
-                        object.put("Nombre", nombreProd.get(i));
-                        object.put("Descripcion", desProd.get(i));
-                        object.put("Precio", precioProd.get(i));
-                        object.put("Fotos", photosProd.get(i));
-                        object.put("store_id", store_id);
-                        jsonObjects.add(object);
-                    }
-                    catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(getContext(), "Debes agregar al menos un producto.", Toast.LENGTH_SHORT).show();
                 }
-                String x = jsonObjects.toString();
-                new agregarProductos().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_productos.php" ,jsonObjects.toString());
-
+                else
+                {
+                    for (int i=0; i<nombreProd.size(); i++)
+                    {
+                        try
+                        {
+                            JSONObject object = new JSONObject();
+                            object.put("Nombre", nombreProd.get(i));
+                            object.put("Descripcion", desProd.get(i));
+                            object.put("Precio", precioProd.get(i));
+                            object.put("Fotos", photosProd.get(i));
+                            object.put("store_id", store_id);
+                            jsonObjects.add(object);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                    String x = jsonObjects.toString();
+                    new agregarProductos().execute(getResources().getString(R.string.direccion_web) + "Controlador/insertar_productos.php" ,jsonObjects.toString());
+                }
                 break;
 
             case R.id.etDescripcionProd:
@@ -455,14 +486,59 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
         }
     }
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_ACCESS_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    if (tipo.equals("Modificar"))
+                    {
+                        tipo = "Modificar";
+                    }
+                    else
+                    {
+                        tipo = "Agregar";
+                    }
+                    dispatchTakePictureIntent();
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
         {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
-            if (tipo == "Agregar")botonImagen.setImageBitmap(imageBitmap);
-            if (tipo == "Modificar")buttonPhotoProduct.setImageBitmap(imageBitmap);
+            if (tipo == "Agregar")
+            {
+                android.view.ViewGroup.LayoutParams params = botonImagen.getLayoutParams();
+                params.height = imageBitmap.getHeight();
+                params.width = imageBitmap.getHeight();
+                botonImagen.setLayoutParams(params);
+                botonImagen.setImageBitmap(imageBitmap);
+            }
+
+            if (tipo == "Modificar")
+            {
+
+                android.view.ViewGroup.LayoutParams params = buttonPhotoProduct.getLayoutParams();
+                params.height = imageBitmap.getHeight();
+                params.width = imageBitmap.getHeight();
+                buttonPhotoProduct.setLayoutParams(params);
+                buttonPhotoProduct.setImageBitmap(imageBitmap);
+            }
             fotoTomada = true;
         }
     }

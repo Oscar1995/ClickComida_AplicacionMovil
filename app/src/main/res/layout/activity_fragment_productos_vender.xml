@@ -28,7 +28,7 @@
             android:id="@+id/lvProd"
             android:layout_width="match_parent"
             android:layout_height="444dp"
-            android:listSelector="@drawable/colorbuttonceleste"/>
+            android:listSelector="@drawable/colorbuttonceleste" />
 
     </LinearLayout>
 
@@ -45,38 +45,37 @@
 
             <Button
                 android:id="@+id/btnAgregarProd"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/colorbutton"
-                android:text="@string/agregar_producto" />
+                android:text="@string/agregar_producto"
+                android:textColor="@color/colorVerde" />
 
             <Button
                 android:id="@+id/btnModProd"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/colorbuttonamarillo"
-                android:text="@string/modificar_producto" />
+                android:text="@string/modificar_producto"
+                android:textColor="@color/colorAmarillo" />
 
             <Button
                 android:id="@+id/btnEliminarProd"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/colorbuttonred"
-                android:text="@string/eliminar_producto" />
+                android:text="@string/eliminar_producto"
+                android:textColor="@color/colorRojo" />
 
             <Button
                 android:id="@+id/btnContinuar_prod"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/colorbuttonceleste"
                 android:text="@string/continuar" />
         </LinearLayout>
 

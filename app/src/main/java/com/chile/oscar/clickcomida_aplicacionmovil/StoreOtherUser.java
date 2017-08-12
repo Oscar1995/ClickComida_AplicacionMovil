@@ -32,9 +32,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Comentarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Notices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -83,9 +85,8 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
     int countLike = 0;
     String nameStore = "a tienda";
 
-    List<String> storesNicknames;
-    List<String> storesComments;
-    List<String> storesDatecomments;
+    List<Comentarios> comentariosList = new ArrayList<>();
+
     ListView listaComentarios;
     EditText editTextComentario;
     TextView textViewDes;
@@ -94,6 +95,8 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
     Boolean favorite = false;
     ImageView imageViewFavoritos;
+    Button buttonAviso;
+    Notices noticesVariable;
 
     RatingBar ratingBarUsuario, ratingTienda;
     TextView textViewCal, textViewLikeStore;
@@ -171,6 +174,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
         View view = inflater.inflate(R.layout.fragment_store_other_user, container, false);
 
+        buttonAviso = (Button)view.findViewById(R.id.btnPostularAviso);
         listaComentarios = (ListView)view.findViewById(R.id.lvComentarios);
         ImageView imageViewOther = (ImageView)view.findViewById(R.id.ivTiendaOther);
         TextView textViewNombre =(TextView)view.findViewById(R.id.tvNombreOther);
@@ -522,7 +526,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
         @Override
         public int getCount() {
-            return storesDatecomments.size();
+            return comentariosList.size();
         }
 
         @Override
@@ -543,9 +547,9 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
             TextView textViewFecha = (TextView)convertView.findViewById(R.id.tvFechaCreacion);
             TextView textViewComentario = (TextView)convertView.findViewById(R.id.tvComentario);
 
-            textViewNickname.setText(storesNicknames.get(position));
-            textViewFecha.setText(storesDatecomments.get(position));
-            textViewComentario.setText(storesComments.get(position));
+            textViewNickname.setText(comentariosList.get(position).getuNickname());
+            textViewFecha.setText(comentariosList.get(position).getFechaCreacion());
+            textViewComentario.setText(comentariosList.get(position).getuComentario());
 
             return convertView;
         }
@@ -779,18 +783,90 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                 }
                 else if (tipoReg.equals("Cargar comentarios"))
                 {
-                    storesNicknames = new ArrayList<>();
-                    storesComments = new ArrayList<>();
-                    storesDatecomments = new ArrayList<>();
 
                     JSONArray jsonArray = new JSONArray(s);
-                    JSONObject jsonObject = null;
-                    for (int i = 0; i < jsonArray.length(); i++)
+
+                    boolean isCommentary = s.contains("commentary");
+                    boolean isNotice = s.contains("requirements");
+                    int ultimoDigito = jsonArray.length();
+
+                    if (comentariosList != null)
                     {
-                        jsonObject = jsonArray.getJSONObject(i);
-                        storesNicknames.add(jsonObject.getString("nickname"));
-                        storesComments.add(jsonObject.getString("commentary"));
-                        storesDatecomments.add(jsonObject.getString("date"));
+                        if (!comentariosList.isEmpty())
+                        {
+                            comentariosList.clear();
+                        }
+                    }
+                    if (jsonArray.length() == 1)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        if (isNotice)
+                        {
+                            buttonAviso.setVisibility(View.VISIBLE);
+                            Notices notices = new Notices();
+                            notices.setNoticeId(jsonObject.getInt("id"));
+                            notices.setDateNotice(jsonObject.getString("date"));
+                            notices.setRequirementsNotice(jsonObject.getString("requirements"));
+                            notices.setVacantsNotice(jsonObject.getInt("available"));
+                            noticesVariable = notices;
+                        }
+                        else if (isCommentary)
+                        {
+                            Comentarios comentarios = new Comentarios();
+                            comentarios.setuNickname(jsonObject.getString("nickname"));
+                            comentarios.setuComentario(jsonObject.getString("commentary"));
+                            comentarios.setFechaCreacion(jsonObject.getString("date"));
+                            comentariosList.add(comentarios);
+                        }
+                    }
+                    else
+                    {
+                        JSONObject jsonObjects = null;
+                        if (isNotice)
+                        {
+
+                            for (int i=0; i<jsonArray.length(); i++)
+                            {
+                                jsonObjects = jsonArray.getJSONObject(i);
+                                if ((ultimoDigito - 1) == i)
+                                {
+                                    if (isNotice)
+                                    {
+                                        buttonAviso.setVisibility(View.VISIBLE);
+                                        Notices notices = new Notices();
+                                        notices.setNoticeId(jsonObjects.getInt("id"));
+                                        notices.setDateNotice(jsonObjects.getString("date"));
+                                        notices.setRequirementsNotice(jsonObjects.getString("requirements"));
+                                        notices.setVacantsNotice(jsonObjects.getInt("available"));
+                                        noticesVariable = notices;
+                                    }
+                                }
+                                else
+                                {
+                                    if (isCommentary)
+                                    {
+                                        Comentarios comentarios = new Comentarios();
+                                        comentarios.setuNickname(jsonObjects.getString("nickname"));
+                                        comentarios.setuComentario(jsonObjects.getString("commentary"));
+                                        comentarios.setFechaCreacion(jsonObjects.getString("date"));
+                                        comentariosList.add(comentarios);
+                                    }
+                                }
+                            }
+                        }
+                        else if (isCommentary)
+                        {
+                            for (int i=0; i<jsonArray.length(); i++)
+                            {
+                                jsonObjects = jsonArray.getJSONObject(i);
+                                Comentarios comentarios = new Comentarios();
+                                comentarios.setuNickname(jsonObjects.getString("nickname"));
+                                comentarios.setuComentario(jsonObjects.getString("commentary"));
+                                comentarios.setFechaCreacion(jsonObjects.getString("date"));
+                                comentariosList.add(comentarios);
+                            }
+                        }
+
                     }
 
                     listaComentarios.setAdapter(new AdapterComentarios());

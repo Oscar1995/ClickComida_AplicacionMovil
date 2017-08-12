@@ -117,6 +117,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ver_mapa" />
 
+                    <Button
+                        android:id="@+id/btnPostularAviso"
+                        style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Ver_aviso"
+                        android:textColor="@color/colorRojo"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </LinearLayout>

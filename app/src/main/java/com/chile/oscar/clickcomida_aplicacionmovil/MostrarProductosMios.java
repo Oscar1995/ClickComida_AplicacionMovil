@@ -1,16 +1,20 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +64,7 @@ import static android.app.Activity.RESULT_OK;
 public class MostrarProductosMios extends Fragment
 {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
+    private final static int REQUEST_ACCESS_CAMERA = 123;
     String store_id, store_name, tipoReg, imagenCod;
 
     ArrayList<Bitmap> imagesProducts;
@@ -331,7 +336,19 @@ public class MostrarProductosMios extends Fragment
                         @Override
                         public void onClick(View v)
                         {
-                            dispatchTakePictureIntent();
+                            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
+                                {
+                                    //Aqui pregunta primero cuando los permidos no estan activados
+                                    requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                }
+                            }
+                            else
+                            {
+                                //Päsa aqui cuando los permisos estan activados
+                                dispatchTakePictureIntent();
+                            }
                         }
                     });
                     botonModCerrar.setOnClickListener(new View.OnClickListener()
@@ -408,6 +425,27 @@ public class MostrarProductosMios extends Fragment
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_ACCESS_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    dispatchTakePictureIntent();
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
     public interface OnFragmentInteractionListener
     {
         // TODO: Update argument type and name

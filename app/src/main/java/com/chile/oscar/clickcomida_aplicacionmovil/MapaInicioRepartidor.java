@@ -3,6 +3,7 @@ package com.chile.oscar.clickcomida_aplicacionmovil;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -72,6 +73,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
     Timer timer = new Timer();
 
     // TODO: Rename and change types of parameters
+
     private String mParamId;
     private GoogleMap mMap;
     List<MapaRepartidorCoordenadas> mapaRepartidorCoordenadasList;
@@ -108,7 +110,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParamId = getArguments().getString("ID_USUARIO");
+            //mParamId = getArguments().getString("ID_USUARIO");
         }
     }
 
@@ -118,6 +120,8 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
         // Inflate the layout for this fragment
         try
         {
+            SharedPreferences sharedpreferences = getActivity().getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+            mParamId = sharedpreferences.getString("id_usuario_shared", "");
             view = inflater.inflate(R.layout.fragment_mapa_inicio_repartidor, null, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmentoRepartidor);
 
@@ -209,7 +213,7 @@ public class MapaInicioRepartidor extends Fragment implements OnMapReadyCallback
                                 JSONObject object = new JSONObject();
                                 object.put("latitud", location.getLatitude());
                                 object.put("longitud", location.getLongitude());
-                                object.put("id", Coordenadas.id);
+                                object.put("id", mParamId);
                                 Log.d("Respuesta", "Enviado");
                                 Log.e("Coordenadas", "Latitud: " + location.getLatitude() + " Longitud: " + location.getLongitude());
                                 new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/cargarCoordenadasRepartidor.php", object.toString());

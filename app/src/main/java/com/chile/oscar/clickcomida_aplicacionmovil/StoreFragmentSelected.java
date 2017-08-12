@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -94,6 +95,12 @@ public class StoreFragmentSelected extends Fragment {
     String tipo, subTipo, requerimientoGlobal;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_PICTURE = 2;
+
+
+    private final static int REQUEST_ACCESS_CAMERA = 123;
+    private final static int WRITE_EXTERNAL_STORAGE = 643;
+
+
     int[] images = {R.drawable.ic_camera, R.drawable.ic_take_photo, R.drawable.ic_cancelar};
     String[] desc = {"Tomar foto", "Ir a galeria", "Cancelar"};
     ImageView imageViewTienda;
@@ -415,7 +422,7 @@ public class StoreFragmentSelected extends Fragment {
                                         if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
                                         {
                                             //Aqui pregunta primero cuando los permidos no estan activados
-                                            //requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
+                                            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_ACCESS_CAMERA);
                                         }
                                     }
                                     else
@@ -432,7 +439,7 @@ public class StoreFragmentSelected extends Fragment {
                                         if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
                                         {
                                             //Aqui pregunta primero cuando los permidos no estan activados
-                                            //requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
                                         }
                                     }
                                     else
@@ -584,13 +591,7 @@ public class StoreFragmentSelected extends Fragment {
                             {
                                 googleMapGlobal = googleMap;
                                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    ActivityCompat#requestPermissions
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for ActivityCompat#requestPermissions for more details.
+
                                     return;
                                 }
                                 googleMap.setMyLocationEnabled(true);
@@ -845,10 +846,7 @@ public class StoreFragmentSelected extends Fragment {
             Uri path = data.getData();
             try
             {
-                //int HeightButton = imageViewTienda.getHeight();
-                //int WidthButton = imageViewTienda.getWidth();
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                //Bitmap rotado = Codificacion.RotarBitmap(Codificacion.bajarResolucion(bitmap, WidthButton, HeightButton), 90);
                 imageViewTienda.setImageBitmap(Codificacion.bajarResolucion(bitmap, 500, 500));
                 String imagenCod = Codificacion.encodeToBase64(Codificacion.bajarResolucion(bitmap, 500, 500), Bitmap.CompressFormat.PNG, 100);
                 JSONObject object = new JSONObject();
@@ -872,6 +870,46 @@ public class StoreFragmentSelected extends Fragment {
             catch (IOException e)
             {
                 e.printStackTrace();
+            }
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_ACCESS_CAMERA:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    tipo = "Imagen";
+                    dispatchTakePictureIntent();
+
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            case WRITE_EXTERNAL_STORAGE:
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //Aceptado
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(intent.createChooser(intent, "Selecciona app de imagen"), SELECT_PICTURE);
+                    tipo = "Imagen";
+
+                }
+                else
+                {
+                    //Negado
+                    Toast.makeText(getContext(), "Debes aceptar los permisos para la camara.", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

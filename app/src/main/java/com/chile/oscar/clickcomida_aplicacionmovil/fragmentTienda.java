@@ -423,7 +423,8 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent()
+    {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
