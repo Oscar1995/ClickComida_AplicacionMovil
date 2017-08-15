@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:hint="@string/titulo_nombre_tienda"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout

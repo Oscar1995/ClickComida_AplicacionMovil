@@ -118,6 +118,22 @@ public class StoreFragmentSelected extends Fragment {
     String[] dayWeek = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
     List<Comentarios> comentariosList = new ArrayList<>();
 
+    TextView textViewNombrePrincipal;
+    TextView textViewNombre;
+    TextView textViewDireccion;
+    TextView textViewDescripcion;
+    TextView textViewHorario;
+
+    TextView textViewHora1;
+    TextView textViewHora2;
+    TextView textViewHora3;
+    TextView textViewHora4;
+
+    EditText editTextNombreTienda;
+    EditText editTextDesTienda;
+    EditText editTextCalle;
+    EditText editTextNum;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -169,11 +185,11 @@ public class StoreFragmentSelected extends Fragment {
         Button buttonModificarFoto = (Button) view.findViewById(R.id.btnModificarFoto);
         Button buttonModificarDatos = (Button) view.findViewById(R.id.btnModificarDatosTienda);
         buttonPublicarAviso = (Button) view.findViewById(R.id.btnPublicarAviso);
-        final TextView textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
-        final TextView textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
-        final TextView textViewDireccion = (TextView)view.findViewById(R.id.tvDireccion);
-        final TextView textViewDescripcion = (TextView)view.findViewById(R.id.tvDesSelected);
-        final TextView textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
+        textViewNombrePrincipal = (TextView) view.findViewById(R.id.tvTituloTienda);
+        textViewNombre = (TextView) view.findViewById(R.id.tvNameTiendaSelected);
+        textViewDireccion = (TextView)view.findViewById(R.id.tvDireccion);
+        textViewDescripcion = (TextView)view.findViewById(R.id.tvDesSelected);
+        textViewHorario = (TextView) view.findViewById(R.id.tvHorarioSelected);
         imageViewTienda = (ImageView) view.findViewById(R.id.ivTiendaSelected);
         listViewComentarios = (ListView)view.findViewById(R.id.lvComentarios);
 
@@ -478,18 +494,21 @@ public class StoreFragmentSelected extends Fragment {
                 {
                     ((ViewGroup)vMod.getParent()).removeView(vMod);
                 }
-                final EditText editTextNombreTienda = (EditText) vMod.findViewById(R.id.etTiendaMod);
-                final EditText editTextDesTienda = (EditText) vMod.findViewById(R.id.etDesMod);
-                final EditText editTextCalle = (EditText) vMod.findViewById(R.id.etCalleMod);
-                final EditText editTextNum = (EditText) vMod.findViewById(R.id.etNumMod);
+                editTextNombreTienda = (EditText) vMod.findViewById(R.id.etTiendaMod);
+                editTextDesTienda = (EditText) vMod.findViewById(R.id.etDesMod);
+                editTextCalle = (EditText) vMod.findViewById(R.id.etCalleMod);
+                editTextNum = (EditText) vMod.findViewById(R.id.etNumMod);
+
                 LinearLayout linearLayoutUno = (LinearLayout) vMod.findViewById(R.id.llHorarioUno);
                 LinearLayout linearLayoutDos = (LinearLayout) vMod.findViewById(R.id.llHorarioDos);
                 TextView textViewTituloUno = (TextView) vMod.findViewById(R.id.tvTituloUno);
                 TextView textViewTituloDos = (TextView) vMod.findViewById(R.id.tvTituloDos);
-                final TextView textViewHora1 = (TextView) vMod.findViewById(R.id.tvHora1);
-                final TextView textViewHora2 = (TextView) vMod.findViewById(R.id.tvHora2);
-                final TextView textViewHora3 = (TextView) vMod.findViewById(R.id.tvHora3);
-                final TextView textViewHora4 = (TextView) vMod.findViewById(R.id.tvHora4);
+
+                textViewHora1 = (TextView) vMod.findViewById(R.id.tvHora1);
+                textViewHora2 = (TextView) vMod.findViewById(R.id.tvHora2);
+                textViewHora3 = (TextView) vMod.findViewById(R.id.tvHora3);
+                textViewHora4 = (TextView) vMod.findViewById(R.id.tvHora4);
+
                 Button buttonMapa = (Button)vMod.findViewById(R.id.btnModCoor);
 
                 Spinner spinnerInicio = (Spinner)vMod.findViewById(R.id.spnInicio);
@@ -575,7 +594,6 @@ public class StoreFragmentSelected extends Fragment {
                             ((ViewGroup)MapStatic.pMapUpdate.getParent()).removeView(MapStatic.pMapUpdate);
                         }
                         final AlertDialog.Builder builderMapa = new AlertDialog.Builder(getContext());
-
                         final SupportMapFragment map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
 
                         Button botonTomarCoor = (Button) MapStatic.pMapUpdate.findViewById(R.id.btnFijarMapaTienda);
@@ -583,7 +601,6 @@ public class StoreFragmentSelected extends Fragment {
                         builderMapa.setView(MapStatic.pMapUpdate);
                         final AlertDialog mapUpdate = builderMapa.create();
                         mapUpdate.show();
-
 
                         map.getMapAsync(new OnMapReadyCallback() {
                             @Override
@@ -682,27 +699,6 @@ public class StoreFragmentSelected extends Fragment {
                             object.put("latitud", Coordenadas.latitud);
                             object.put("longitud", Coordenadas.longitud);
 
-                            String openupdate = new MetodosCreados().HoraNormal(textViewHora1.getText().toString());
-                            String closeupdate = new MetodosCreados().HoraNormal(textViewHora2.getText().toString());
-
-                            textViewNombre.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Tienda) + ": </b>" + editTextNombreTienda.getText().toString().trim()));
-                            textViewDireccion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Direccion) + ": </b>" + editTextCalle.getText().toString().trim() + " #" + editTextNum.getText().toString().trim()));
-                            textViewDescripcion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.titulo_descripcion)+ ": </b>" + editTextDesTienda.getText().toString().trim()));
-
-
-                            if (textViewHora3.getText().equals("00:00:00") && textViewHora4.getText().equals("00:00:00"))
-                            {
-                                textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
-                                        "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
-                            }
-                            else
-                            {
-                                String openupdatelunch = new MetodosCreados().HoraNormal(textViewHora3.getText().toString());
-                                String closeupdatelunch = new MetodosCreados().HoraNormal(textViewHora4.getText().toString());
-                                textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
-                                        "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
-                                        + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
-                            }
                         }
                         catch (JSONException e)
                         {
@@ -986,6 +982,29 @@ public class StoreFragmentSelected extends Fragment {
                     {
                         Toast.makeText(getContext(), "Los datos han sido modificados.", Toast.LENGTH_SHORT).show();
                         mapUpdate.dismiss();
+
+                        String openupdate = new MetodosCreados().HoraNormal(textViewHora1.getText().toString());
+                        String closeupdate = new MetodosCreados().HoraNormal(textViewHora2.getText().toString());
+                        textViewNombre.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Tienda) + ": </b>" + editTextNombreTienda.getText().toString().trim()));
+                        textViewDireccion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.Direccion) + ": </b>" + editTextCalle.getText().toString().trim() + " #" + editTextNum.getText().toString().trim()));
+                        textViewDescripcion.setText(Html.fromHtml("<b>"+getResources().getString(R.string.titulo_descripcion)+ ": </b>" + editTextDesTienda.getText().toString().trim()));
+                        if (textViewHora3.getText().equals("00:00:00") && textViewHora4.getText().equals("00:00:00"))
+                        {
+                            textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
+                                    "Continuado: </b>" +  "de " + openupdate + " a " + closeupdate));
+                        }
+                        else
+                        {
+                            String openupdatelunch = new MetodosCreados().HoraNormal(textViewHora3.getText().toString());
+                            String closeupdatelunch = new MetodosCreados().HoraNormal(textViewHora4.getText().toString());
+                            textViewHorario.setText(Html.fromHtml("<b> <font color=\"blue\">"+dInicio + " a " + dFin+ "</font> <br>"+
+                                    "Mañana: </b>" +  "de " + openupdate + " a " + closeupdate + "<br>"
+                                    + "<b>Tarde: </b>de " + openupdatelunch + " a " + closeupdatelunch));
+                        }
+                    }
+                    else if (res.equals("Existente"))
+                    {
+                        Toast.makeText(getContext(), "El nombre de la tienda ya esta en uso.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 catch (JSONException e)
