@@ -564,6 +564,16 @@ public class MostrarProductosMios extends Fragment
                     {
                         Toast.makeText(getContext(), "El producto ha sido modificado", Toast.LENGTH_SHORT).show();
                         dialogMod.dismiss();
+
+                        progress = new ProgressDialog(getContext());
+                        progress.setMessage("Cargando productos...");
+                        progress.show();
+
+                        tipoReg = "Cargar productos";
+                        JSONObject objectProd = new JSONObject();
+                        objectProd.put("store_id", store_id);
+
+                        new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "/Controlador/cargarProductos.php", objectProd.toString());
                     }
                 }
 

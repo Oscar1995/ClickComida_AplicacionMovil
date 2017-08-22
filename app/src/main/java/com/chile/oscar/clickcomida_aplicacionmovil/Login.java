@@ -319,6 +319,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                         i.putExtra("correo_usuario", jsonResult.getString("Correo"));
                         i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
                         i.putExtra("rol", jsonResult.getString("Rol"));
+                        startActivity(i);
+                        finish();
                     }
                     else if (jsonResult.getString("Rol").equals("repartidor"))
                     {
@@ -327,9 +329,36 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                         i.putExtra("correo_usuario", jsonResult.getString("Correo"));
                         i.putExtra("nombre_usuario", jsonResult.getString("Nombre"));
                         i.putExtra("rol", jsonResult.getString("Rol"));
+                        startActivity(i);
+                        finish();
                     }
-                    startActivity(i);
-                    finish();
+                    else
+                    {
+                        progress.dismiss();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(Login.this, R.style.Theme_AppCompat_Light_Dialog));
+                        builder.setTitle("Administrador")
+                                .setMessage("El administrador no puede logearse en al aplicación, para administracion usar la pagina web.")
+                                .setPositiveButton("Aceptar",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                        .setNegativeButton("Ir a la pagina web", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                String link = "http://clickcomidaoficial.esy.es/login";
+                                Intent intent = null;
+                                intent = new Intent(intent.ACTION_VIEW, Uri.parse(link));
+                                startActivity(intent);
+                            }
+                        });
+                        builder.show();
+                    }
+
                 }
                 else
                 {

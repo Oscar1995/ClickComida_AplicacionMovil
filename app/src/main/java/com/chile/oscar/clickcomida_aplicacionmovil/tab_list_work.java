@@ -114,7 +114,8 @@ public class tab_list_work extends Fragment
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent)
+        {
             convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_work_list, null);
             TextView textViewTienda = (TextView)convertView.findViewById(R.id.tvTienda);
             TextView textViewCalle = (TextView)convertView.findViewById(R.id.tvCalle);
@@ -128,15 +129,22 @@ public class tab_list_work extends Fragment
             buttonMapa.setId(position);
             textViewFecha.setText("Fecha de publicación: " + tiendaNoticesList.get(position).getFechaPublicacion());
 
-            if (tiendaNoticesList.get(position).getUser_id().equals(Coordenadas.id))
+            if (tiendaNoticesList.get(position).getIdCreator() == Integer.parseInt(Coordenadas.id))
             {
-                buttonVer.setText("Estas postulando");
-                buttonVer.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                buttonVer.setVisibility(View.GONE);
             }
             else
             {
-                buttonVer.setText("Ver requisitos");
-                buttonVer.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
+                if (tiendaNoticesList.get(position).getUser_id().equals(Coordenadas.id))
+                {
+                    buttonVer.setText("Estas postulando");
+                    buttonVer.setBackground(getResources().getDrawable(R.drawable.colorbuttonred));
+                }
+                else
+                {
+                    buttonVer.setText("Ver requisitos");
+                    buttonVer.setBackground(getResources().getDrawable(R.drawable.colorbuttonceleste));
+                }
             }
 
             buttonVer.setOnClickListener(new View.OnClickListener() {
@@ -365,11 +373,12 @@ public class tab_list_work extends Fragment
                             tiendaNotices.setCalleTienda(jsonObject.getString("street"));
                             tiendaNotices.setNumTienda(jsonObject.getString("number"));
                             tiendaNotices.setLatLngStore(new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude")));
-                            tiendaNotices.setNoticeId(jsonObject.getInt("id"));
+                            tiendaNotices.setNoticeId(jsonObject.getInt("x"));
                             tiendaNotices.setFechaPublicacion(jsonObject.getString("date"));
                             tiendaNotices.setNoticeRequerimiento(jsonObject.getString("requirements"));
                             tiendaNotices.setNoticeVacant(jsonObject.getInt("vacants"));
                             tiendaNotices.setUser_id(jsonObject.getString("user_id"));
+                            tiendaNotices.setIdCreator(jsonObject.getInt("10"));
                             tiendaNoticesList.add(tiendaNotices);
                         }
                         progress.dismiss();

@@ -16,6 +16,16 @@ public class TiendaNotices
     String user_id;
     int noticeVacant;
 
+    public int getIdCreator() {
+        return idCreator;
+    }
+
+    public void setIdCreator(int idCreator) {
+        this.idCreator = idCreator;
+    }
+
+    int idCreator;
+
     public LatLng getLatLngStore() {
         return latLngStore;
     }
