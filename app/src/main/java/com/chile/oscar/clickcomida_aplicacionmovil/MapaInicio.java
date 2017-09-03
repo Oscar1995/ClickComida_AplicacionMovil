@@ -90,16 +90,25 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try {
+        try
+        {
+            progress = new ProgressDialog(getContext());
+            progress.setMessage("Cargando marcadores...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
             view = inflater.inflate(R.layout.activity_mapa_inicio, null, false);
             mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaFragmento);
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
+                {
                     //Aqui pregunta primero cuando los permidos no estan activados
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE);
                 }
-            } else {
+            }
+            else
+            {
                 //Päsa aqui cuando los permisos estan activados
                 cargarCoordenadas();
                 mapFragment.getMapAsync(this);
@@ -447,6 +456,11 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                         }
 
                     }
+                    progress.dismiss();
+                }
+                else
+                {
+                    progress.dismiss();
                 }
             }
             catch (JSONException e)
