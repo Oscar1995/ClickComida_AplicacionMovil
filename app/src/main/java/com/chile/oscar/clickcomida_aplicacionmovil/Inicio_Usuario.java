@@ -7,10 +7,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Actividades.BusquedaAvanzadaActivity;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.LastDate;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
@@ -82,17 +86,56 @@ public class Inicio_Usuario extends AppCompatActivity
         Bundle args = new Bundle();
         args.putString("ID_USUARIO", idUsuario);
         myFrag.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag).commit();
+        LastDate.dataInfo = "Maps";
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_general, myFrag, "Maps").commit();
 
         //Inicia la clase de seguimiento en segundo plano preguntando cada 2 minutos si hay algun pedido, si hay... monitoreara....
         //startService(new Intent(Inicio_Usuario.this, ServiceTracking.class));
 
     }
-
+    Boolean swOff = false;
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_usuario);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(LastDate.dataInfo);
+        if (currentFragment != null && currentFragment.isVisible())
+        {
+            if (LastDate.dataInfo.equals("Maps"))
+            {
+                if (swOff == false)
+                {
+                    swOff = true;
+                    Toast.makeText(getApplicationContext(), "Pincha de nuevo para salir de la aplicación", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    System.exit(1);
+                }
+            }
+            else
+            {
+                swOff = false;
+                Fragment fragment = new MapaInicio();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_general, fragment, "Maps").commit();
+                getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+                LastDate.dataInfo = "Maps";
+            }
+        }
+        else
+        {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_usuario);
+            if (drawer.isDrawerOpen(GravityCompat.START))
+            {
+                drawer.closeDrawer(GravityCompat.START);
+            }
+            else
+            {
+                //getFragmentManager().beginTransaction().remove(map).commit();
+                super.onBackPressed();
+            }
+        }
+
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_usuario);
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
@@ -101,7 +144,7 @@ public class Inicio_Usuario extends AppCompatActivity
         {
             //getFragmentManager().beginTransaction().remove(map).commit();
             super.onBackPressed();
-        }
+        }*/
     }
 
     @Override
@@ -126,6 +169,7 @@ public class Inicio_Usuario extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
@@ -134,19 +178,18 @@ public class Inicio_Usuario extends AppCompatActivity
         int id = item.getItemId();
 
         Fragment fragment = null;
-        boolean fragmentoSeleccionado = false;
 
         if (id == R.id.nav_camera)
         {
             fragment = new MapaInicio();
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_inicio));
+            TransactionReplace("Maps", fragment);
         }
         else if (id == R.id.nav_search)
         {
             fragment = new BusquedaAvanzada();
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.busqueda_avanzada));
+            TransactionReplace("Busqueda", fragment);
             //startActivity(new Intent(this, BusquedaAvanzadaActivity.class));
         }
         else if (id == R.id.nav_gallery)
@@ -155,8 +198,8 @@ public class Inicio_Usuario extends AppCompatActivity
             Bundle args = new Bundle();
             args.putString("ID_USUARIO", idUsuario);
             fragment.setArguments(args);
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_crear_tienda));
+            TransactionReplace("Tienda", fragment);
         }
         else if (id == R.id.nav_slideshow)
         {
@@ -164,8 +207,8 @@ public class Inicio_Usuario extends AppCompatActivity
             Bundle args = new Bundle();
             args.putString("IdUser", idUsuario);
             fragment.setArguments(args);
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mis_datos));
+            TransactionReplace("Datos", fragment);
         }
         else if (id == R.id.nav_manage)
         {
@@ -173,17 +216,17 @@ public class Inicio_Usuario extends AppCompatActivity
             Bundle args = new Bundle();
             args.putString("user_id", idUsuario);
             fragment.setArguments(args);
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mi_tienda));
+            TransactionReplace("Store", fragment);
         }
         else if (id == R.id.nav_favorite)
         {
             fragment = new Favorites_stores();
             Bundle args = new Bundle();
             args.putString("user_id", idUsuario);
-            fragment.setArguments(args);
-            fragmentoSeleccionado = true;
+            fragment.setArguments(args);;
             getSupportActionBar().setTitle(getResources().getString(R.string.titulo_mi_tienda));
+            TransactionReplace("Favoritos", fragment);
         }
         else if (id == R.id.nav_cart)
         {
@@ -191,8 +234,8 @@ public class Inicio_Usuario extends AppCompatActivity
             Bundle args = new Bundle();
             //args.putString("user_id", idUsuario);
             //fragment.setArguments(args);
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.mi_carro));
+            TransactionReplace("Carro", fragment);
         }
         else if (id == R.id.nav_track)
         {
@@ -200,8 +243,8 @@ public class Inicio_Usuario extends AppCompatActivity
             //Bundle args = new Bundle();
             //args.putString("user_id", idUsuario);
             //fragment.setArguments(args);
-            fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.historial));
+            TransactionReplace("Tracking", fragment);
         }
         else if (id == R.id.nav_work)
         {
@@ -227,22 +270,22 @@ public class Inicio_Usuario extends AppCompatActivity
             startActivity(intent);
             this.finish();
         }
-        if (fragmentoSeleccionado == true)
-        {
-            if (new Validadores().isNetDisponible(getApplicationContext()))
-            {
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_general, fragment).commit();
-            }
-            else
-            {
-                Toast.makeText(getApplicationContext(), "Debes estar conectado a una red.", Toast.LENGTH_SHORT).show();
-            }
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_usuario);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void TransactionReplace (String TAG, Fragment fragment)
+    {
+        if (new Validadores().isNetDisponible(getApplicationContext()))
+        {
+            LastDate.dataInfo = TAG;
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_general, fragment, TAG).commit();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Debes estar conectado a una red.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

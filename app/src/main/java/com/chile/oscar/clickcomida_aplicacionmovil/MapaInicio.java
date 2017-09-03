@@ -211,8 +211,9 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                     {
                         e.printStackTrace();
                     }
-                    tipoConsulta = "Mi Tienda";
 
+                    tipoConsulta = "Mi Tienda";
+                    
                     progress = new ProgressDialog(getContext());
                     progress.setMessage("Cargando información acerca de tu tienda "+ "\"" + marker.getTitle() + "\"");
                     progress.setCanceledOnTouchOutside(false);
@@ -471,9 +472,10 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
                 OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                out.write(params[1].toString().getBytes());
+                /*BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
                 writer.write(params[1].toString());
-                writer.close();
+                writer.close();*/
                 out.close();
                 int responseCode = conn.getResponseCode();
                 System.out.println("responseCode" + responseCode);
