@@ -1,423 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context="com.chile.oscar.clickcomida_aplicacionmovil.MisDatos">
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/textoBlanco"
-        android:background="@color/colorCeleste"
-        android:textStyle="bold"
-        android:text="@string/mis_datos" />
-
-    <TextView
-        android:id="@+id/textView87"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/titulo_datos_usuario"
-        android:textColor="@color/colorNegro"
-        android:textStyle="bold" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="290dp"
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="@color/colorCeleste"
+            android:gravity="center"
+            android:text="@string/mis_datos"
+            android:textColor="@color/textoBlanco"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/txtNombre_misdatos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/usuario_nombre" />
+        <TextView
+            android:id="@+id/textView87"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/titulo_datos_usuario"
+            android:textColor="@color/colorNegro"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/txtApellido_misdatos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/usuario_apellido" />
-
-            <TextView
-                android:id="@+id/txtNickname_misdatos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/usuario_nickname" />
-
-            <TextView
-                android:id="@+id/txtCorreo_misdatos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/correo_usuario" />
-
-            <TextView
-                android:id="@+id/txtTipo_misdatos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/tipo_usuario" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvVocal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="J"
+            android:textSize="50sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/ivActualizarDatos"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                app:srcCompat="@drawable/update" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView88"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:gravity="center"
-                android:text="@string/titulo_telefonos"
-                android:textColor="@color/colorNegro"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnAgregarNuevoTelefono"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/colorbutton"
-                android:text="@string/agregar_producto" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llTelefono1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/txtTeleUno_misdatos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/titulo_telefono" />
-
-            <ImageView
-                android:id="@+id/ivUpdateTel1"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/update" />
-
-            <ImageView
-                android:id="@+id/ivDeleteTel1"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/delete" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llTelefono2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/txtTeleDos_misdatos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/titulo_telefono" />
-
-            <ImageView
-                android:id="@+id/ivUpdateTel2"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/update" />
-
-            <ImageView
-                android:id="@+id/ivDeleteTel2"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/delete" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView88"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:gravity="center"
-                android:text="@string/titulo_direcciones"
-                android:textColor="@color/colorNegro"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnAgregarNuevaDireccion"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/colorbutton"
-                android:text="@string/agregar_producto" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llDireccion1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView89"
+                    android:id="@+id/tvNombre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:text="@string/direccion_1"
-                    android:textColor="@color/colorNegro"
-                    android:textStyle="bold" />
+                    android:gravity="left"
+                    android:text="Nombre: Juan"
+                    android:textColor="@color/colorNegro" />
 
                 <TextView
-                    android:id="@+id/txtCalle_misdatos"
+                    android:id="@+id/tvApellido"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/calle_usuario" />
-
-                <TextView
-                    android:id="@+id/txtNumeroCalle_misdatos"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/calle_numero_usuario" />
-
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Apellido: Perez"
+                    android:textColor="@color/colorNegro" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivModificar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    app:srcCompat="@drawable/modify" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView69"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/correo_usuario"
+                android:textColor="@color/colorNegro"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="juanperez@hotmail.com"
+                android:textColor="@color/colorNegro" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView69"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/tipo_usuario"
+                android:textColor="@color/colorNegro"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCuenta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Miembro"
+                android:textColor="@color/colorNegro" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btnUsarUno"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/colorbuttonamarillo"
-                    android:text="@string/Usar" />
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView69"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right|center"
+                        android:text="@string/titulo_telefonos"
+                        android:textColor="@color/colorNegro"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnAgregarTel"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        android:background="@color/colorVerde"
+                        android:gravity="center"
+                        android:text="@string/agregar_producto" />
+                </LinearLayout>
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivUpdateDir1"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
-
-            <ImageView
-                android:id="@+id/ivDeleteDir1"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/delete" />
+            <ListView
+                android:id="@+id/lvTelefonos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/llDireccion2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textView89"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:text="@string/direccion_2"
-                    android:textColor="@color/colorNegro"
-                    android:textStyle="bold" />
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txtCalle_misdatos_d"
+                    <TextView
+                        android:id="@+id/textView69"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right|center"
+                        android:text="@string/titulo_direcciones"
+                        android:textColor="@color/colorNegro"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:text="@string/calle_usuario" />
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txtNumeros_misdatos_d"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/calle_numero_usuario" />
-
+                    <Button
+                        android:id="@+id/btnAgregarDir"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        android:background="@color/colorVerde"
+                        android:gravity="center"
+                        android:text="@string/agregar_producto" />
+                </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
+            <ListView
+                android:id="@+id/lvDirecciones"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="match_parent" />
 
-                <Button
-                    android:id="@+id/btnUsarDos"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/colorbuttonamarillo"
-                    android:text="@string/Usar" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/ivUpdateDir2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
-
-            <ImageView
-                android:id="@+id/ivDeleteDir2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/delete" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llDireccion3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView89"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="2dp"
-                    android:layout_weight="1"
-                    android:text="@string/direccion_3"
-                    android:textColor="@color/colorNegro"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtCallemisdatos_t"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/calle_usuario" />
-
-                <TextView
-                    android:id="@+id/txtNumeromisdatos_t"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/calle_numero_usuario" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/btnUsarTres"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/colorbuttonamarillo"
-                    android:text="@string/Usar" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/ivUpdateDir3"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
-
-            <ImageView
-                android:id="@+id/ivDeleteDir3"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/delete" />
-        </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

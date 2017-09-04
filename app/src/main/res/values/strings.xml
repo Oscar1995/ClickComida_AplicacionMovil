@@ -57,8 +57,8 @@
     <string name="usuario_nombre">Nombre:</string>
     <string name="usuario_apellido">Apellido:</string>
     <string name="usuario_nick">Nickname:</string>
-    <string name="correo_usuario">Correo electronico:</string>
-    <string name="tipo_usuario">Tipo de cuenta:</string>
+    <string name="correo_usuario">Correo electronico</string>
+    <string name="tipo_usuario">Tipo de cuenta</string>
     <string name="numero_de_telefono_de_usuario">Numeros telefonicos</string>
     <string name="direcciones_usuario">usuario_direccion</string>
     <string name="numtel_uno">Telefono 1:</string>
