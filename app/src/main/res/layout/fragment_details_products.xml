@@ -190,7 +190,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingLeft="20dp"
-                android:text="@string/titulo_comentarios"
+                android:text="@string/titulo_comentarios_productos"
                 android:textAlignment="center"
                 android:textColor="@color/colorNegro"
                 android:textSize="11sp" />

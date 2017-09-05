@@ -14,16 +14,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView26"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/titulo_has_seleccionado"
-                android:background="@color/colorCeleste"
-                android:textColor="@color/textoBlanco"
-                android:textStyle="bold" />
-
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -46,27 +36,26 @@
 
                 <Button
                     android:id="@+id/btnModificarTelefono_us"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="2dp"
                     android:layout_weight="1"
-                    android:background="@drawable/colorbuttonamarillo"
                     android:text="@string/modificar_boton" />
 
                 <Button
                     android:id="@+id/btnCerrarTelefono_us"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    style="@android:style/Widget.Material.Light.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="20dp"
                     android:layout_weight="1"
-                    android:background="@drawable/colorbuttonred"
-                    android:text="@string/boton_cerrar" />
+                    android:text="@string/boton_cerrar"
+                    android:textColor="@color/colorRojo" />
             </LinearLayout>
         </LinearLayout>
 

@@ -57,8 +57,8 @@
     <string name="usuario_nombre">Nombre:</string>
     <string name="usuario_apellido">Apellido:</string>
     <string name="usuario_nick">Nickname:</string>
-    <string name="correo_usuario">Correo electronico:</string>
-    <string name="tipo_usuario">Tipo de cuenta:</string>
+    <string name="correo_usuario">Correo electronico</string>
+    <string name="tipo_usuario">Tipo de cuenta</string>
     <string name="numero_de_telefono_de_usuario">Numeros telefonicos</string>
     <string name="direcciones_usuario">usuario_direccion</string>
     <string name="numtel_uno">Telefono 1:</string>
@@ -73,7 +73,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="google_maps_key">AIzaSyBVWckeTBVm1nmPyJmSqyyFsW_ecedufyA</string>
+    <string name="google_maps_key">AIzaSyDk4MD2mWUgYH5ESkKYZDaxNz61fPgw4fo</string>
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -281,4 +281,5 @@
     <string name="Publicar_Aviso">Publicar aviso</string>
     <string name="Modificar_Aviso">Modificar aviso</string>
     <string name="Ver_aviso">Ver aviso</string>
+    <string name="titulo_comentarios_productos">Comentarios de los usuarios que han comprado este producto</string>
 </resources>

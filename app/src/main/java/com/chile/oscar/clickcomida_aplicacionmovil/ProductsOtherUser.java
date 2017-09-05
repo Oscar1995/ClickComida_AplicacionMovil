@@ -70,6 +70,9 @@ public class ProductsOtherUser extends Fragment
     List<Bitmap> imagesProd;
     int posProd;
     boolean isProdSelected = false;
+    boolean isProdOne = false;
+
+    int posProdOne;
 
     ProgressDialog progress;
 
@@ -113,6 +116,7 @@ public class ProductsOtherUser extends Fragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        isProdOne = false;
         View v = inflater.inflate(R.layout.fragment_products_other_user, container, false);
         autoCompleteTextViewProducto = (AutoCompleteTextView)v.findViewById(R.id.actvProductos);
         spinnerFiltro = (Spinner)v.findViewById(R.id.sFiltro);
@@ -124,6 +128,7 @@ public class ProductsOtherUser extends Fragment
         TextView textViewNombreTienda = (TextView)v.findViewById(R.id.tvTienda);
         Button buttonAgregarCarro = (Button)v.findViewById(R.id.btnAgregarCarro);
         Button buttonDetalles = (Button)v.findViewById(R.id.btnDetalles);
+        Button buttonBuscarProducto = (Button)v.findViewById(R.id.btnBuscarProd);;
 
         String[] tOption = {"Nombre", "Menor precio", "Mayor precio"};
         ArrayAdapter arrayAdapterFiltro = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, tOption);
@@ -133,6 +138,58 @@ public class ProductsOtherUser extends Fragment
         imageViewTienda.setImageDrawable(new MetodosCreados().EncuadrarBitmap(imagenTienda, getResources()));
         textViewTituloTienda.setText(getResources().getString(R.string.titulo_productos_tienda) + " " + nombreTienda);
 
+
+        buttonBuscarProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if (nombreProd.contains(autoCompleteTextViewProducto.getText().toString()))
+                {
+                    posProdOne = nombreProd.indexOf(autoCompleteTextViewProducto.getText().toString());
+
+                    BaseAdapter baseAdapter = new BaseAdapter() {
+                        @Override
+                        public int getCount()
+                        {
+                            return 1;
+                        }
+
+                        @Override
+                        public Object getItem(int position) {
+                            return null;
+                        }
+
+                        @Override
+                        public long getItemId(int position) {
+                            return 0;
+                        }
+
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent)
+                        {
+                            convertView = getActivity().getLayoutInflater().inflate(R.layout.custom_products_other, null);
+                            ImageView imageViewProd = (ImageView)convertView.findViewById(R.id.ivProductOther);
+                            TextView textViewNombre = (TextView)convertView.findViewById(R.id.txtNombreProd);
+                            TextView textViewPrecio = (TextView)convertView.findViewById(R.id.etPrecioProd);
+
+                            imageViewProd.setImageDrawable(new MetodosCreados().RedondearBitmap(imagesProd.get(posProdOne), getResources()));
+                            textViewNombre.setText(nombreProd.get(posProdOne));
+                            textViewPrecio.setText("$" + precioProd.get(posProdOne));
+
+                            return convertView;
+                        }
+                    };
+                    isProdOne = true;
+                    gridViewProductos.setAdapter(baseAdapter);
+                }
+                else
+                {
+                    isProdOne = false;
+                    Toast.makeText(getContext(), "El producto \"" + autoCompleteTextViewProducto.getText().toString() + "\" no existe.", Toast.LENGTH_SHORT).show();
+                }
+                isProdSelected = false;
+            }
+        });
 
         gridViewProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,7 +209,14 @@ public class ProductsOtherUser extends Fragment
                     AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                     final NumberPicker numberPicker = new NumberPicker(getContext());
                     alert.setMessage("Elige una cantidad...");
-                    alert.setTitle(nombreProd.get(posProd));
+                    if (isProdOne)
+                    {
+                        alert.setTitle(nombreProd.get(posProdOne));
+                    }
+                    else
+                    {
+                        alert.setTitle(nombreProd.get(posProd));
+                    }
 
                     numberPicker.setMinValue(1);
                     numberPicker.setMaxValue(20);
@@ -162,11 +226,19 @@ public class ProductsOtherUser extends Fragment
                     {
                         public void onClick(DialogInterface dialog, int whichButton)
                         {
-                            guardarPreferencias(Integer.parseInt(idProd.get(posProd)), numberPicker.getValue(), Integer.parseInt(store_id));
+                            if (isProdOne)
+                            {
+                                guardarPreferencias(Integer.parseInt(idProd.get(posProdOne)), numberPicker.getValue(), Integer.parseInt(store_id));
+                            }
+                            else
+                            {
+                                guardarPreferencias(Integer.parseInt(idProd.get(posProd)), numberPicker.getValue(), Integer.parseInt(store_id));
+                            }
                         }
                     });
 
-                    alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
+                    {
                         public void onClick(DialogInterface dialog, int whichButton)
                         {
                             dialog.dismiss();
@@ -190,10 +262,20 @@ public class ProductsOtherUser extends Fragment
                 if (isProdSelected)
                 {
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), nombreTienda, store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
+                    if (isProdOne)
+                    {
+                        trans.replace(R.id.content_general, newInstance(imagesProd.get(posProdOne), nombreTienda, store_id, idProd.get(posProdOne), nombreProd.get(posProdOne), desProd.get(posProdOne), precioProd.get(posProdOne)));
+                    }
+                    else
+                    {
+
+                        trans.replace(R.id.content_general, newInstance(imagesProd.get(posProd), nombreTienda, store_id, idProd.get(posProd), nombreProd.get(posProd), desProd.get(posProd), precioProd.get(posProd)));
+
+                    }
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();
+
                 }
                 else
                 {
