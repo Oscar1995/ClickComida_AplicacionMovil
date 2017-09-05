@@ -188,6 +188,7 @@ public class MapaInicio extends Fragment implements OnMapReadyCallback, Location
 
         if (getMyLocation() != null)
         {
+
             Location location = getMyLocation();
             LatLng latLngLocal = new LatLng(location.getLatitude(), location.getLongitude());
             float zoomLevel = 14.0f; //This goes up to 21
