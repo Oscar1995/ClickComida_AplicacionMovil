@@ -211,14 +211,17 @@ public class Tracking extends Fragment
             public void onClick(View v)
             {
                 Calendar newCalendar = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener()
+                {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
                         dateEsps = new MetodosCreados().formatearFecha2(year + "-" + (month + 1) + "-" + dayOfMonth); //Este es para la base de datos
                         textViewEspecifico.setText(new MetodosCreados().formatearFecha3(year + "-" + (month + 1) + "-" + dayOfMonth)); // Este es para mostrar al usuario
                     }
+
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
@@ -228,7 +231,8 @@ public class Tracking extends Fragment
             public void onClick(View v)
             {
                 Calendar newCalendar = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener()
+                {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                     {
@@ -261,6 +265,7 @@ public class Tracking extends Fragment
                         }
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
@@ -302,6 +307,7 @@ public class Tracking extends Fragment
                         }
                     }
                 }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });

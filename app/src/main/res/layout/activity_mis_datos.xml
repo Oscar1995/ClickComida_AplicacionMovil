@@ -85,7 +85,7 @@
                 android:id="@+id/ivActualizarDatos"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
         </LinearLayout>
     </LinearLayout>
 
@@ -140,7 +140,7 @@
                 android:id="@+id/ivUpdateTel1"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
 
             <ImageView
                 android:id="@+id/ivDeleteTel1"
@@ -167,7 +167,7 @@
                 android:id="@+id/ivUpdateTel2"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
 
             <ImageView
                 android:id="@+id/ivDeleteTel2"
@@ -272,7 +272,7 @@
                 android:id="@+id/ivUpdateDir1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
 
             <ImageView
                 android:id="@+id/ivDeleteDir1"
@@ -341,7 +341,7 @@
                 android:id="@+id/ivUpdateDir2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
 
             <ImageView
                 android:id="@+id/ivDeleteDir2"
@@ -409,7 +409,7 @@
                 android:id="@+id/ivUpdateDir3"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:srcCompat="@drawable/update" />
+                app:srcCompat="@drawable/modify" />
 
             <ImageView
                 android:id="@+id/ivDeleteDir3"

@@ -95,7 +95,6 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
     Boolean favorite = false;
     ImageView imageViewFavoritos;
-    Button buttonAviso;
     Notices noticesVariable;
 
     RatingBar ratingBarUsuario, ratingTienda;
@@ -174,7 +173,6 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
 
         View view = inflater.inflate(R.layout.fragment_store_other_user, container, false);
 
-        buttonAviso = (Button)view.findViewById(R.id.btnPostularAviso);
         listaComentarios = (ListView)view.findViewById(R.id.lvComentarios);
         ImageView imageViewOther = (ImageView)view.findViewById(R.id.ivTiendaOther);
         TextView textViewNombre =(TextView)view.findViewById(R.id.tvNombreOther);
@@ -802,7 +800,7 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                         JSONObject jsonObject = jsonArray.getJSONObject(0);
                         if (isNotice)
                         {
-                            buttonAviso.setVisibility(View.VISIBLE);
+
                             Notices notices = new Notices();
                             notices.setNoticeId(jsonObject.getInt("id"));
                             notices.setDateNotice(jsonObject.getString("date"));
@@ -832,7 +830,6 @@ public class StoreOtherUser extends Fragment implements View.OnClickListener
                                 {
                                     if (isNotice)
                                     {
-                                        buttonAviso.setVisibility(View.VISIBLE);
                                         Notices notices = new Notices();
                                         notices.setNoticeId(jsonObjects.getInt("id"));
                                         notices.setDateNotice(jsonObjects.getString("date"));
