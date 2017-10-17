@@ -87,9 +87,12 @@ public class tab_list_work extends Fragment
         progress.setCanceledOnTouchOutside(false);
         progress.show();
         JSONObject jsonObject = new JSONObject();
-        try {
+        try
+        {
             jsonObject.put("null", null);
-        } catch (JSONException e) {
+        }
+        catch (JSONException e)
+        {
             e.printStackTrace();
         }
         tipoLoad = "Postulacion";
