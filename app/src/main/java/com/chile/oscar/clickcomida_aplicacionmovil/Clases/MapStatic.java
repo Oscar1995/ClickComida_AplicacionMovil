@@ -12,4 +12,5 @@ public class MapStatic
     public static View pMapStore;
     public static View pMapUpdate;
     public static View pMapUpdateData;
+    public static View pMapUpdateDataRealTimeUser;
 }

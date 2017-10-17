@@ -47,6 +47,7 @@ import android.widget.Toast;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.BusquedaAvanzadaProductos;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Codificacion;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MapStatic;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Pedidos_Proceso;
 import com.google.android.gms.common.ConnectionResult;
@@ -111,7 +112,6 @@ public class Tracking extends Fragment
     List<BusquedaAvanzadaProductos> busquedaAvanzadaProductosList = new ArrayList<>();
     ProgressDialog progress;
     String tipoLoad = "", resErrorDate;
-    View pMap;
     AlertDialog mapUpdate;
     Boolean sonidoRep =false;
     SupportMapFragment map;
@@ -529,17 +529,17 @@ public class Tracking extends Fragment
                     {
                         googleMapGlobal.clear();
                     }
-                    if (pMap == null)
+                    if (MapStatic.pMapUpdateDataRealTimeUser == null)
                     {
-                        pMap = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
+                        MapStatic.pMapUpdateDataRealTimeUser = getActivity().getLayoutInflater().inflate(R.layout.activity_maps_tienda, null);
                     }
-                    if (pMap.getParent() != null)
+                    if (MapStatic.pMapUpdateDataRealTimeUser.getParent() != null)
                     {
-                        ((ViewGroup)pMap.getParent()).removeView(pMap);
+                        ((ViewGroup)MapStatic.pMapUpdateDataRealTimeUser.getParent()).removeView(MapStatic.pMapUpdateDataRealTimeUser);
                     }
                     map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-                    Button botonTomarCoor = (Button) pMap.findViewById(R.id.btnFijarMapaTienda);
-                    builderMapa.setView(pMap);
+                    Button botonTomarCoor = (Button) MapStatic.pMapUpdateDataRealTimeUser.findViewById(R.id.btnFijarMapaTienda);
+                    builderMapa.setView(MapStatic.pMapUpdateDataRealTimeUser);
                     mapUpdate = builderMapa.create();
                     mapUpdate.show();
                     map.getMapAsync(new OnMapReadyCallback()
@@ -592,7 +592,7 @@ public class Tracking extends Fragment
                                     }
 
                                 }
-                            }, 0, 5000);
+                            }, 0, 2000);
                             googleMap.setMyLocationEnabled(true);
                             googleMap.getUiSettings().setZoomControlsEnabled(true);
                             if (googleMap != null)
