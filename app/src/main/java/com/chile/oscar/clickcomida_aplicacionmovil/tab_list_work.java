@@ -71,6 +71,7 @@ public class tab_list_work extends Fragment
     AlertDialog mapUpdate;
     SupportMapFragment map;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
