@@ -1,10 +1,13 @@
 package com.chile.oscar.clickcomida_aplicacionmovil;
 
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -15,6 +18,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,11 +40,27 @@ import com.chile.oscar.clickcomida_aplicacionmovil.Clases.LastDate;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Usuarios;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class Inicio_Usuario extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, fragmentTienda.OnFragmentInteractionListener, StoreFragment.OnFragmentInteractionListener, StoreFragmentSelected.OnFragmentInteractionListener, MostrarProductosMios.OnFragmentInteractionListener, StoreOtherUser.OnFragmentInteractionListener, Favorites_stores.OnFragmentInteractionListener, StoreProductsFragment.OnFragmentInteractionListener, ProductsOtherUser.OnFragmentInteractionListener, Details_products.OnFragmentInteractionListener, cart_products.OnFragmentInteractionListener, Tracking.OnFragmentInteractionListener, BusquedaAvanzada.OnFragmentInteractionListener
 {
     //TextView vCorreo, vNombre;
     String idUsuario;
+    Fragment fragment = null;
+    ProgressDialog progress;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -177,7 +198,7 @@ public class Inicio_Usuario extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        Fragment fragment = null;
+
 
         if (id == R.id.nav_camera)
         {
@@ -194,12 +215,22 @@ public class Inicio_Usuario extends AppCompatActivity
         }
         else if (id == R.id.nav_gallery)
         {
-            fragment = new fragmentTienda();
-            Bundle args = new Bundle();
-            args.putString("ID_USUARIO", idUsuario);
-            fragment.setArguments(args);
-            getSupportActionBar().setTitle(getResources().getString(R.string.titulo_crear_tienda));
-            TransactionReplace("Tienda", fragment);
+            progress = new ProgressDialog(this);
+            progress.setMessage("Verificando...");
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+
+            JSONObject jsonObject = new JSONObject();
+            try
+            {
+                jsonObject.put("id", idUsuario);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
+            new EjecutarSentencia().execute(getResources().getString(R.string.direccion_web) + "Controlador/contarTiendas.php", jsonObject.toString());
         }
         else if (id == R.id.nav_slideshow)
         {
@@ -292,5 +323,93 @@ public class Inicio_Usuario extends AppCompatActivity
     public void onFragmentInteraction(Uri uri)
     {
 
+    }
+    public class EjecutarSentencia extends AsyncTask<String, Void, String>
+    {
+        @Override
+        public String doInBackground(String... params)
+        {
+            HttpURLConnection conn = null;
+            try
+            {
+                StringBuffer response = null;
+                URL url = new URL(params[0]);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(params[1].toString());
+                writer.close();
+                out.close();
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode" + responseCode);
+
+                switch (responseCode)
+                {
+                    case 200:
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        response = new StringBuffer();
+                        while ((inputLine = in.readLine()) != null)
+                        {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return response.toString();
+                }
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.disconnect();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(String s)
+        {
+            try
+            {
+                JSONObject jsonObject = new JSONObject(s);
+                int cStore = jsonObject.getInt("count(user_id)");
+                progress.dismiss();
+                if (cStore >= 3)
+                {
+                    Toast.makeText(getApplicationContext(), "No puedes crear mas tiendas, el limite maximo es solo hasta 3 tiendas.", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    fragment = new fragmentTienda();
+                    Bundle args = new Bundle();
+                    args.putString("ID_USUARIO", idUsuario);
+                    fragment.setArguments(args);
+                    getSupportActionBar().setTitle(getResources().getString(R.string.titulo_crear_tienda));
+                    TransactionReplace("Tienda", fragment);
+                }
+
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
     }
 }
