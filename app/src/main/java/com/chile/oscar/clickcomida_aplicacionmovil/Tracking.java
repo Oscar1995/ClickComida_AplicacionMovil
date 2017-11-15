@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -116,6 +117,7 @@ public class Tracking extends Fragment
     Boolean sonidoRep =false;
     SupportMapFragment map;
     Boolean isDateCorrect = false;
+
 
     String dateEsps, dateEntre1s = "", dateEntre2s = "";
 
@@ -499,6 +501,7 @@ public class Tracking extends Fragment
             final TextView textViewEstado = (TextView)convertView.findViewById(R.id.txtEstado);
             TextView textViewNombreTienda = (TextView)convertView.findViewById(R.id.txtNombreTienda);
             TextView textViewFecha= (TextView)convertView.findViewById(R.id.txtFecha);
+
             ImageView imageViewOjo = (ImageView)convertView.findViewById(R.id.ivOjo);
             ImageView imageViewMap = (ImageView)convertView.findViewById(R.id.ivMap);
 
@@ -567,10 +570,13 @@ public class Tracking extends Fragment
                                 {
                                     try
                                     {
-                                        if (mapUpdate.isShowing()) //Cuando el mastra se muestra empieza el conteo cada 5 segundos
+                                        if (mapUpdate.isShowing()) //Cuando el mapa se muestra empieza el conteo cada 2 segundos
                                         {
+                                            SharedPreferences sharedpreferences = getActivity().getSharedPreferences("datos_del_usuario", Context.MODE_PRIVATE);
+                                            int userId = Integer.parseInt(sharedpreferences.getString("id_usuario_shared", ""));
+
                                             JSONObject object = new JSONObject();
-                                            object.put("user_id", Coordenadas.id);
+                                            object.put("user_id", userId);
                                             object.put("order_id", pedidos_procesoList.get(v.getId()).getOrden_id());
                                             tipoLoad = "Repartidor";
                                             googleMapGlobal = googleMap;
@@ -583,19 +589,16 @@ public class Tracking extends Fragment
                                             timer.purge();
                                             Log.e("Muestra", "Ha parado el temporizador");
                                         }
-
-
                                     }
                                     catch (JSONException e)
                                     {
                                         e.printStackTrace();
                                     }
-
                                 }
                             }, 0, 2000);
                             googleMap.setMyLocationEnabled(true);
                             googleMap.getUiSettings().setZoomControlsEnabled(true);
-                            if (googleMap != null)
+                            /*if (googleMap != null)
                             {
                                 Location location = getMyLocation();
                                 if (location != null)
@@ -604,9 +607,7 @@ public class Tracking extends Fragment
                                     //CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                                     //googleMap.animateCamera(miUbicacion);
                                 }
-
-                            }
-
+                            }*/
                         }
                     });
                     botonTomarCoor.setOnClickListener(new View.OnClickListener() {
@@ -680,11 +681,11 @@ public class Tracking extends Fragment
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(params[1].toString());
-                writer.close();
-                out.close();
+
+                OutputStream os = new BufferedOutputStream(conn.getOutputStream());
+                os.write(params[1].toString().getBytes());
+                os.close();
+
                 int responseCode = conn.getResponseCode();
                 System.out.println("responseCode" + responseCode);
 
@@ -778,7 +779,6 @@ public class Tracking extends Fragment
                         if (locationMe != null && latLngLocal != null)
                         {
                             LatLng latLng = new LatLng(locationMe.getLatitude(), locationMe.getLongitude());
-
                             Integer MetrosDistancia = new MetodosCreados().CalculationByDistance(latLng, latLngLocal);
                             if (MetrosDistancia == 0)
                             {
@@ -787,7 +787,6 @@ public class Tracking extends Fragment
                                     new MetodosCreados().MostrarNotificacion(getContext(), getResources());
                                     sonidoRep = true;
                                 }
-
                             }
                             Log.d("Distancia: " , MetrosDistancia + " metros.");
                         }

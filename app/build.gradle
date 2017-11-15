@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-android {
+android{
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     useLibrary 'org.apache.http.legacy'
@@ -19,6 +19,9 @@ android {
         }
     }
     productFlavors {
+    }
+    aaptOptions {
+        cruncherEnabled = false
     }
 }
 configurations.all {
