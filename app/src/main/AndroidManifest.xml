@@ -63,21 +63,27 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".RegistrarUsuarioContinuacion"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".Inicio_Usuario"
             android:label="@string/title_activity_inicio__usuario"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".fragmentTiendaDos" />
+
         <activity
+            android:screenOrientation="portrait"
             android:name=".BusquedaAvanzada"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".fragmentProductosVender" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".MapaInicio"
             android:label="@string/title_activity_mapa_inicio" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".SplashScreen"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -88,6 +94,7 @@
         </activity>
         <activity
             android:name=".MisDatos"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MapaInicio">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -95,21 +102,26 @@
         </activity>
         <activity
             android:name=".MapsActivityReg"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps_reg" />
         <activity android:name=".Postulantes_Tienda" />
         <activity
             android:name=".MapsActivityTienda"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps_tienda" />
         <activity
             android:name=".MapsActivityPrueba"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps_prueba" />
         <activity android:name=".Passwword_forgot" />
         <activity
             android:name=".Inicio_Repartidor"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_inicio__repartidor"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WorksActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_works"
             android:theme="@style/AppTheme" />
         <activity android:name=".Actividades.BusquedaAvanzadaActivity"></activity>

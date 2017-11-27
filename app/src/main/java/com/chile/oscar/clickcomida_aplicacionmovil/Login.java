@@ -152,7 +152,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
 
                     }
                     else
-                    {
+                {
                         if (new Validadores().isNetDisponible(getApplicationContext()))
                         {
                             JSONObject jsonObject = new JSONObject();

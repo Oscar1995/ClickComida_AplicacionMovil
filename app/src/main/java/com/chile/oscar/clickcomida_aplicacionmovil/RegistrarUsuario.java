@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Validadores;
 
 import org.json.JSONException;
@@ -101,8 +102,18 @@ public class RegistrarUsuario extends AppCompatActivity  implements View.OnClick
                 {
                     if (txtClave.getText().toString().length() >= 6)
                     {
-                        claveUsuario = txtClave.getText().toString();
-                        isCorrectClave = true;
+                        MetodosCreados x = new MetodosCreados();
+                        if (x.ValidarClave(txtClave.getText().toString()) == true)
+                        {
+                            claveUsuario = txtClave.getText().toString();
+                            isCorrectClave = true;
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "La clave debe tener por lo menos un número.", Toast.LENGTH_SHORT).show();
+                            isCorrectClave = false;
+                        }
+
                     }
                     else
                     {

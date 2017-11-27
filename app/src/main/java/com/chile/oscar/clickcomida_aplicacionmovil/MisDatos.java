@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -1343,227 +1344,135 @@ public class MisDatos extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.ivDeleteDir1:
-                AlertDialog.Builder builderDir = new AlertDialog.Builder(getActivity());
-                builderDir.setTitle("Eliminar")
-                        .setMessage("¿Seguro que deseas esta dirección?")
-                        .setPositiveButton("Aceptar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        JSONObject object = new JSONObject();
-                                        try
-                                        {
-                                            object.put("Id", id);
-                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
-                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
-                                            tipoReg = "Eliminar Direccion 1";
-                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
-
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                })
-                        .setNegativeButton("Cancelar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                    }
-                                });
-                builderDir.show();
-
-                /*AlertDialog.Builder builderDeleteDir1 = new AlertDialog.Builder(getContext());
-                View pDirDelete1 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                builderDeleteDir1.setView(pDirDelete1);
-                dialogAlertDeleteDir1 = builderDeleteDir1.create();
-                dialogAlertDeleteDir1.show();
-
-                Button buttonEliminarDir1 = (Button) pDirDelete1.findViewById(R.id.btnEliminar_d_f);
-                Button buttonCerrarDir1 = (Button) pDirDelete1.findViewById(R.id.btnCancelar_d_f);
-
-                buttonEliminarDir1.setOnClickListener(new View.OnClickListener()
+                if (buttonUsar1.getText().toString().equals("En uso"))
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        JSONObject object = new JSONObject();
-                        try
-                        {
-                            object.put("Id", id);
-                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
-                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
-                            tipoReg = "Eliminar Direccion 1";
-                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+                    Toast.makeText(getActivity(), "No se puede eliminar la dirección porque esta en uso.", Toast.LENGTH_LONG).show();
 
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                buttonCerrarDir1.setOnClickListener(new View.OnClickListener()
+                }
+                else
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertDeleteDir1.dismiss();
-                    }
-                });*/
+                    AlertDialog.Builder builderDir = new AlertDialog.Builder(getActivity());
+                    builderDir.setTitle("Eliminar")
+                            .setMessage("¿Seguro que deseas esta dirección?")
+                            .setPositiveButton("Aceptar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            try
+                                            {
+                                                object.put("Id", id);
+                                                object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                                object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                                tipoReg = "Eliminar Direccion 1";
+                                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
 
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builderDir.show();
+                }
                 break;
             case R.id.ivDeleteDir2:
-                AlertDialog.Builder builderDir2 = new AlertDialog.Builder(getActivity());
-                builderDir2.setTitle("Eliminar")
-                        .setMessage("¿Seguro que deseas esta dirección?")
-                        .setPositiveButton("Aceptar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        JSONObject object = new JSONObject();
-                                        try
-                                        {
-                                            object.put("Id", id);
-                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
-                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
-                                            tipoReg = "Eliminar Direccion 1";
-                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
-
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                })
-                        .setNegativeButton("Cancelar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                    }
-                                });
-                builderDir2.show();
-                /*AlertDialog.Builder builderDeleteDir2 = new AlertDialog.Builder(getContext());
-                View pDirDelete2 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                builderDeleteDir2.setView(pDirDelete2);
-                dialogAlertDeleteDir2 = builderDeleteDir2.create();
-                dialogAlertDeleteDir2.show();
-
-                Button buttonEliminarDir2 = (Button) pDirDelete2.findViewById(R.id.btnEliminar_d_f);
-                Button buttonCerrarDir2 = (Button) pDirDelete2.findViewById(R.id.btnCancelar_d_f);
-
-                buttonEliminarDir2.setOnClickListener(new View.OnClickListener()
+                if (buttonUsar2.getText().toString().equals("En uso"))
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        JSONObject object = new JSONObject();
-                        try
-                        {
-                            object.put("Id", id);
-                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calleDos.getText().toString()));
-                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalleDos.getText().toString()));
-                            tipoReg = "Eliminar Direccion 2";
-                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+                    Toast.makeText(getActivity(), "No se puede eliminar la dirección porque esta en uso.", Toast.LENGTH_LONG).show();
 
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                buttonCerrarDir2.setOnClickListener(new View.OnClickListener()
+                }
+                else
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertDeleteDir2.dismiss();
-                    }
-                });*/
+                    AlertDialog.Builder builderDir2 = new AlertDialog.Builder(getActivity());
+                    builderDir2.setTitle("Eliminar")
+                            .setMessage("¿Seguro que deseas esta dirección?")
+                            .setPositiveButton("Aceptar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            try
+                                            {
+                                                object.put("Id", id);
+                                                object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                                object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                                tipoReg = "Eliminar Direccion 2";
+                                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
 
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builderDir2.show();
+                }
                 break;
 
             case R.id.ivDeleteDir3:
-                AlertDialog.Builder builderDir3 = new AlertDialog.Builder(getActivity());
-                builderDir3.setTitle("Eliminar")
-                        .setMessage("¿Seguro que deseas esta dirección?")
-                        .setPositiveButton("Aceptar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        JSONObject object = new JSONObject();
-                                        try
-                                        {
-                                            object.put("Id", id);
-                                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
-                                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
-                                            tipoReg = "Eliminar Direccion 1";
-                                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
-
-                                        }
-                                        catch (JSONException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                })
-                        .setNegativeButton("Cancelar",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                    }
-                                });
-                builderDir3.show();
-                /*AlertDialog.Builder builderDeleteDir3 = new AlertDialog.Builder(getContext());
-                View pDirDelete3 = getActivity().getLayoutInflater().inflate(R.layout.eliminar_telefono_o_direccion, null);
-                builderDeleteDir3.setView(pDirDelete3);
-                dialogAlertDeleteDir3 = builderDeleteDir3.create();
-                dialogAlertDeleteDir3.show();
-
-                Button buttonEliminarDir3 = (Button) pDirDelete3.findViewById(R.id.btnEliminar_d_f);
-                Button buttonCerrarDir3 = (Button) pDirDelete3.findViewById(R.id.btnCancelar_d_f);
-
-                buttonEliminarDir3.setOnClickListener(new View.OnClickListener()
+                if (buttonUsar3.getText().toString().equals("En uso"))
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        JSONObject object = new JSONObject();
-                        try
-                        {
-                            object.put("Id", id);
-                            object.put("Calle", new MetodosCreados().quitarDosPuntos(calleTres.getText().toString()));
-                            object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalleTres.getText().toString()));
-                            tipoReg = "Eliminar Direccion 3";
-                            new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+                    Toast.makeText(getActivity(), "No se puede eliminar la dirección porque esta en uso.", Toast.LENGTH_LONG).show();
 
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                buttonCerrarDir3.setOnClickListener(new View.OnClickListener()
+                }
+                else
                 {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        dialogAlertDeleteDir3.dismiss();
-                    }
-                });*/
+                    AlertDialog.Builder builderDir3 = new AlertDialog.Builder(getActivity());
+                    builderDir3.setTitle("Eliminar")
+                            .setMessage("¿Seguro que deseas esta dirección?")
+                            .setPositiveButton("Aceptar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            JSONObject object = new JSONObject();
+                                            try
+                                            {
+                                                object.put("Id", id);
+                                                object.put("Calle", new MetodosCreados().quitarDosPuntos(calle.getText().toString()));
+                                                object.put("Numero", new MetodosCreados().quitarDosPuntos(numCalle.getText().toString()));
+                                                tipoReg = "Eliminar Direccion 3";
+                                                new EjecutarConsulta().execute(getResources().getString(R.string.direccion_web) + "Controlador/eliminar_datos_usuario.php", object.toString());
+
+                                            }
+                                            catch (JSONException e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                    builderDir3.show();
+                }
+
                 break;
         }
     }

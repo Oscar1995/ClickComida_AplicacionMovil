@@ -356,4 +356,17 @@ public class MetodosCreados
         String nuevoFormato = vVariable.trim();
         return nuevoFormato;
     }
+    public boolean ValidarClave (String passUser) //Metodo entrega si la palabra por lo menos contiene un número.
+    {
+        boolean isNumeric = false;
+        for (int i=0; i<passUser.length(); i++)
+        {
+            if (passUser.charAt(i) == '1' || passUser.charAt(i) == '2'|| passUser.charAt(i) == '3'|| passUser.charAt(i) == '4'|| passUser.charAt(i) == '5'|| passUser.charAt(i) == '6'|| passUser.charAt(i) == '7'|| passUser.charAt(i) == '8'|| passUser.charAt(i) == '9'|| passUser.charAt(i) == '0')
+            {
+                isNumeric = true;
+            }
+
+        }
+        return isNumeric;
+    }
 }
