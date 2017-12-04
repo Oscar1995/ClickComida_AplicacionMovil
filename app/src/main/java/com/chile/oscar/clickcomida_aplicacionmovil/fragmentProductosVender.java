@@ -85,9 +85,19 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
     List<JSONObject> jsonObjects = new ArrayList<>();
     ProgressDialog progress;
 
-    EditText txtProducto;
+    boolean btnPresionMod = false;
+    boolean btnPresion = false;
 
+    EditText txtProducto, txtDescripcion, txtPrecio;
     ImageButton botonImagen;
+
+    EditText textNombreProd;
+    EditText textDesProd;
+    EditText textPreProd;
+    AlertDialog dialogMod;
+
+    boolean prodLocal;
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -142,7 +152,6 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 final AlertDialog dialogAdd = builderAgregar.create();
                 dialogAdd.show();
 
-                final EditText txtDescripcion, txtPrecio;
                 txtProducto = (EditText)p.findViewById(R.id.etNombreProducto);
                 txtDescripcion = (EditText)p.findViewById(R.id.etDescripcionProd);
                 txtPrecio = (EditText)p.findViewById(R.id.etPrecioProd);
@@ -157,7 +166,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     {
                         if (hasFocus == false)
                         {
-                            if (!txtProducto.getText().toString().isEmpty())
+                            if (!txtProducto.getText().toString().trim().isEmpty())
                             {
                                 progress = new ProgressDialog(getContext());
                                 progress.setMessage("Comprobando nombre..");
@@ -167,7 +176,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                                 JSONObject object = new JSONObject();
                                 try
                                 {
-                                    object.put("Nombre", txtProducto.getText().toString());
+                                    object.put("Nombre", txtProducto.getText().toString().trim());
                                     object.put("Id", store_id);
                                 }
                                 catch (JSONException e)
@@ -190,44 +199,28 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                         {
                             if (prodDb == false)
                             {
-                                if (nombreProd.contains(txtProducto.getText().toString()))
+                                btnPresion = true;
+                                progress = new ProgressDialog(getContext());
+                                progress.setMessage("Comprobando nombre..");
+                                progress.setCanceledOnTouchOutside(false);
+                                progress.show();
+
+                                JSONObject object = new JSONObject();
+                                try
                                 {
-                                    Toast.makeText(getContext(), "El nombre ya existe, elige otro.", Toast.LENGTH_SHORT).show();
+                                    object.put("Nombre", txtProducto.getText().toString().trim());
+                                    object.put("Id", store_id);
                                 }
-                                else
+                                catch (JSONException e)
                                 {
-                                    if (fotoTomada)
-                                    {
-                                        nombreProd.add(txtProducto.getText().toString().trim());
-                                        desProd.add(txtDescripcion.getText().toString().trim());
-                                        precioProd.add(txtPrecio.getText().toString().trim());
-                                        photosProd.add(Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
-                                        mostrarProd = new String[nombreProd.size()];
-
-                                        for (int i = 0; i < nombreProd.size(); i++)
-                                        {
-                                            mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
-                                        }
-                                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
-                                        listaProductos.setAdapter(arrayAdapter);
-
-                                        txtProducto.setText("");
-                                        txtDescripcion.setText("");
-                                        txtPrecio.setText("");
-                                        botonImagen.setImageResource(R.drawable.ic_menu_camera);
-
-                                        Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
-                                        fotoTomada = false;
-                                    }
-                                    else
-                                    {
-                                        Toast.makeText(getContext(), "Debes tomar una foto para el producto.", Toast.LENGTH_SHORT).show();
-                                    }
+                                    e.printStackTrace();
                                 }
+                                new ConsultarProducto().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultarProducto.php", object.toString());
+
                             }
                             else
                             {
-                                Toast.makeText(getContext(), "El producto " + txtProducto.getText().toString() + ", ya se encuentra en la base de datos.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "El producto " + txtProducto.getText().toString().trim() + ", ya lo has registrado anteriormente.", Toast.LENGTH_LONG).show();
                             }
 
                         }
@@ -269,12 +262,12 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                     AlertDialog.Builder builderModificar = new AlertDialog.Builder(getContext());
                     View pUpdate = getActivity().getLayoutInflater().inflate(R.layout.modificar_productos_ventana, null);
                     builderModificar.setView(pUpdate);
-                    final AlertDialog dialogMod = builderModificar.create();
+                    dialogMod = builderModificar.create();
                     dialogMod.show();
 
-                    final EditText textNombreProd = (EditText) pUpdate.findViewById(R.id.etNombreProdMod);
-                    final EditText textDesProd = (EditText) pUpdate.findViewById(R.id.etDesProdMod);
-                    final EditText textPreProd = (EditText) pUpdate.findViewById(R.id.etPrecioProdMod);
+                    textNombreProd = (EditText) pUpdate.findViewById(R.id.etNombreProdMod);
+                    textDesProd = (EditText) pUpdate.findViewById(R.id.etDesProdMod);
+                    textPreProd = (EditText) pUpdate.findViewById(R.id.etPrecioProdMod);
                     Button botonModProd = (Button) pUpdate.findViewById(R.id.btnModProd);
                     Button botonModCerrar = (Button) pUpdate.findViewById(R.id.btnModCerrar);
                     buttonPhotoProduct = (ImageButton)pUpdate.findViewById(R.id.ibModProducts);
@@ -292,7 +285,25 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                         {
                             if (validarCampos(textNombreProd, textDesProd, textPreProd))
                             {
-                                int posicionActual = nombreProd.indexOf(textNombreProd.getText().toString());
+                                btnPresionMod = true;
+                                progress = new ProgressDialog(getContext());
+                                progress.setMessage("Comprobando nombre..");
+                                progress.setCanceledOnTouchOutside(false);
+                                progress.show();
+
+                                JSONObject object = new JSONObject();
+                                try
+                                {
+                                    object.put("Nombre", textNombreProd.getText().toString().trim());
+                                    object.put("Id", store_id);
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                                new ConsultarProducto().execute(getResources().getString(R.string.direccion_web) + "Controlador/consultarProducto.php", object.toString());
+
+                                /*int posicionActual = nombreProd.indexOf(textNombreProd.getText().toString());
                                 if (posicionActual == posicionProducto || posicionActual == -1)
                                 {
                                     nombreProd.set(posicionProducto, textNombreProd.getText().toString().trim());
@@ -309,7 +320,7 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                                 {
                                     String other_item = nombreProd.get(posicionActual);
                                     Toast.makeText(getContext(), "El nombre " + other_item + " ya existe.", Toast.LENGTH_SHORT).show();
-                                }
+                                }*/
 
                             }
                         }
@@ -694,12 +705,75 @@ public class fragmentProductosVender extends Fragment implements View.OnClickLis
                 if (res.equals("Si"))
                 {
                     txtProducto.setError("Este producto ya lo tienes registrado en tu tienda.");
-                    Toast.makeText(getContext(), txtProducto.getText().toString() + " ya existe en la base de datos.", Toast.LENGTH_SHORT).show();
-                    prodDb = true;
+
+                    Toast.makeText(getContext(), txtProducto.getText().toString().trim() + "El nombre del producto ya lo tienes registrado.", Toast.LENGTH_SHORT).show();
+
+                    prodDb = false;
                 }
                 else if (res.equals("No"))
                 {
                     prodDb = false;
+                    if (btnPresion == true)
+                    {
+                        if (nombreProd.contains(txtProducto.getText().toString().trim()))
+                        {
+                            Toast.makeText(getContext(), "El nombre ya existe, elige otro.", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            if (fotoTomada)
+                            {
+                                nombreProd.add(txtProducto.getText().toString().trim());
+                                desProd.add(txtDescripcion.getText().toString().trim());
+                                precioProd.add(txtPrecio.getText().toString().trim());
+                                photosProd.add(Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
+                                mostrarProd = new String[nombreProd.size()];
+
+                                for (int i = 0; i < nombreProd.size(); i++)
+                                {
+                                    mostrarProd[i] = "Nombre: " + nombreProd.get(i) + ", Precio: " + precioProd.get(i);
+                                }
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mostrarProd);
+                                listaProductos.setAdapter(arrayAdapter);
+
+                                txtProducto.setText("");
+                                txtDescripcion.setText("");
+                                txtPrecio.setText("");
+                                botonImagen.setImageResource(R.drawable.ic_menu_camera);
+
+                                Toast.makeText(getContext(), "Producto agregado.", Toast.LENGTH_SHORT).show();
+                                fotoTomada = false;
+                                btnPresion = false;
+                                prodDb = false;
+                            }
+                            else
+                            {
+                                Toast.makeText(getContext(), "Debes tomar una foto para el producto.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                    else if (btnPresionMod == true)
+                    {
+                        int posicionActual = nombreProd.indexOf(textNombreProd.getText().toString());
+                        if (posicionActual == posicionProducto || posicionActual == -1)
+                        {
+                            nombreProd.set(posicionProducto, textNombreProd.getText().toString().trim());
+                            desProd.set(posicionProducto, textDesProd.getText().toString().trim());
+                            precioProd.set(posicionProducto, textPreProd.getText().toString().trim());
+                            photosProd.set(posicionProducto, Codificacion.encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100));
+                            buttonPhotoProduct.setImageResource(R.drawable.ic_menu_camera);
+                            cargarProductos();
+                            dialogMod.cancel();
+                            Toast.makeText(getContext(), "Producto modificado", Toast.LENGTH_SHORT).show();
+                            productoEncontrado = false;
+                        }
+                        else
+                        {
+                            String other_item = nombreProd.get(posicionActual);
+                            Toast.makeText(getContext(), "El nombre " + other_item + " ya existe.", Toast.LENGTH_SHORT).show();
+                        }
+                        btnPresionMod = false;
+                    }
                 }
                 progress.dismiss();
             }
