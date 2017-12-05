@@ -169,10 +169,6 @@ public class Inicio_Repartidor extends AppCompatActivity implements NavigationVi
             fragmentoSeleccionado = true;
             getSupportActionBar().setTitle(getResources().getString(R.string.pedidos_péndientes));
         }
-        else if (id == R.id.nav_share)
-        {
-
-        }
         else if (id == R.id.nav_end)
         {
 

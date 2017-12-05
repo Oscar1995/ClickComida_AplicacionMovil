@@ -32,7 +32,7 @@ public class Passwword_forgot extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passwword_forgot);
 
-        String url = "http://clickcomidaoficial.esy.es/password/reset";
+        String url = "http://clickcomida.xyz/password/reset";
         WebView webView = (WebView)findViewById(R.id.wbComida);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(url);

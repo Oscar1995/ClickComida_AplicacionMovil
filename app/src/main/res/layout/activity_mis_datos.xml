@@ -278,6 +278,7 @@
                 android:id="@+id/ivDeleteDir1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:visibility="invisible"
                 app:srcCompat="@drawable/delete" />
 
         </LinearLayout>
@@ -347,6 +348,7 @@
                 android:id="@+id/ivDeleteDir2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:visibility="invisible"
                 app:srcCompat="@drawable/delete" />
         </LinearLayout>
 
@@ -415,6 +417,7 @@
                 android:id="@+id/ivDeleteDir3"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+                android:visibility="invisible"
                 app:srcCompat="@drawable/delete" />
         </LinearLayout>
 

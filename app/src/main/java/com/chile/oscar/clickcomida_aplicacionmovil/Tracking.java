@@ -769,10 +769,17 @@ public class Tracking extends Fragment
                         {
                             googleMapGlobal.clear();
                         }
+
                         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_moto_marker);
-                        latLngLocal = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 15);
+                        Bitmap iconMe = BitmapFactory.decodeResource(getResources(), R.drawable.flag_red);
+
+                        latLngLocal = new LatLng(jsonObject.getDouble("latR"), jsonObject.getDouble("lonR")); //Coordenadas del repartidor
+                        LatLng latLngUs = new LatLng(jsonObject.getDouble("latU"), jsonObject.getDouble("lonU")); //Coordenadas del usuario, NOTA: Este es estatico...
+
+                        CameraUpdate miUbicacion = CameraUpdateFactory.newLatLngZoom(latLngLocal, 20);
                         googleMapGlobal.addMarker(new MarkerOptions().position(latLngLocal).title("Repartidor")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(icon, 100, 100)));
+
+                        googleMapGlobal.addMarker(new MarkerOptions().position(latLngUs).title("Tu dirección")).setIcon(BitmapDescriptorFactory.fromBitmap(new MetodosCreados().resizeMapIcons(iconMe, 100, 100)));
                         googleMapGlobal.animateCamera(miUbicacion);
 
                         Location locationMe = getMyLocation();
