@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.chile.oscar.clickcomida_aplicacionmovil.Clases.Coordenadas;
+import com.chile.oscar.clickcomida_aplicacionmovil.Clases.MetodosCreados;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -159,7 +160,18 @@ public class MapsActivityReg extends FragmentActivity implements OnMapReadyCallb
         switch (v.getId())
         {
             case R.id.btnFijar:
-                finish();
+                MetodosCreados metodosCreados = new MetodosCreados();
+                if (metodosCreados.ConsultarCiudad(getApplicationContext(), Coordenadas.latitud, Coordenadas.longitud))
+                {
+                    finish();
+                }
+                else
+                {
+                    Coordenadas.latitud = 0.0;
+                    Coordenadas.longitud = 0.0;
+                    Toast.makeText(getApplicationContext(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
     }

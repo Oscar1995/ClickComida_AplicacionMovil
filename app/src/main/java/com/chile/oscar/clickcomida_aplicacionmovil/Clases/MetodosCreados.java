@@ -12,7 +12,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.util.Calendar;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -37,10 +39,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -368,5 +373,28 @@ public class MetodosCreados
 
         }
         return isNumeric;
+    }
+    public boolean ConsultarCiudad (Context con, Double lat, Double lon)
+    {
+        try
+        {
+            Geocoder geocoder = new Geocoder(con, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+
+            String city = addresses.get(0).getAddressLine(0);
+            if (city.contains("Osorno"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

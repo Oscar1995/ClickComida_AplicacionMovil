@@ -220,7 +220,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
 
             case R.id.btnClaveOlvidada:
                 //startActivity(new Intent(Login.this, Passwword_forgot.class));
-                String link = "http://clickcomidaoficial.esy.es/password/reset";
+                String link = "https://clickcomida.xyz/password/reset";
                 Intent intent = null;
                 intent = new Intent(intent.ACTION_VIEW, Uri.parse(link));
                 startActivity(intent);
@@ -350,7 +350,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Vi
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                String link = "http://clickcomidaoficial.esy.es/login";
+                                String link = "http://clickcomida.xyz/login";
                                 Intent intent = null;
                                 intent = new Intent(intent.ACTION_VIEW, Uri.parse(link));
                                 startActivity(intent);

@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -47,6 +49,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -242,8 +246,8 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                                     googleMap.clear();
                                 }
                                 LatLng latlng = googleMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
 
+                                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marca"));
                                 Coordenadas.latitud = googleMap.getCameraPosition().target.latitude;
                                 Coordenadas.longitud = googleMap.getCameraPosition().target.longitude;
                             }
@@ -255,7 +259,15 @@ public class fragmentTienda extends Fragment implements View.OnClickListener
                     public void onClick(View v)
                     {
                         //getFragmentManager().beginTransaction().remove(map).commit();
-                        mapUpdate.dismiss();
+                        MetodosCreados metodosCreados = new MetodosCreados();
+                        if (metodosCreados.ConsultarCiudad(getContext(), Coordenadas.latitud, Coordenadas.longitud))
+                        {
+                            mapUpdate.dismiss();
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 

@@ -443,7 +443,15 @@ public class MisDatos extends Fragment implements View.OnClickListener
                                 @Override
                                 public void onClick(View v)
                                 {
-                                    mapUpdate.dismiss();
+                                    MetodosCreados metodosCreados = new MetodosCreados();
+                                    if (metodosCreados.ConsultarCiudad(getContext(), Coordenadas.latitud, Coordenadas.longitud))
+                                    {
+                                        mapUpdate.dismiss();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getActivity(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             });
                         }
@@ -966,8 +974,17 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             @Override
                             public void onClick(View v)
                             {
-                                getFragmentManager().beginTransaction().remove(map).commit();
-                                mapUpdate.dismiss();
+                                MetodosCreados metodosCreados = new MetodosCreados();
+                                if (metodosCreados.ConsultarCiudad(getContext(), Coordenadas.latitud, Coordenadas.longitud))
+                                {
+                                    getFragmentManager().beginTransaction().remove(map).commit();
+                                    mapUpdate.dismiss();
+                                }
+                                else
+                                {
+                                    Toast.makeText(getActivity(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         });
                     }
@@ -1126,8 +1143,16 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             @Override
                             public void onClick(View v)
                             {
-                                getFragmentManager().beginTransaction().remove(map2).commit();
-                                mapUpdate.dismiss();
+                                MetodosCreados metodosCreados = new MetodosCreados();
+                                if (metodosCreados.ConsultarCiudad(getContext(), Coordenadas.latitud, Coordenadas.longitud))
+                                {
+                                    getFragmentManager().beginTransaction().remove(map2).commit();
+                                    mapUpdate.dismiss();
+                                }
+                                else
+                                {
+                                    Toast.makeText(getActivity(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
@@ -1284,8 +1309,16 @@ public class MisDatos extends Fragment implements View.OnClickListener
                             @Override
                             public void onClick(View v)
                             {
-                                getFragmentManager().beginTransaction().remove(map2).commit();
-                                mapUpdate.dismiss();
+                                MetodosCreados metodosCreados = new MetodosCreados();
+                                if (metodosCreados.ConsultarCiudad(getContext(), Coordenadas.latitud, Coordenadas.longitud))
+                                {
+                                    getFragmentManager().beginTransaction().remove(map2).commit();
+                                    mapUpdate.dismiss();
+                                }
+                                else
+                                {
+                                    Toast.makeText(getActivity(), "Debe elegir la dirección dentro de Osorno", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
